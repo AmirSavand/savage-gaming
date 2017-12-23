@@ -25,7 +25,7 @@ In this mode, you can only kill enemy team (3 teams in total)
 - Fixed team color
 - Safe zone in team base
 
-## Featues
+## Features
 
 ### Gamemode
 
