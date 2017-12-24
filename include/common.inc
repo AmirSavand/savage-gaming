@@ -89,7 +89,7 @@ stock Ran(min, max)
 stock Log(string[], fileLocation[] = "log.txt")
 {
     new File:logFile = fopen(fileLocation, io_append);
-    new logStr[256];
+    new logStr[2000];
 
     new _year, _month, _day, _hour, _minute, _second;
     getdate(_year, _month, _day);
