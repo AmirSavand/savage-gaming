@@ -23,8 +23,9 @@
 #define TIME_DOUBLE_KILL            5
 #define TIME_SERVER_UPDATE          500
 
-#define MODE_FFA                    1
-#define MODE_TDM                    2
+#define MODE_FREEROAM               1
+#define MODE_FFA                    2
+#define MODE_TDM                    3
 
 // Includes
 
@@ -362,14 +363,16 @@ CMD:mode(playerid, params[])
         return AlertPlayerError(playerid, "> Command usage: /mode [mode]");
 
     // Unload modes
+    SendRconCommand("unloadfs modes/freeroam");
     SendRconCommand("unloadfs modes/tdm");
     SendRconCommand("unloadfs modes/ffa");
 
     // Load mode
     switch (mode)
     {
-        case MODE_FFA: SendRconCommand("loadfs modes/ffa");
-        case MODE_TDM: SendRconCommand("loadfs modes/tdm");
+        case MODE_FREEROAM: SendRconCommand("loadfs modes/freeroam");
+        case MODE_FFA:      SendRconCommand("loadfs modes/ffa");
+        case MODE_TDM:      SendRconCommand("loadfs modes/tdm");
     }
 
     // For all players
