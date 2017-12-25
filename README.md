@@ -6,6 +6,16 @@ This server doesn't handle security and cheats since it's made for LAN only.
 
 ## Modes
 
+### Freeroam
+
+In this mode, you hang around, buy cars, collect packages and have fun.
+
+- Random spawn point
+- Random package to collect
+- Random color
+- Vehicles to purchase
+- Health regeneration (killing is hard)
+
 ### Free For All (FFA)
 
 In this mode, you kill everyone
