@@ -466,6 +466,10 @@ CMD:addcar(playerid, params[]) // Create a db car in current position (model is 
     // Get player position
     IMPORT_PLAYER_POS;
 
+    // Get a if in a car
+    if (IsPlayerInAnyVehicle(playerid))
+        GetVehicleZAngle(PVI, pPos[3]);
+
     // Insert car to db
     new qry[1000];
     mysql_format(db, qry, sizeof(qry), "INSERT INTO cars (model, x, y, z, a) VALUES (%i, %f, %f, %f, %f)", mod, pPos[0], pPos[1], pPos[2], pPos[3]);
