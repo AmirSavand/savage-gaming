@@ -151,13 +151,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem)
     // Purchase dialog
     if (dialogid == DIALOG_CARS)
     {
-        new car = GetCarIndex(PVI);
+        // Index
+        new i = GetCarIndex(PVI);
 
         // Wants to buy
         if (response)
         {
             // Has enough money?
-            if (!HasEnoughMoney(playerid, Car[car][price]))
+            if (!HasEnoughMoney(playerid, Car[i][price]))
             {
                 // No money, remove and alert
                 RemovePlayerFromVehicle(playerid);
@@ -168,18 +169,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem)
             else 
             {
                 // Take money from player
-                GivePlayerMoney(playerid, -Car[car][price]);
+                GivePlayerMoney(playerid, -Car[i][price]);
 
                 // Update ownership
-                Car[car][owner] = GetPVarInt(playerid, "id");
+                Car[i][owner] = GetPVarInt(playerid, "id");
 
                 // Restore car engine and repair
-                SetVehicleHealth(PVI, Car[car][engine]);
                 RepairVehicle(PVI);
+                SetVehicleHealth(PVI, Car[i][engine]);
 
                 // Update to db if purchased permanently (not one time car)
-                if (Car[car][type] != TYPE_PURCHASE_ONCE)
-                    UpdateCar(car);
+                if (Car[i][type] != TYPE_PURCHASE_ONCE)
+                    UpdateCar(i);
 
                 // Event
                 CallRemoteFunction("OnPlayerPurchaseVehicle", "ii", playerid, PVI);
