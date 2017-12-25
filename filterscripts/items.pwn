@@ -25,6 +25,7 @@
 #define ITEM_NITROS             4
 #define ITEM_PAINTS             5
 #define ITEM_SKYDIVE            6
+#define ITEM_AMMO               7
 
 #pragma unused randomItems
 
@@ -43,7 +44,8 @@ new const itemNames[][] = {
     "",
     "Medic Box",     "Body Armor",
     "Car Tools",     "Nitros",
-    "Special Paint", "Sky Dive"
+    "Special Paint", "Sky Dive",
+    "Ammo Bag"
 };
 
 new randomItems[MAX_ITEMS] = {
