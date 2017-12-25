@@ -249,6 +249,19 @@ public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
     Car[i][color][2] = paintjobid;
 }
 
+// Public functions
+
+forward OnPlayerUseItem(playerid, item, itemName[]);
+public  OnPlayerUseItem(playerid, item, itemName[])
+{
+    // Repair car and is in a car
+    if (isequal("Car Tools", itemName))
+    {
+        // Set health to saved engine
+        SetVehicleHealth(PVI, Car[GetCarIndex(PVI)][engine]);
+    }
+}
+
 // Functions
 
 DestroyCars() // Destroy all db and admin cars
