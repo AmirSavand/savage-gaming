@@ -26,5 +26,5 @@ public  SpawnRandomPackage()
 
     // Spawn random package pickup and mapicon
     randomPackage = CreateDynamicPickup(19057, 1, randomPackageSpawns[i][0], randomPackageSpawns[i][1], randomPackageSpawns[i][2]);
-    randomPackageMapicon = CreateDynamicMapIcon(randomPackageSpawns[i][0], randomPackageSpawns[i][1], randomPackageSpawns[i][2], 56, 0);
+    randomPackageMapicon = CreateDynamicMapIcon(randomPackageSpawns[i][0], randomPackageSpawns[i][1], randomPackageSpawns[i][2], 56, 0, -1, -1, -1, 1000, MAPICON_GLOBAL);
 }
