@@ -318,7 +318,25 @@ public  OnPlayerKillStreak(playerid, killStreak)
         // Announce
         AlertPlayers(FPlayer(playerid, str));
     }
+}
 
+forward OnPlayerAttemptToUseItem(playerid, item, itemName[]);
+public  OnPlayerAttemptToUseItem(playerid, item, itemName[])
+{
+    // Using items that required you to be in a car
+    if (isequal(itemName, "Car Tools"))
+    {
+        // Can't repair car if not in a car
+        if (!IsPlayerInAnyVehicle(playerid))
+        {
+            // Alert
+            AlertPlayerText(playerid, "~r~~h~Not in vehicle");
+            return 0;
+        }
+    }
+
+    // Allow usage
+    return 1;
 }
 
 // Commands
