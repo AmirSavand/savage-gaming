@@ -2,6 +2,7 @@
 * Class
 *
 * Weapon class and selection for players.
+* Call GivePlayerClassWeapons() to give player ammo of current class.
 *
 * by Amir Savand
 */
@@ -27,7 +28,9 @@
 // Variables
 
 new static classNames[][] = {
-    "Assault", "Assault (2)", "Engineer", "Engineer (2)", "Sniper", "Sniper (2)"
+    "Assault",  "Assault (2)",
+    "Engineer", "Engineer (2)",
+    "Sniper",   "Sniper (2)"
 };
 
 new static classGuns[][] = {
@@ -54,11 +57,6 @@ public OnFilterScriptInit()
     return 1;
 }
 
-public OnFilterScriptExit()
-{
-    return 1;
-}
-
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
     if (dialogid == DIALOG_CLASSES && response)
@@ -76,7 +74,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             ResetPlayerWeapons(playerid);
 
             // Give weapons of selected class
-            GivePlayerClassWeapons(playerid);
+            GivePlayerClassWeapons(playerid, 1);
         }
 
         // Already had a weapon class, give weapons on spawn
@@ -94,7 +92,7 @@ public OnPlayerSpawn(playerid)
     if (playerClass[playerid] > -1)
     {
         // Rearm player with class weapons
-        GivePlayerClassWeapons(playerid);
+        GivePlayerClassWeapons(playerid, 1);
     }
 
     // No class selected
@@ -162,20 +160,26 @@ ShowPlayerClasses(playerid)
         strcat(str, strLine);
     }
 
-
     // Show dialog
     ShowPlayerDialog(playerid, DIALOG_CLASSES, DIALOG_STYLE_TABLIST_HEADERS, "{00FFFF}Weapon Class", str, "Select", "Close");
 }
 
-GivePlayerClassWeapons(playerid, Float:multiplier = 1.0)
+// Public functions
+
+forward GivePlayerClassWeapons(playerid, Float:multiplier);
+public  GivePlayerClassWeapons(playerid, Float:multiplier)
 {
+    // Multiplier is factor if not given
+    if (multiplier == 0)
+        multiplier = DEATH_PICKUP_AMMO_FACTOR;
+
     // Get player class
     new c = playerClass[playerid];
 
     // Give guns and ammo based on multiplier (multiplier is used for ammo pickups)
-    GivePlayerWeapon(playerid, classGuns[c][4], floatround(classGuns[c][5]* multiplier));
-    GivePlayerWeapon(playerid, classGuns[c][2], floatround(classGuns[c][3]* multiplier));
-    GivePlayerWeapon(playerid, classGuns[c][0], floatround(classGuns[c][1]* multiplier));
+    GivePlayerWeapon(playerid, classGuns[c][4], floatround(classGuns[c][5] * multiplier));
+    GivePlayerWeapon(playerid, classGuns[c][2], floatround(classGuns[c][3] * multiplier));
+    GivePlayerWeapon(playerid, classGuns[c][0], floatround(classGuns[c][1] * multiplier));
 }
 
 // Commands
