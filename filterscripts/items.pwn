@@ -2,7 +2,7 @@
 * Items
 *
 * Items for players to consume/buy/sell.
-* Control item usage via OnPlayerUseItem (return 0 to pervent player from using item)
+* Allow player to use items via OnPlayerAttemptToUseItem (return 1)
 * Know what item player gets via OnPlayerGetItem
 *
 * by Amir Savand
@@ -14,7 +14,7 @@
 
 #define DIALOG_ITEMS            300
 
-#define MAX_ITEMS               100
+#define MAX_ITEMS               50
 
 #define RANDOM_ITEM_TIME        10 * 60000
 #define RANDOM_ITEM_MIN_PLAYER  2
@@ -110,7 +110,7 @@ public OnPlayerSpawn(playerid)
 
     // Load player
     new qry[500]; mysql_format(db, qry, sizeof(qry), "SELECT item, count FROM items WHERE player=%i", uid);
-    mysql_query(db, qry);
+    new Cache:cache = mysql_query(db, qry);
 
     // Add all items
     for (new i; i < cache_num_rows(); i++)
@@ -119,6 +119,8 @@ public OnPlayerSpawn(playerid)
         cache_get_value_int(i, "item", item);
         cache_get_value_int(i, "count", playerItem[playerid][item]);
     }
+
+    cache_delete(cache);
     return 1;
 }
 
@@ -163,14 +165,11 @@ UsePlayerItem(playerid, item)
     if (!playerItem[playerid][item] || !item)
         return 0;
 
-    // Decrease item count
-    playerItem[playerid][item]--;
-
-    // Call remote
-    new usage = CallRemoteFunction("OnPlayerUseItem", "iis", playerid, item, itemNames[item]);
+    // Event
+    new usage = CallRemoteFunction("OnPlayerAttemptToUseItem", "iis", playerid, item, itemNames[item]);
 
     // Can use
-    if (usage != 0)
+    if (usage)
     {
         // Consume item
         switch (item)
@@ -181,10 +180,15 @@ UsePlayerItem(playerid, item)
             case ITEM_NITROS:  AddVehicleComponent(PVI, 1010);
             case ITEM_PAINTS:  ChangeVehicleColor(PVI, Ran(128, 243), Ran(128, 243));
             case ITEM_SKYDIVE: SkyDivePlayer(playerid);
+            case ITEM_AMMO:    CallRemoteFunction("GivePlayerClassWeapons", "ii", playerid, 0);
         }
 
-        // Alert
+        // Decrease item count
+        playerItem[playerid][item]--;
         AlertPlayerText(playerid, "~b~~h~Item Used");
+
+        // Event
+        CallRemoteFunction("OnPlayerUseItem", "iis", playerid, item, itemNames[item]);
         return 1;
     }
 
