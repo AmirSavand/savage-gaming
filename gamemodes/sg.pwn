@@ -8,19 +8,21 @@
 
 // Defines
 
+#define SERVER_TITLE                "Savage Gaming"
+
 #define MAX_RANDOM_PACKAGES         4
 
 #define RANDOM_PACKAGE_CASH         0
-#define RANDOM_PACKAGE_HP_AR        1
+#define RANDOM_PACKAGE_AR           1
 #define RANDOM_PACKAGE_RPG          2
 #define RANDOM_PACKAGE_RANDOM_ITEM  3
 
-#define KILL_STREAK_MINIGUN         150
+#define KILL_STREAK_MINIGUN         100
 #define KILL_STREAK_MONEY           1000
 #define KILL_STREAK_RPG             20
 #define KILL_STREAK_GRENADE         40
+#define KILL_STREAK_MONEY_2         2000
 
-#define TIME_DOUBLE_KILL            5
 #define TIME_SERVER_UPDATE          500
 
 #define MODE_FREEROAM               1
@@ -34,19 +36,9 @@
 #include <sscanf>
 #include <zcmd>
 
-#include "../include/common"
-
 // Variables
 
-new Text:titleTextdrawText;
-new titleTextDraw[50] = "Savage Gaming";
-
-new PlayerText:engineTextdraw[MAX_PLAYERS][2];
-
-new playerKillStreak[MAX_PLAYERS]; // Used for kill streak rewards
-new playerLastKill[MAX_PLAYERS]; // Used for double kill reward
-
-new ranks[] = { // Money per rank upgrade
+new const ranks[] = { // Money per rank upgrade
          0,
      10000,  15000,  18000,  22000,
      25000,  28000,  30000,  35000,
@@ -56,11 +48,31 @@ new ranks[] = { // Money per rank upgrade
     180000, 200000, 250000, 300000
 };
 
+// Includes
+
+#include "../include/common"
+
+#include "../include/player-commands"
+
+#include "../include/admin-commands"
+
+#include "../include/gang-skins"
+
+#include "../include/rank"
+
+#include "../include/player-label"
+
+#include "../include/engine-textdraw"
+
+#include "../include/title-textdraw"
+
+#include "../include/kill-streak"
+
 // Main
 
 main()
 {
-    print("\n > Starting Savage Gaming gamemode by Amir Savand.\n");
+    printf("\n > Starting %s gamemode by Amir Savand.\n", SERVER_TITLE);
 }
 
 // Callbacks
@@ -68,21 +80,21 @@ main()
 public OnGameModeInit()
 {
     // Game mode functions
-    SetGameModeText("FFA TDM");
+    SetGameModeText("Freeroam FFA TDM");
     AllowInteriorWeapons(false);
     EnableStuntBonusForAll(false);
     ShowPlayerMarkers(PLAYER_MARKERS_MODE_GLOBAL);
     DisableInteriorEnterExits();
-    UsePlayerPedAnims();
+    // UsePlayerPedAnims();
+
+    // Gang Skins
+    AddGangSkins();
 
     // Gamemode timer
     SetTimer("OnServerUpdate", TIME_SERVER_UPDATE, 1);
 
-    // Gang Skins
-    #include "../include/gang-skins"
-
     // Title Textdraw
-    #include "../include/title-textdraw"
+    InitialTitleTextdraw(SERVER_TITLE);
     return 1;
 }
 
@@ -91,11 +103,11 @@ public OnPlayerConnect(playerid)
     // Announce player is joining
     SendDeathMessage(INVALID_PLAYER_ID, playerid, 200);
 
-    // Show text title
-    TextDrawShowForPlayer(playerid, titleTextdrawText);
-
     // Initial text draw
-    InitialPlayerEngineTextdraw(playerid);
+    InitialEngineTextdraw(playerid);
+
+    // Player label
+    InitialPlayerLabel(playerid, "...");
     return 1;
 }
 
@@ -108,15 +120,15 @@ public OnPlayerDisconnect(playerid)
 
 public OnPlayerSpawn(playerid)
 {
-    // Reset kill streak
-    ResetPlayerKillStreak(playerid);
-
     // Alert player if upgrade available
     if (CanPlayerUpgradeRank(playerid))
-        AlertPlayerText(playerid, "~p~~h~/rankup available");
+        AlertPlayerDialog(playerid, "Info", "{00FF00}New rank available!\nType /rankup to pay for upgrade to next rank.");
 
     // Fix default -$100
     GivePlayerMoney(playerid, 100);
+
+    // Update player label
+    UpdatePlayerLabel(playerid, sprintf("{FF00FF}Rank %i", GetPVarInt(playerid, "rank")));
     return 1;
 }
 
@@ -134,21 +146,7 @@ public OnPlayerDeath(playerid, killerid, reason)
         SetPlayerHealth(killerid, 100);
 
         // Kill streak handling
-        CheckPlayerKillStreak(killerid);
-
-        // Check for double kill
-        if (gettime() - playerLastKill[killerid] < TIME_DOUBLE_KILL)
-        {
-            // Show player 2x kill money
-            AlertPlayerText(killerid, "~g~~h~+200");
-            GivePlayerMoney(killerid, 100);
-
-            // Alert players
-            AlertPlayers(FPlayer(killerid, "performed a {FF0000}Double Kill!"));
-        }
-
-        // Save last kill time
-        playerLastKill[killerid] = gettime();
+        CheckPlayerKillStreak(killerid, playerid);
     }
     return 1;
 }
@@ -175,33 +173,51 @@ public OnPlayerClickMap(playerid, Float:fX,  Float:fY, Float:fZ)
     return 1;
 }
 
-public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart)
+public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
 {
-    // Hit sound (ding) if not flame
-    if (weaponid != WEAPON_FLAMETHROWER)
-        PlayerPlaySound(playerid, 17802, 0.0, 0.0, 0.0);
-
-    // Extra damage multiplier
-    new Float:multiplier = 1;
-
-    // Extra damage for each weapon
-    switch (weaponid)
+    // Damage from another player
+    if (issuerid != INVALID_PLAYER_ID)
     {
-        case WEAPON_SNIPER:   multiplier = 2;
-        case WEAPON_RIFLE:    multiplier = 2;
-        case WEAPON_SHOTGUN:  multiplier = 2;
-        case WEAPON_SILENCED: multiplier = 2;
-        case WEAPON_DEAGLE:   multiplier = 2;
+        // If not burning
+        if (weaponid != WEAPON_FLAMETHROWER)
+        {
+            // Hit sound (ding)
+            PlayerPlaySound(issuerid, 17802, 0.0, 0.0, 0.0);
+        }
+
+        // Extra damage multiplier
+        new Float:multiplier = 1;
+
+        // Extra damage for each weapon
+        switch (weaponid)
+        {
+            // Assault
+            case WEAPON_MP5:      multiplier = 2;
+
+            // Snipers
+            case WEAPON_SNIPER:   multiplier = 2;
+            case WEAPON_RIFLE:    multiplier = 2;
+
+            // Shotguns
+            case WEAPON_SHOTGSPA: multiplier = 1.5;
+            case WEAPON_SHOTGUN:  multiplier = 3;
+            
+            // Pistols
+            case WEAPON_SILENCED: multiplier = 2;
+            case WEAPON_DEAGLE:   multiplier = 2;
+        }
+
+        // Headshot
+        if (bodypart == 9)
+        {
+            // Double damage
+            multiplier = multiplier * 2;
+        }
+
+        // Deal extra damage to player
+        GivePlayerDamage(playerid, amount * multiplier);
     }
-
-    // Double damage if headshot
-    if (bodypart == 9)
-        multiplier = multiplier * 2;
-
-    // Deal extra damage to player
-    if (damagedid != INVALID_PLAYER_ID)
-        GivePlayerDamage(damagedid, amount * multiplier);
-    return 0;
+    return 1;
 }
 
 // Public functions
@@ -216,7 +232,7 @@ public  OnServerUpdate()
         SetPlayerScore(i, GetPlayerMoney(i));
 
         // Update textdraw
-        UpdatePlayerEngineTextdraw(i);
+        UpdateEngineTextdraw(i);
     }
 }
 
@@ -226,39 +242,33 @@ public  OnPlayerPickupRandomPackage(playerid)
     // Get random index from packages
     new package = Ran(0, MAX_RANDOM_PACKAGES);
 
-    // Message
-    new msg[60];    
-
     // Give player random package
     switch(package)
     {
         case RANDOM_PACKAGE_CASH: // Cash
         {
-            GivePlayerMoney(playerid, 500);
-            msg = "~g~~h~+500";
+            GivePlayerMoney(playerid, 600);
+            AlertPlayerText(playerid, "~g~~h~+600");
         }
-        case RANDOM_PACKAGE_HP_AR: // HP and armour
+        case RANDOM_PACKAGE_AR  : // HP and armour
         {
             SetPlayerArmour(playerid, 100);
             SetPlayerHealth(playerid, 100);
-            msg = "~b~~h~Armour ~r~~h~Health";
+            AlertPlayerText(playerid, "~b~~h~200 Armour");
         }
         case RANDOM_PACKAGE_RPG: // RPG
         {
-            GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, 2);
-            msg = "~b~~h~RPG";
+            GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, 3);
+            AlertPlayerText(playerid, "~b~~h~3 RPG");
         }
         case RANDOM_PACKAGE_RANDOM_ITEM: // Random item
         {
             CallRemoteFunction("GivePlayerRandomItem", "i", playerid);
-            msg = "~b~~h~Random Item";
+            AlertPlayerText(playerid, "~b~~h~Random Item");
         }
     }
 
-    // Alert player
-    AlertPlayerText(playerid, msg);
-
-    // Collect message
+    // Announce
     AlertPlayers(FPlayer(playerid, "collected random pacakge!"));
 }
 
@@ -266,7 +276,7 @@ forward OnPlayerPurchaseVehicle(playerid, vehicleid);
 public  OnPlayerPurchaseVehicle(playerid, vehicleid)
 {
     // Purchase message
-    new str[100]; format(str, sizeof(str), "purchased {FFFF00}%s!", GetCarName(vehicleid));
+    new str[100]; format(str, sizeof(str), "purchased {FFFF00}%s", GetCarName(vehicleid));
 
     // Alert everyone
     AlertPlayers(FPlayer(playerid, str));
@@ -285,31 +295,37 @@ public  OnPlayerKillStreak(playerid, killStreak)
         {
             GivePlayerWeapon(playerid, WEAPON_MINIGUN, KILL_STREAK_MINIGUN);
             AlertPlayerText(playerid, "~b~~h~Minigun");
-            str = "got {FF0000}Minigun {DDDDDD}from 5x kills streak.";
+            str = "got {FF0000}Minigun {DDDDDD}from 5 kill streak.";
         }
         case 10: // Money
         {
             GivePlayerMoney(playerid, KILL_STREAK_MONEY);
             AlertPlayerText(playerid, "~g~~h~+1000");
-            str = "got {00FF00}$1,000 {DDDDDD}from 10x kills streak.";
+            str = "got {00FF00}$1000 {DDDDDD}from 10 kill streak.";
         }
         case 15: // Grenade
         {
             GivePlayerWeapon(playerid, WEAPON_GRENADE, KILL_STREAK_GRENADE);
             AlertPlayerText(playerid, "~b~~h~RPG");
-            str = "got many {FF0000}Grenades {DDDDDD}from 15x kills streak.";
+            str = "got many {FF0000}Grenades {DDDDDD}from 15 kill streak.";
         }
         case 20: // Jetpack
         {
             SetPlayerSpecialAction(playerid, SPECIAL_ACTION_USEJETPACK);
             AlertPlayerText(playerid, "~b~~h~JETPACK");
-            str = "got {FF0000}Jetpack {DDDDDD}from 20x kills streak.";
+            str = "got {FF0000}Jetpack {DDDDDD}from 20 kill streak.";
         }
-        case 30: // RPG
+        case 25: // RPG
         {
-            GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, KILL_STREAK_GRENADE);
+            GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, KILL_STREAK_RPG);
             AlertPlayerText(playerid, "~b~~h~RPG");
-            str = "got {FF0000}RPG {DDDDDD}from 30x kills streak.";
+            str = "got {FF0000}RPG {DDDDDD}from 25 kill streak.";
+        }
+        case 30: // Money (2)
+        {
+            GivePlayerMoney(playerid, KILL_STREAK_MONEY_2);
+            AlertPlayerText(playerid, "~g~~h~+2000");
+            str = "got {00FF00}$2,000 {DDDDDD}from 30 kill streak.";
         }
     }
 
@@ -318,6 +334,28 @@ public  OnPlayerKillStreak(playerid, killStreak)
     {
         // Announce
         AlertPlayers(FPlayer(playerid, str));
+    }
+}
+
+forward OnPlayerDoubleKill(playerid);
+public  OnPlayerDoubleKill(playerid)
+{
+    // Show player 2x kill money
+    AlertPlayerText(playerid, "~g~~h~+300"); // Combined with the last kill
+    GivePlayerMoney(playerid, 200);
+
+    // Alert players
+    AlertPlayers(FPlayer(playerid, "performed a {FF0000}Double Kill!"));
+}
+
+forward OnPlayerKillStreakEnded(playerid, enderid, killStreak);
+public  OnPlayerKillStreakEnded(playerid, enderid, killStreak)
+{
+    // 5 kill streak
+    if (killStreak >= 5)
+    {
+        // Announce
+        AlertPlayers(FPlayer(enderid, sprintf("ended {FF0000}%s's %i kill streak!", GetName(playerid), killStreak)));
     }
 }
 
@@ -340,6 +378,13 @@ public  OnPlayerAttemptToUseItem(playerid, item, itemName[])
     return 1;
 }
 
+forward OnPlayerRankUp(playerid, rank, cost);
+public  OnPlayerRankUp(playerid, rank, cost)
+{
+    // Announce
+    AlertPlayers(FPlayer(playerid, sprintf("is now {FF00FF}Rank %i", rank)));
+}
+
 // Commands
 
 CMD:rankup(playerid)
@@ -348,8 +393,6 @@ CMD:rankup(playerid)
     UpgradePlayerRank(playerid);
     return 1;
 }
-
-// Admin Command
 
 CMD:mode(playerid, params[])
 {
@@ -379,19 +422,7 @@ CMD:mode(playerid, params[])
     for (new i; i < MAX_PLAYERS; i++)
     {
         // Kill em
-        SetPlayerHealth(playerid, 0);
+        SetPlayerHealth(i, 0);
     }
     return 1;
 }
-
-// Includes
-
-#include "../include/player-commands"
-
-#include "../include/admin-commands"
-
-#include "../include/rank"
-
-#include "../include/engine-textdraw"
-
-#include "../include/kill-streak"
