@@ -27,22 +27,24 @@
 
 // Variables
 
-new static classNames[][] = {
-    "Assault",  "Assault (2)",
-    "Engineer", "Engineer (2)",
+new const classNames[][] = {
+    "Assault",  "Assault (2)",  "Assault (3)",
+    "Engineer", "Engineer (2)", "Engineer (3)",
     "Sniper",   "Sniper (2)"
 };
 
-new static classGuns[][] = {
+new const classGuns[][] = {
     // Assault
-    {WEAPON_M4,       150, WEAPON_MP5,      200, WEAPON_GRENADE,    2},
-    {WEAPON_AK47,     200, WEAPON_UZI,      100, WEAPON_MOLTOV,     2},
-    // Shotgun
-    {WEAPON_SHOTGSPA,  50, WEAPON_DEAGLE,    10, WEAPON_GRENADE,    2},
-    {WEAPON_SAWEDOFF,  50, WEAPON_TEC9,     200, WEAPON_GRENADE,    2},
+    {WEAPON_M4,        50, WEAPON_TEC9,     100, WEAPON_GRENADE,    2},
+    {WEAPON_AK47,      90, WEAPON_UZI,      100, WEAPON_MOLTOV,     2},
+    {WEAPON_MP5,       70, WEAPON_DEAGLE,    10, WEAPON_GRENADE,    2},
+    // Engineer
+    {WEAPON_SHOTGSPA,  40, WEAPON_DEAGLE,    15, WEAPON_GRENADE,    2},
+    {WEAPON_SAWEDOFF,  40, WEAPON_TEC9,     150, WEAPON_GRENADE,    2},
+    {WEAPON_SHOTGUN,   30, WEAPON_TEC9,     150, WEAPON_GRENADE,    2},
     // Sniper
-    {WEAPON_SNIPER,    10, WEAPON_SILENCED,  50, WEAPON_MOLTOV,     1},
-    {WEAPON_RIFLE,     10, WEAPON_SHOTGUN,   50, WEAPON_MOLTOV,     1}
+    {WEAPON_SNIPER,     6, WEAPON_SILENCED,  20, WEAPON_MOLTOV,     1},
+    {WEAPON_RIFLE,     10, WEAPON_DEAGLE,    10, WEAPON_MOLTOV,     1}
 };
 
 new deathPickup[MAX_PLAYERS];
@@ -106,6 +108,7 @@ public OnPlayerSpawn(playerid)
 
 public OnPlayerDeath(playerid, killerid, reason)
 {
+    // Position
     IMPORT_PLAYER_POS;
 
     // Respawn death pickup
@@ -144,20 +147,14 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 ShowPlayerClasses(playerid)
 {
     // Dialog string with head
-    new str[2000] = "CLASS\tPRIMARY\tSECONDARY\tTACTICAL\n";
+    new str[2000] = "CLASS\tPRIMARY\tSECONDARY\tLETHAL\n";
 
     // Show all classes
     for (new i; i < sizeof(classNames); i++)
     {
-        // Class line string
-        new strLine[500];
-
-        // Class name, weapons with ammo in line
-        format(strLine, sizeof(strLine), "{FFFF00}%s\t{00FF00}%s {BBBBBB}%i\t{00FF00}%s {BBBBBB}%i\t{00FF00}%s {BBBBBB}%i\n",
-            classNames[i], GetGunName(classGuns[i][0]), classGuns[i][1], GetGunName(classGuns[i][2]), classGuns[i][3], GetGunName(classGuns[i][4]), classGuns[i][5]);
-
-        // Add to dialog string
-        strcat(str, strLine);
+        // Add class detail to classes dialog
+        strcat(str, sprintf("{FFFF00}%s\t{00FF00}%s {BBBBBB}%i\t{00FF00}%s {BBBBBB}%i\t{00FF00}%s {BBBBBB}%i\n",
+            classNames[i], GetGunName(classGuns[i][0]), classGuns[i][1], GetGunName(classGuns[i][2]), classGuns[i][3], GetGunName(classGuns[i][4]), classGuns[i][5]));
     }
 
     // Show dialog
@@ -180,6 +177,36 @@ public  GivePlayerClassWeapons(playerid, Float:multiplier)
     GivePlayerWeapon(playerid, classGuns[c][4], floatround(classGuns[c][5] * multiplier));
     GivePlayerWeapon(playerid, classGuns[c][2], floatround(classGuns[c][3] * multiplier));
     GivePlayerWeapon(playerid, classGuns[c][0], floatround(classGuns[c][1] * multiplier));
+}
+
+forward GivePlayerPrimaryAmmo(playerid, Float:multiplier);
+public  GivePlayerPrimaryAmmo(playerid, Float:multiplier)
+{
+    // Class
+    new c = playerClass[playerid];
+
+    // Give player ammo of current class
+    GivePlayerWeapon(playerid, classGuns[c][0], floatround(classGuns[c][1] * multiplier));
+}
+
+forward GivePlayerSecondaryAmmo(playerid, Float:multiplier);
+public  GivePlayerSecondaryAmmo(playerid, Float:multiplier)
+{
+    // Class
+    new c = playerClass[playerid];
+
+    // Give player ammo of current class
+    GivePlayerWeapon(playerid, classGuns[c][2], floatround(classGuns[c][3] * multiplier));
+}
+
+forward GivePlayerLethalAmmo(playerid, ammo);
+public  GivePlayerLethalAmmo(playerid, ammo)
+{
+    // Class
+    new c = playerClass[playerid];
+
+    // Give player ammo of current class
+    GivePlayerWeapon(playerid, classGuns[c][4], ammo);
 }
 
 // Commands
