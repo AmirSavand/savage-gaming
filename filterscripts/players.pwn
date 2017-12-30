@@ -66,7 +66,7 @@ public OnPlayerConnect(playerid)
         mysql_format(db, qry, sizeof(qry), "INSERT INTO players SET name='%e'", GetName(playerid));
         mysql_tquery(db, qry);
         SetPVarInt(playerid, "new", 1);
-        SetPVarInt(playerid, "rank", 1);
+        SetPVarInt(playerid, "rank", 0);
     }
 
     // Log in
