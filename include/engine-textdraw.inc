@@ -1,16 +1,21 @@
 /**
 * Engine Textdraw
 *
-* Vehicle engine status on screen (textdraw)
-* Requires: PlayerText:engineTextdraw[MAX_PLAYERS][2]
+* Vehicle engine status on screen for players (textdraw)
 *
 * by Amir Savand
 */
 
-InitialPlayerEngineTextdraw(playerid)
+// Variables
+
+new PlayerText:engineTextdraw[MAX_PLAYERS][2]; // Text - Value
+
+// Functions
+
+InitialEngineTextdraw(playerid)
 {
-    engineTextdraw[playerid][0] = CreatePlayerTextDraw(playerid, 558.463317, 388.916717, "Engine");
-    PlayerTextDrawLetterSize(playerid, engineTextdraw[playerid][0], 0.337000, 1.689999);
+    engineTextdraw[playerid][0] = CreatePlayerTextDraw(playerid, 558, 390, "Engine");
+    PlayerTextDrawLetterSize(playerid, engineTextdraw[playerid][0], 0.337, 1.69);
     PlayerTextDrawAlignment(playerid, engineTextdraw[playerid][0], 3);
     PlayerTextDrawColor(playerid, engineTextdraw[playerid][0], -5963521);
     PlayerTextDrawSetOutline(playerid, engineTextdraw[playerid][0], 1);
@@ -18,8 +23,8 @@ InitialPlayerEngineTextdraw(playerid)
     PlayerTextDrawFont(playerid, engineTextdraw[playerid][0], 3);
     PlayerTextDrawSetProportional(playerid, engineTextdraw[playerid][0], 1);
 
-    engineTextdraw[playerid][1] = CreatePlayerTextDraw(playerid, 560.000000, 388.916717, " ");
-    PlayerTextDrawLetterSize(playerid, engineTextdraw[playerid][1], 0.434999, 1.689999);
+    engineTextdraw[playerid][1] = CreatePlayerTextDraw(playerid, 560, 390, " ");
+    PlayerTextDrawLetterSize(playerid, engineTextdraw[playerid][1], 0.434999, 1.69);
     PlayerTextDrawAlignment(playerid, engineTextdraw[playerid][1], 1);
     PlayerTextDrawColor(playerid, engineTextdraw[playerid][1], -1);
     PlayerTextDrawSetOutline(playerid, engineTextdraw[playerid][1], 1);
@@ -28,7 +33,7 @@ InitialPlayerEngineTextdraw(playerid)
     PlayerTextDrawSetProportional(playerid, engineTextdraw[playerid][1], 1);
 }
 
-UpdatePlayerEngineTextdraw(playerid)
+UpdateEngineTextdraw(playerid)
 {
     // Is in any vehicle to show textdraw for
     if (IsPlayerInAnyVehicle(playerid))
@@ -36,13 +41,8 @@ UpdatePlayerEngineTextdraw(playerid)
         // Show textdraw
         TogglePlayerEngineTextdraw(playerid, true);
 
-        // Get engine status
-        new Float: engine; GetVehicleHealth(GetPlayerVehicleID(playerid), engine);
-        new dhp = floatround(engine)/10; if (dhp == 99) dhp++;
-        new str[50]; format(str, sizeof(str),":_%i", dhp);
-
-        // Update textdraw
-        PlayerTextDrawSetString(playerid, engineTextdraw[playerid][1], str);
+        // Update textdraw and show current engine status
+        PlayerTextDrawSetString(playerid, engineTextdraw[playerid][1], sprintf(":_%i", floatround(GetVehicleEngine(PVI) / 10)));
     }
 
     // Not in any vehicle, hide textdraw
@@ -51,12 +51,14 @@ UpdatePlayerEngineTextdraw(playerid)
 
 TogglePlayerEngineTextdraw(playerid, bool:toggle = true)
 {
+    // Show
     if (toggle)
     {
         PlayerTextDrawShow(playerid, engineTextdraw[playerid][0]);
         PlayerTextDrawShow(playerid, engineTextdraw[playerid][1]);
     }
 
+    // Hide
     else
     {
         PlayerTextDrawHide(playerid, engineTextdraw[playerid][0]);
