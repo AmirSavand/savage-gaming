@@ -14,7 +14,7 @@
 
 #define DIALOG_ITEMS            300
 
-#define MAX_ITEMS               50
+#define MAX_ITEMS               8
 
 #define RANDOM_ITEM_TIME        10 * 60000
 #define RANDOM_ITEM_MIN_PLAYER  2
@@ -37,31 +37,34 @@
 #include <zcmd>
 
 #include "../include/common"
+#include "../include/database"
 
 // Variables
 
-new const itemNames[][] = {
+new const itemNames[MAX_ITEMS][] = {
     "",
-    "Medic Box",     "Body Armor",
-    "Car Tools",     "Nitros",
-    "Special Paint", "Sky Dive",
+    "Medic Box",
+    "Body Armor",
+    "Car Tools",
+    "Nitros",
+    "Special Paint",
+    "Sky Dive",
     "Ammo Bag"
 };
 
-new randomItems[MAX_ITEMS] = {
+new const randomItems[] = {
     0,
-    ITEM_HEALTH, ITEM_ARMOUR,
-    ITEM_REPAIR, ITEM_NITROS,
-    ITEM_PAINTS
+    ITEM_HEALTH,
+    ITEM_ARMOUR,
+    ITEM_REPAIR,
+    ITEM_NITROS,
+    ITEM_PAINTS,
+    ITEM_AMMO
 };
 
 new playerItem[MAX_PLAYERS][MAX_ITEMS];
 new playerItemSelection[MAX_PLAYERS][MAX_ITEMS];
-new bool:isPlayerItemLoaded[MAX_PLAYERS];
-
-new MySQL:db;
-
-new randomItemTimer;
+new bool:isPlayerLoaded[MAX_PLAYERS];
 
 // Callbacks
 
@@ -70,10 +73,10 @@ public OnFilterScriptInit()
     print("\n > Items filterscript by Amir Savand.\n");
 
     // Give player items every 10 minutes
-    randomItemTimer = SetTimer("GivePlayersRandomItem", RANDOM_ITEM_TIME, true);
+    SetTimer("GivePlayersRandomItem", RANDOM_ITEM_TIME, true);
 
-    // Connect to database
-    #include "../include/connect-database"
+    // Connect to db
+    InitialDatabase();
     return 1;
 }
 
@@ -83,11 +86,8 @@ public OnFilterScriptExit()
     for (new i = 0; i < MAX_PLAYERS; i++)
         SavePlayerItems(i);
 
-    // Kill timers
-    KillTimer(randomItemTimer);
-
     // Close db
-    mysql_close(db);
+    CloseDatabase();
     return 1;
 }
 
@@ -102,11 +102,11 @@ public OnPlayerSpawn(playerid)
     new uid = GetPVarInt(playerid, "id");
 
     // If already loaded
-    if (isPlayerItemLoaded[playerid] == true || !uid)
+    if (isPlayerLoaded[playerid] || !uid)
         return 1;
 
     // Set to loaded
-    isPlayerItemLoaded[playerid] = true;
+    isPlayerLoaded[playerid] = true;
 
     // Load player
     new qry[500]; mysql_format(db, qry, sizeof(qry), "SELECT item, count FROM items WHERE player=%i", uid);
@@ -120,6 +120,9 @@ public OnPlayerSpawn(playerid)
         cache_get_value_int(i, "count", playerItem[playerid][item]);
     }
 
+    // Debug
+    Log(sprintf("Loaded %i items for player %s", cache_num_rows(), GetName(playerid)), "items.txt");
+
     cache_delete(cache);
     return 1;
 }
@@ -129,6 +132,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem)
     // Use selected item
     if (response && dialogid == DIALOG_ITEMS)
         UsePlayerItem(playerid, playerItemSelection[playerid][listitem]);
+}
+
+public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
+{
+    // Press Y
+    if (PRESSED(KEY_YES))
+    {
+        // Show items
+        cmd_items(playerid);
+    }
+
+    return 1;
 }
 
 // Functions
@@ -241,6 +256,9 @@ public  GivePlayerRandomItem(playerid)
 forward GivePlayersRandomItem();
 public  GivePlayersRandomItem()
 {
+    // Debug
+    Log(sprintf("Attept to give players random item (%i/%i online)", CountPlayers(), RANDOM_ITEM_MIN_PLAYER), "items.txt");
+
     // Check min players for random item
     if (CountPlayers() < RANDOM_ITEM_MIN_PLAYER)
         return 0;
@@ -266,7 +284,8 @@ public  SkyDivePlayer(playerid)
 
 // Commands
 
-CMD:item(playerid)
+CMD:item(playerid) return cmd_items(playerid);
+CMD:items(playerid)
 {
     // Check items
     if (!HasPlayerAnyItems(playerid))
