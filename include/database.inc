@@ -2,13 +2,20 @@
 * Connect Database
 *
 * Should be included in an Init function
-* Requires: MySQL:db
-* Need to call mysql_close(db) on script exit.
 * Need to change password for security
+* Need to call CloseDatabase() on script exit.
 *
 * by Amir Savand
 */
 
+// Variables
+
+new MySQL:db;
+
+// Functions
+
+InitialDatabase()
+{
     // Allow mysql duplicate
     mysql_global_options(DUPLICATE_CONNECTIONS, true);
 
@@ -17,3 +24,10 @@
 
     // Failed
     if (mysql_errno() != 0) print(" > Failed to connect to database.");
+}
+
+CloseDatabase()
+{
+    // Close connection
+    mysql_close(db);
+}
