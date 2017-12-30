@@ -1,22 +1,27 @@
 /**
 * Kill Streak
 *
-* Player kill streak handler.
-* Kill streak is called on each kill streaks (5, 10, 15, ...)
-* Requires: playerKillStreak[MAX_PLAYERS]
-*           CheckPlayerKillStreak() from OnPlayerDeath()
+* Player kill streak and double kill handler
+* Check OnPlayerKillStreak() OnPlayerDoubleKill() to handle rewards
+* Check OnPlayerKillStreakEnded() to announce ending kill streak
+* Call CheckPlayerKillStreak() from OnPlayerDeath()
 *
 * by Amir Savand
 */
 
+// Defines
+
+#define TIME_DOUBLE_KILL 5
+
+// Variables
+
+new playerKillStreak[MAX_PLAYERS]; // Used for kill streak
+
+new playerLastKill[MAX_PLAYERS]; // Used for double kill
+
 // Functions
 
-ResetPlayerKillStreak(playerid)
-{
-    playerKillStreak[playerid] = 0;
-}
-
-CheckPlayerKillStreak(playerid)
+CheckPlayerKillStreak(playerid, killedid)
 {
     // Increase kill streak
     playerKillStreak[playerid]++;
@@ -24,7 +29,27 @@ CheckPlayerKillStreak(playerid)
     // If more than 3 kills
     if (playerKillStreak[playerid] >= 3)
     {
-        // Trigger event
+        // Event
         CallRemoteFunction("OnPlayerKillStreak", "ii", playerid, playerKillStreak);
     }
+
+    // Check for double kill
+    if (gettime() - playerLastKill[playerid] < TIME_DOUBLE_KILL)
+    {
+        // Event
+        CallRemoteFunction("OnPlayerDoubleKill", "i", playerid);
+    }
+
+    // Save last kill time
+    playerLastKill[playerid] = gettime();
+
+    // If killed player had a kill streak
+    if (playerKillStreak[killedid] >= 3)
+    {
+        // Event (killedid's kill streak ended by playerid)
+        CallRemoteFunction("OnPlayerKillStreakEnded", "iii", killedid, playerid, playerKillStreak[killedid]);
+    }
+
+    // Reset killed kill streak
+    playerKillStreak[killedid] = 0;
 }
