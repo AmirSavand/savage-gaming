@@ -86,7 +86,7 @@ stock Ran(min, max)
     return random(max - min) + min;
 }
 
-stock Log(string[], fileLocation[] = "log.txt")
+stock Log(string[], const fileLocation[] = "log.txt")
 {
     new File:logFile = fopen(fileLocation, io_append);
     new logStr[2000];
@@ -201,7 +201,7 @@ stock MovePlayer(playerid, Float:x, Float:y, Float:z, Float:a)
 
 stock SetPlayerWeaponSkills(playerid, skill)
 {
-    for (new i = 0; i < 11; i++)
+    for (new i; i < 11; i++)
         SetPlayerSkillLevel(playerid, i, skill);
 
     return 1;
@@ -299,9 +299,17 @@ stock AlertPlayersError(const message[])
 
 stock AlertPlayersText(const message[])
 {
-    for (new i = 0; i < MAX_PLAYERS; i++)
+    for (new i; i < MAX_PLAYERS; i++)
     {
         GameTextForPlayer(i, message, 3000, 4);
+    }
+}
+
+stock AlertPlayersDialog(const title[], const message[])
+{
+    for (new i; i < MAX_PLAYERS; i++)
+    {
+        AlertPlayerDialog(i, title, message);
     }
 }
 
@@ -311,7 +319,7 @@ stock AlertPlayersText(const message[])
 
 stock GetVehicleDriver(vehicleid)
 {
-    for (new i = 0; i < MAX_PLAYERS; i++)
+    for (new i; i < MAX_PLAYERS; i++)
     {
         if (GetPlayerState(i) == PLAYER_STATE_DRIVER)
         {
@@ -322,4 +330,11 @@ stock GetVehicleDriver(vehicleid)
         }
     }
     return INVALID_PLAYER_ID;
+}
+
+stock Float:GetVehicleEngine(vehicleid)
+{
+    new Float: engine;
+    GetVehicleHealth(vehicleid, engine);
+    return engine;
 }
