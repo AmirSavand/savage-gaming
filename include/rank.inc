@@ -2,7 +2,7 @@
 * Rank
 *
 * Purchase and upgrade to next rank for players.
-* Requires ranks[]
+* Requires ranks[] (money per rank starting with 0)
 *
 * by Amir Savand
 */
@@ -47,8 +47,7 @@ UpgradePlayerRank(playerid)
     // Get money
     GivePlayerMoney(playerid, -ranks[rank + 1]);
 
-    // Announce
-    new str[200]; format(str, sizeof(str), "> {00FF00}%s {DDDDDD}is now {FF00FF}rank %i", GetName(playerid), rank + 1);
-    AlertPlayers(str);
+    // Event
+    CallRemoteFunction("OnPlayerRankUp", "iii", playerid, rank + 1, -ranks[rank + 1]);    
     return 1;
 }
