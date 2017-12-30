@@ -29,7 +29,7 @@
 #define MAX_COLOR_LENGTH    5
 #define MAX_COLOR_STRING    50
 
-#define CAR_SELL_FACTOR     0.5
+#define CAR_SELL_FACTOR     0.9
 
 // Includes
 
@@ -116,30 +116,30 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
     // Got into a car
     if (newstate == PLAYER_STATE_DRIVER)
     {
-        // Get index
-        new car = GetCarIndex(PVI);
+        // Index
+        new i = GetCarIndex(PVI);
 
         // Check db car
-        if (car == -1) return 1;
+        if (i == -1) return 1;
 
         // Car is owned
-        if (Car[car][owner] > 0)
+        if (Car[i][owner] > 0)
         {
             // Owned by player
-            if (Car[car][owner] == GetPVarInt(playerid, "id"))
+            if (Car[i][owner] == GetPVarInt(playerid, "id"))
                 return 1;
 
             // Owned by another player
-            AlertPlayerDialog(playerid, "Owned Vehicle", "This vehicle is owned by another player.");
+            AlertPlayerDialog(playerid, "Info", "This vehicle is owned by another player.");
             RemovePlayerFromVehicle(playerid);
             return 1;
         }
 
         // Car is available to purchase
-        if (Car[car][type] == TYPE_PURCHASE || Car[car][type] == TYPE_PURCHASE_ONCE)
+        if (IsCarForPurchase(i))
         {
             // Show purchase dialog
-            new str[500]; format(str, sizeof(str), "You can buy this vehicle for {00FF00}$%i", Car[car][price]);
+            new str[500]; format(str, sizeof(str), "You can buy this vehicle for {00FF00}$%i", Car[i][price]);
             ShowPlayerDialog(playerid, DIALOG_CARS, DIALOG_STYLE_MSGBOX, "Buy Vehicle", str, "{00FF00}Buy", "Cancel");
         }
     }
@@ -450,6 +450,12 @@ UpdateCarMods(index) // Update all car mods to variable (comps, colors, etc...)
     }
 }
 
+IsCarForPurchase(index) // Check if vehicle type is for puchase (including once)
+{
+    // Check type
+    return Car[index][type] == TYPE_PURCHASE || Car[index][type] == TYPE_PURCHASE_ONCE;
+}
+
 // Commands
 
 CMD:addcar(playerid, params[]) // Create a db car in current position (model is optional)
@@ -581,7 +587,7 @@ CMD:sellcar(playerid) // Sell current car
 
     // Reset ownership
     Car[i][owner] = 0;
-    AlertPlayerDialog(playerid, "Info", "You'ved soled your vehicle for half of its price!");
+    AlertPlayerDialog(playerid, "Info", sprintf("{00FF00}You'ved soled your vehicle for %i%s of its price ($%s)!", CAR_SELL_FACTOR, "%%", Car[i][price]));
     UpdateCar(i);
 
     // Event
