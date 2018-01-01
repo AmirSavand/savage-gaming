@@ -18,9 +18,9 @@
 #define RANDOM_PACKAGE_RANDOM_ITEM  3
 
 #define KILL_STREAK_MINIGUN         100
-#define KILL_STREAK_MONEY           1000
 #define KILL_STREAK_RPG             20
 #define KILL_STREAK_GRENADE         40
+#define KILL_STREAK_MONEY           1000
 #define KILL_STREAK_MONEY_2         2000
 
 #define TIME_SERVER_UPDATE          500
@@ -248,6 +248,14 @@ public  OnPlayerPickupRandomPackage(playerid)
     // Get random index from packages
     new package = Ran(0, MAX_RANDOM_PACKAGES);
 
+    // If player has minigun and giving RPG
+    if (DoesPlayerHaveWeapon(playerid, WEAPON_MINIGUN) && package == RANDOM_PACKAGE_RPG)
+    {
+        // Give another package
+        OnPlayerPickupRandomPackage(playerid);
+        return;
+    }
+
     // Give player random package
     switch(package)
     {
@@ -259,7 +267,7 @@ public  OnPlayerPickupRandomPackage(playerid)
         case RANDOM_PACKAGE_AR  : // Armor
         {
             SetPlayerArmour(playerid, 200);
-            AlertPlayerText(playerid, "~b~~h~200 Armour");
+            AlertPlayerText(playerid, "~b~~h~+200 Armour");
         }
         case RANDOM_PACKAGE_RPG: // RPG
         {
@@ -329,8 +337,8 @@ public  OnPlayerKillStreak(playerid, killStreak)
         case 30: // Money (2)
         {
             GivePlayerMoney(playerid, KILL_STREAK_MONEY_2);
-            AlertPlayerText(playerid, "~g~~h~+$2000");
-            str = "got {00FF00}$2,000 {DDDDDD}from 30 kill streak.";
+            AlertPlayerText(playerid, "~g~~h~+2000");
+            str = "got {00FF00}$2000 {DDDDDD}from 30 kill streak.";
         }
     }
 
@@ -346,7 +354,7 @@ forward OnPlayerDoubleKill(playerid);
 public  OnPlayerDoubleKill(playerid)
 {
     // Show player 2x kill money
-    AlertPlayerText(playerid, "~g~~h~+300"); // Combined with the last kill
+    AlertPlayerText(playerid, "~g~~h~+400"); // Combined with the last kill
     GivePlayerMoney(playerid, 200);
 
     // Alert players
