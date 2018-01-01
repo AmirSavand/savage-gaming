@@ -60,6 +60,7 @@ CMD:killme(playerid)
 
     // Kill player
     SetPlayerHealth(playerid, 0);
+    SetPlayerArmour(playerid, 0);
     return 1;
 }
 
