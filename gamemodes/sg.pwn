@@ -52,9 +52,7 @@ new const ranks[] = { // Money per rank upgrade
 
 #include "../include/common"
 
-#include "../include/player-commands"
-
-#include "../include/admin-commands"
+#include "../include/commands"
 
 #include "../include/gang-skins"
 
@@ -122,7 +120,7 @@ public OnPlayerSpawn(playerid)
 {
     // Alert player if upgrade available
     if (CanPlayerUpgradeRank(playerid))
-        AlertPlayerDialog(playerid, "Info", "{00FF00}New rank available!\nType /rankup to pay for upgrade to next rank.");
+        AlertPlayerDialog(playerid, "Info", "{00FF00}New rank available!\n{DDDDDD}Type /rankup to pay for upgrade to next rank.");
 
     // Fix default -$100
     GivePlayerMoney(playerid, 100);
@@ -148,6 +146,9 @@ public OnPlayerDeath(playerid, killerid, reason)
         // Kill streak handling
         CheckPlayerKillStreak(killerid, playerid);
     }
+
+    // Sucide
+    else ResetPlayerKillStreak(playerid);
     return 1;
 }
 
@@ -163,11 +164,11 @@ public OnPlayerClickMap(playerid, Float:fX,  Float:fY, Float:fZ)
     // Check admin
     if (GetPlayerAdmin(playerid) >= 5)
     {
-        // Set position
-        if (GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+        // Move player
+        if (IsPlayerInAnyVehicle(playerid))
             SetPlayerPos(playerid, fX, fY, fZ);
 
-        // Set vehicle position
+        // Move car
         else SetVehiclePos(PVI, fX, fY, fZ);
     }
     return 1;
@@ -255,10 +256,9 @@ public  OnPlayerPickupRandomPackage(playerid)
             GivePlayerMoney(playerid, 600);
             AlertPlayerText(playerid, "~g~~h~+600");
         }
-        case RANDOM_PACKAGE_AR  : // HP and armour
+        case RANDOM_PACKAGE_AR  : // Armor
         {
-            SetPlayerArmour(playerid, 100);
-            SetPlayerHealth(playerid, 100);
+            SetPlayerArmour(playerid, 200);
             AlertPlayerText(playerid, "~b~~h~200 Armour");
         }
         case RANDOM_PACKAGE_RPG: // RPG
@@ -329,7 +329,7 @@ public  OnPlayerKillStreak(playerid, killStreak)
         case 30: // Money (2)
         {
             GivePlayerMoney(playerid, KILL_STREAK_MONEY_2);
-            AlertPlayerText(playerid, "~g~~h~+2000");
+            AlertPlayerText(playerid, "~g~~h~+$2000");
             str = "got {00FF00}$2,000 {DDDDDD}from 30 kill streak.";
         }
     }
