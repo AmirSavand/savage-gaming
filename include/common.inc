@@ -253,6 +253,24 @@ stock CountPlayers()
     return count;
 }
 
+stock bool:DoesPlayerHaveWeapon(playerid, weaponid)
+{
+    new ammo, checkweaponid;
+
+    for (new slot; slot <= 12; slot++)
+    {
+        // Get weapon data in that slot
+        if (!GetPlayerWeaponData(playerid, slot, checkweaponid, ammo))
+            return false;
+
+        // If has that weapon
+        if (checkweaponid == weaponid && ammo > 0)
+            return true;
+    }
+
+    return false;
+}
+
 // For a single player
 
 stock AlertPlayer(playerid, const message[])
