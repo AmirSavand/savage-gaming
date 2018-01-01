@@ -140,3 +140,22 @@ CMD:getmoney(playerid, params[]) // Get money
     GivePlayerMoney(playerid, amount);
     return 1;
 }
+
+CMD:addmoney(playerid, params[]) // Add money (from server)
+{
+    // Check admin
+    if (GetPlayerAdmin(playerid) <= 5)
+        return 0;
+
+    // Check params
+    new targetid, amount;
+    if (sscanf(params, "ui", targetid, amount))
+        return AlertPlayerError(playerid, "> Command usage: /addmoney [player] [amount]");
+
+    // Add money to target
+    GivePlayerMoney(targetid, amount);
+
+    // Alert sender and reciever
+    AlertPlayers(FPlayer(targetid, sprintf("recieved {00FF00}$%i {DDDDDD}from server.", amount)));
+    return 1;
+}
