@@ -51,5 +51,11 @@ CheckPlayerKillStreak(playerid, killedid)
     }
 
     // Reset killed kill streak
-    playerKillStreak[killedid] = 0;
+    ResetPlayerKillStreak(killedid);
+}
+
+ResetPlayerKillStreak(playerid)
+{
+    // Set counter to 0
+    playerKillStreak[playerid] = 0;
 }
