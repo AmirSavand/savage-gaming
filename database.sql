@@ -20,7 +20,7 @@ CREATE TABLE `cars` (
  `model` int(11) NOT NULL,
  `engine` int(11) NOT NULL DEFAULT '1000',
  `comps` varchar(100) NOT NULL DEFAULT '0 0 0 0 0 0 0 0 0 0 0 0 0',
- `colors` VARCHAR(50) NOT NULL DEFAULT '-1 -1 0',
+ `colors` varchar(50) NOT NULL DEFAULT '-1 -1 -1',
  `x` float NOT NULL,
  `y` float NOT NULL,
  `z` float NOT NULL,
@@ -35,3 +35,11 @@ CREATE TABLE `items` (
  `item` int(11) NOT NULL,
  `count` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- perks
+
+CREATE TABLE `perks` (
+ `player` int(11) NOT NULL,
+ `perk` int(11) NOT NULL,
+ `status` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
