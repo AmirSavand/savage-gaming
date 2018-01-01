@@ -36,15 +36,15 @@ new const classNames[][] = {
 new const classGuns[][] = {
     // Assault
     {WEAPON_M4,        50, WEAPON_TEC9,     100, WEAPON_GRENADE,    2},
-    {WEAPON_AK47,      90, WEAPON_UZI,      100, WEAPON_MOLTOV,     2},
-    {WEAPON_MP5,       70, WEAPON_DEAGLE,    10, WEAPON_GRENADE,    2},
+    {WEAPON_AK47,      80, WEAPON_UZI,      100, WEAPON_MOLTOV,     2},
+    {WEAPON_MP5,       50, WEAPON_DEAGLE,     6, WEAPON_GRENADE,    1},
     // Engineer
     {WEAPON_SHOTGSPA,  40, WEAPON_DEAGLE,    15, WEAPON_GRENADE,    2},
-    {WEAPON_SAWEDOFF,  40, WEAPON_TEC9,     150, WEAPON_GRENADE,    2},
-    {WEAPON_SHOTGUN,   30, WEAPON_TEC9,     150, WEAPON_GRENADE,    2},
+    {WEAPON_SAWEDOFF,  40, WEAPON_TEC9,     100, WEAPON_GRENADE,    2},
+    {WEAPON_SHOTGUN,   30, WEAPON_TEC9,     100, WEAPON_GRENADE,    2},
     // Sniper
     {WEAPON_SNIPER,     6, WEAPON_SILENCED,  20, WEAPON_MOLTOV,     1},
-    {WEAPON_RIFLE,     10, WEAPON_DEAGLE,    10, WEAPON_MOLTOV,     1}
+    {WEAPON_RIFLE,     10, WEAPON_DEAGLE,    14, WEAPON_MOLTOV,     1}
 };
 
 new deathPickup[MAX_PLAYERS];
