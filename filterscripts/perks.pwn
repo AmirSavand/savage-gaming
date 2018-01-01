@@ -14,6 +14,8 @@
 
 #define MAX_PERKS       100
 
+#define INVALID_PERK_ID -1
+
 // Includes
 
 #include <a_samp>
@@ -40,16 +42,16 @@ new bool:playerPerks[MAX_PLAYERS][MAX_PERKS];
 new bool:isPlayerLoaded[MAX_PLAYERS];
 
 new const perks[][iPerk] = {
-    {"More ammo on pickup",             "+0.4",     0.4},
-    {"More primary ammo",               "+0.4",     0.4},
-    {"More secondary ammo",             "+0.4",     0.4},
+    {"More ammo on pickup",             "+0.3",     0.3},
+    {"More primary ammo",               "+0.3",     0.3},
+    {"More secondary ammo",             "+0.3",     0.3},
     {"More lethal ammo",                "+2",       2.0},
     {"RPG on spawn",                    "+1",       1.0},
     {"HS Rocket on spawn",              "+2",       2.0},
     {"Armor on spawn",                  "+40",     40.0},
     {"Nitro on vehicle enter",          "x10",   1010.0},
-    {"More engine on vehicle purchase", "+100",   100.0},
-    {"Spawn with a bike",               "BMX",    481.0}
+    {"More engine on vehicle purchase", "+100",  1000.0},
+    {"Explode on death",                    "",     0.0}
 };
 
 // Callbacks
@@ -76,11 +78,118 @@ public OnFilterScriptExit()
 
 public OnPlayerSpawn(playerid)
 {
+    // Load up
+    LoadPlayerPerks(playerid);
+
+    // Apply perks
+    new perk;
+
+    perk = DoesPlayerHavePerk(playerid, "More primary ammo");
+    if (perk != INVALID_PERK_ID)
+        CallRemoteFunction("GivePlayerPrimaryAmmo", "if", playerid, perks[perk][value]);
+
+    perk = DoesPlayerHavePerk(playerid, "More secondary ammo");
+    if (perk != INVALID_PERK_ID)
+        CallRemoteFunction("GivePlayerSecondaryAmmo", "if", playerid, perks[perk][value]);
+
+    perk = DoesPlayerHavePerk(playerid, "More lethal ammo");
+    if (perk != INVALID_PERK_ID)
+        CallRemoteFunction("GivePlayerLethalAmmo", "ii", playerid, floatround(perks[perk][value]));
+
+    perk = DoesPlayerHavePerk(playerid, "RPG on spawn");
+    if (perk != INVALID_PERK_ID)
+        GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, floatround(perks[perk][value]));
+
+    perk = DoesPlayerHavePerk(playerid, "HS Rocket on spawn");
+    if (perk != INVALID_PERK_ID)
+        GivePlayerWeapon(playerid, WEAPON_HEATSEEKER, floatround(perks[perk][value]));
+
+    perk = DoesPlayerHavePerk(playerid, "Armor on spawn");
+    if (perk != INVALID_PERK_ID)
+        SetPlayerArmour(playerid, GetArmour(playerid) + perks[perk][value]);
+
+    return 1;
+}
+
+public OnPlayerDisconnect(playerid, reason)
+{
+    // Save player
+    SavePlayerPerks(playerid);
+    return 1;
+}
+
+public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
+{
+    // Selected a perk
+    if (dialogid == DIALOG_PERKS && response)
+    {
+        // If player reached perks limit (and trying to enable)
+        if (CountPlayerPerks(playerid) >= GetPlayerMaxPerks(playerid) && !playerPerks[playerid][listitem])
+        {
+            // Error player
+            AlertPlayerDialog(playerid, "Info", "{FF0000}You can't activate anymore perks!\n{DDDDDD}You need to rank up or deactivate other perks.");
+        }
+
+        // Player can activate more perks
+        else
+        {
+            // Toggle perk status
+            playerPerks[playerid][listitem] = !playerPerks[playerid][listitem];
+
+            // Show perks again
+            ShowPlayerPerks(playerid);
+        }
+    }
+}
+
+// Public functiosn
+
+forward OnPlayerPickupDeathPickup(playerid);
+public  OnPlayerPickupDeathPickup(playerid)
+{
+    // Apply perk
+    new perk = DoesPlayerHavePerk(playerid, "More ammo on pickup");
+
+    if (perk != INVALID_PERK_ID)
+        CallRemoteFunction("GivePlayerClassWeapons", "if", playerid, perks[perk][value]);
+}
+
+forward OnPlayerPurchaseVehicle(playerid, vehicleid);
+public  OnPlayerPurchaseVehicle(playerid, vehicleid)
+{
+    // Apply perk
+    new perk = DoesPlayerHavePerk(playerid, "More engine on vehicle purchase");
+    if (perk != INVALID_PERK_ID)
+        SetVehicleHealth(vehicleid, GetVehicleEngine(vehicleid) + perks[perk][value]);
+}
+
+// Functions
+
+SavePlayerPerks(playerid) // Save perks to db
+{
+    // Get player db id
+    new uid = GetPVarInt(playerid, "id");
+
+    // Not db player
+    if (!uid) return;
+
+    // Update perks (statuses)
+    for (new i; i < sizeof(perks); i++)
+    {
+        // Save perk and status
+        new qry[500];
+        mysql_format(db, qry, sizeof(qry), "UPDATE perks SET status=%i WHERE perk=%i AND player=%i", playerPerks[playerid][i], i, uid);
+        mysql_query(db, qry, false);
+    }
+}
+
+LoadPlayerPerks(playerid) // Load perks form db
+{
     new uid = GetPVarInt(playerid, "id");
 
     // If already loaded
     if (isPlayerLoaded[playerid] || !uid)
-        return 1;
+        return;
 
     // Set to loaded
     isPlayerLoaded[playerid] = true;
@@ -99,58 +208,18 @@ public OnPlayerSpawn(playerid)
         cache_get_value_bool(i, "status", playerPerks[playerid][perk]);
     }
 
+    // No perks (not initiated)
+    if (cache_num_rows() != sizeof(perks))
+    {
+        // Delete all perks
+        mysql_query(db, sprintf("DELETE FROM perks WHERE player=%i", uid), false);
+
+        // Add all perks (initiate)
+        for (new i; i < sizeof(perks); i++)
+            mysql_query(db, sprintf("INSERT INTO perks (player, perk, status) VALUES (%i, %i, %i)", uid, i, playerPerks[playerid][i]), false);
+    }
+
     cache_delete(cache);
-    return 1;
-}
-
-public OnPlayerDisconnect(playerid, reason)
-{
-    // Save player
-    SavePlayerPerks(playerid);
-    return 1;
-}
-
-public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
-{
-    // Selected a perk
-    if (dialogid == DIALOG_PERKS && response)
-    {
-        // If player reached perks limit (and trying to enable)
-        if (GetPlayerMaxPerks(playerid) >= CountPlayerPerks(playerid) && !playerPerks[playerid][listitem])
-        {
-            // Error player
-            AlertPlayerDialog(playerid, "Info", "{FF0000}You can't activate anymore perks!\n{DDDDDD}You need to rank up or deactivate other perks.");
-        }
-
-        // Player can activate more perks
-        else
-        {
-            // Toggle perk status
-            playerPerks[playerid][listitem] = !playerPerks[playerid][listitem];
-
-            // Show perks again
-            ShowPlayerPerks(playerid);
-        }
-    }
-}
-
-// Functions
-
-SavePlayerPerks(playerid) // Save perks to db
-{
-    // Get player db id
-    new uid = GetPVarInt(playerid, "id");
-
-    // Not db player
-    if (!uid) return;
-
-    // Update perks (statuses)
-    for (new i; i < sizeof(perks); i++)
-    {
-        // Save perk and status
-        new qry[500]; mysql_format(db, qry, sizeof(qry), "UPDATE perks SET perk=%i, status=%i WHERE player=%i", i, playerPerks[playerid][i], uid);
-        mysql_tquery(db, qry);
-    }
 }
 
 ShowPlayerPerks(playerid) // Perks dialog
@@ -195,6 +264,23 @@ GetPlayerMaxPerks(playerid) // Maximum number of perks that player can have (act
 {
     // Rank
     return GetPVarInt(playerid, "rank");
+}
+
+DoesPlayerHavePerk(playerid, perkName[]) // Check if player has this perk
+{
+    // For all perks
+    for (new i; i < sizeof(perks); i++)
+    {
+        // Matches perk name and perk is activated
+        if (isequal(perks[i][name], perkName) && playerPerks[playerid][i])
+        {
+            // Yes, return the perk id
+            return i;
+        }
+    }
+
+    // Not found
+    return INVALID_PERK_ID;
 }
 
 // Commands
