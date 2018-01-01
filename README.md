@@ -72,3 +72,8 @@ In this mode, you can only kill enemy team (3 teams in total)
 - List of weapon classes to choose from
 - Get weapons from selected class on spawn
 - Gain ammo of current class when picking up death pickup
+
+### Perks
+
+- List of perks to activate
+- Activate perks by ranking up
