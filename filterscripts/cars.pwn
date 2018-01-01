@@ -40,6 +40,7 @@
 #include <getvehiclecolor>
 
 #include "../include/common"
+#include "../include/database"
 
 // Variables
 
@@ -58,15 +59,14 @@ enum iCar
     id,
     Float:pos[4],
 
+    // Raw components separated by space
     colorsRaw[MAX_COLOR_STRING],
-    compsRaw[MAX_COMP_STRING] // Raw components separated by space
+    compsRaw[MAX_COMP_STRING]
 }
 
 new Car[MAX_VEHICLES][iCar];
 
 new adminCar[MAX_PLAYERS] = -1;
-
-new MySQL:db;
 
 new ps;
 
@@ -85,7 +85,7 @@ public OnFilterScriptInit()
     print("\n > Cars filterscript by Amir Savand.\n");
 
     // Connect to database
-    #include "../include/connect-database"
+    InitialDatabase();
 
     // Load all vehicles
     InitializeCars();
@@ -95,6 +95,7 @@ public OnFilterScriptInit()
 public OnFilterScriptExit()
 {
     DestroyCars();
+    CloseDatabase();
     return 1;
 }
 
@@ -765,7 +766,7 @@ CMD:setcarowner(playerid, params[]) // Change car owner and update to db
 
     // Get owner
     new carOwner;
-    if (sscanf(params, "i", carOwner))
+    if (sscanf(params, "u", carOwner))
         return AlertPlayerText(playerid, "~r~~h~You must set owner uid");
 
     // Index
@@ -776,7 +777,7 @@ CMD:setcarowner(playerid, params[]) // Change car owner and update to db
         return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
 
     // Set owner
-    Car[i][owner] = carOwner;
+    Car[i][owner] = GetPVarInt(playerid, "id");
     AlertPlayerText(playerid, "~p~~b~Owner set");
 
     // Update info
