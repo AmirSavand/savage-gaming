@@ -174,7 +174,7 @@ public  GivePlayerClassWeapons(playerid, Float:multiplier)
     new c = playerClass[playerid];
 
     // Give guns and ammo based on multiplier (multiplier is used for ammo pickups)
-    GivePlayerWeapon(playerid, classGuns[c][4], floatround(classGuns[c][5] * multiplier));
+    GivePlayerWeapon(playerid, classGuns[c][4], floatround(classGuns[c][5] * multiplier, floatround_floor));
     GivePlayerWeapon(playerid, classGuns[c][2], floatround(classGuns[c][3] * multiplier));
     GivePlayerWeapon(playerid, classGuns[c][0], floatround(classGuns[c][1] * multiplier));
 }
