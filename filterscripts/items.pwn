@@ -152,14 +152,13 @@ SavePlayerItems(playerid)
 {
     // Get player uid
     new uid = GetPVarInt(playerid, "id");
+    new qry[1000];
 
     // If player has uid
-    if (uid < 1) return 0;
+    if (!uid) return;
 
     // Delete all player items
-    new qry[1000];
-    mysql_format(db, qry, sizeof(qry), "DELETE FROM items WHERE player=%i", uid);
-    mysql_tquery(db, qry);
+    mysql_query(db, sprintf("DELETE FROM items WHERE player=%i", uid), false);
 
     // Update items
     for (new i; i < MAX_ITEMS; i++)
@@ -169,9 +168,8 @@ SavePlayerItems(playerid)
 
         // Save item and count
         mysql_format(db, qry, sizeof(qry), "INSERT INTO items (player, item, count) values (%i, %i, %i)", uid, i, playerItem[playerid][i]);
-        mysql_tquery(db, qry);
+        mysql_query(db, qry, false);
     }
-    return 1;
 }
 
 UsePlayerItem(playerid, item)
