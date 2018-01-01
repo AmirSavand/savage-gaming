@@ -192,19 +192,24 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
         switch (weaponid)
         {
             // Assault
-            case WEAPON_MP5:      multiplier = 2;
+            case WEAPON_M4:             multiplier = 1.2;
+            case WEAPON_AK47:           multiplier = 1.2;
+            case WEAPON_MP5:            multiplier = 1.5;
 
             // Snipers
-            case WEAPON_SNIPER:   multiplier = 2;
-            case WEAPON_RIFLE:    multiplier = 2;
+            case WEAPON_SNIPER:         multiplier = 1.5;
+            case WEAPON_RIFLE:          multiplier = 2;
 
             // Shotguns
-            case WEAPON_SHOTGSPA: multiplier = 1.5;
-            case WEAPON_SHOTGUN:  multiplier = 3;
+            case WEAPON_SHOTGSPA:       multiplier = 1.5;
+            case WEAPON_SHOTGUN:        multiplier = 3;
             
             // Pistols
-            case WEAPON_SILENCED: multiplier = 2;
-            case WEAPON_DEAGLE:   multiplier = 2;
+            case WEAPON_SILENCED:       multiplier = 2;
+            case WEAPON_DEAGLE:         multiplier = 1.5;
+            
+            // Other
+            case WEAPON_ROCKETLAUNCHER: multiplier = 1.5;
         }
 
         // Headshot
