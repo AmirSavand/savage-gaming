@@ -17,10 +17,7 @@
 #include <a_mysql>
 
 #include "../include/common"
-
-// Variables
-
-new MySQL:db;
+#include "../include/database"
 
 // Callbacks
 
@@ -28,17 +25,17 @@ public OnFilterScriptInit()
 {
     print("\n > Players filterscript by Amir Savand.\n");
 
-    // Connect to database
-    #include "../include/connect-database"
+    InitialDatabase();
     return 1;
 }
 
 public OnFilterScriptExit()
 {
-    for (new i = 0; i < MAX_PLAYERS; i++)
+    // Save all players
+    for (new i; i < MAX_PLAYERS; i++)
         SavePlayer(i);
 
-    mysql_close(db);
+    CloseDatabase();
     return 1;
 }
 
@@ -47,8 +44,8 @@ public OnPlayerDeath(playerid, killerid, reason)
     // If not sucide
     if (killerid != INVALID_PLAYER_ID)
     {
-        // Increase kills
-        SetPVarInt(playerid, "kills", GetPVarInt(playerid, "kills") + 1);
+        // Increase kills of killer
+        SetPVarInt(killerid, "kills", GetPVarInt(killerid, "kills") + 1);
     }
     return 1;
 }
@@ -56,15 +53,15 @@ public OnPlayerDeath(playerid, killerid, reason)
 public OnPlayerConnect(playerid)
 {
     new qry[500];
-    mysql_format(db, qry, sizeof(qry), "SELECT* FROM players WHERE name='%e'", GetName(playerid));
-    mysql_query(db, qry);
+    mysql_format(db, qry, sizeof(qry), "SELECT * FROM players WHERE name='%e'", GetName(playerid));
+    new Cache:cache = mysql_query(db, qry);
 
     // Register
     if (!cache_num_rows())
     {
         // Insert player
         mysql_format(db, qry, sizeof(qry), "INSERT INTO players SET name='%e'", GetName(playerid));
-        mysql_tquery(db, qry);
+        mysql_query(db, qry, false);
         SetPVarInt(playerid, "new", 1);
         SetPVarInt(playerid, "rank", 0);
     }
@@ -88,6 +85,8 @@ public OnPlayerConnect(playerid)
 
         SetPlayerMoney(playerid, money);
     }
+
+    cache_delete(cache);
     return 1;
 }
 
