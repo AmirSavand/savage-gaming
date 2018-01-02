@@ -177,6 +177,9 @@ public  GivePlayerClassWeapons(playerid, Float:multiplier)
     GivePlayerWeapon(playerid, classGuns[c][4], floatround(classGuns[c][5] * multiplier, floatround_floor));
     GivePlayerWeapon(playerid, classGuns[c][2], floatround(classGuns[c][3] * multiplier));
     GivePlayerWeapon(playerid, classGuns[c][0], floatround(classGuns[c][1] * multiplier));
+
+    // If rearming, event
+    if (multiplier == 1) CallRemoteFunction("OnPlayerRearmWeaponClass", "i", playerid);
 }
 
 forward GivePlayerPrimaryAmmo(playerid, Float:multiplier);
