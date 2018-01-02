@@ -22,14 +22,25 @@ new dropMoney[MAX_DROP_MONEY];
 
 stock DropMoney(Float:x, Float:y, Float:z, pickups = DROP_MONEY_PICKUPS)
 {
-    // For each drop money poclup
+    // For all drop money pickups
     for (new i; i < pickups; i++)
     {
         // Random index
         new index = Ran(0, MAX_DROP_MONEY);
 
-        // Create dropped money pickup
-        dropMoney[index] = CreateDynamicPickup(1212, 1, x + Ran(-i/2, i/2), y + Ran(-i/2, i/2), z - 0.4);
+        // (Re)Create dropped money pickup
+        DestroyDynamicPickup(dropMoney[index]);
+        dropMoney[index] = CreateDynamicPickup(1212, 1, x + Ran(-i/2, i/2), y + Ran(-i/2, i/2), z - 0.5);
+    }
+}
+
+stock DestroyDropMoney()
+{
+    // For all drop money (index)
+    for (new i; i < MAX_DROP_MONEY; i++)
+    {
+        // Destroy dropped money pickup
+        DestroyDynamicPickup(dropMoney[i]);
     }
 }
 
