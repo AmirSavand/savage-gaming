@@ -66,6 +66,8 @@ new const ranks[] = { // Money per rank upgrade
 
 #include "../include/kill-streak"
 
+#include "../include/drop-money"
+
 // Main
 
 main()
@@ -149,6 +151,9 @@ public OnPlayerDeath(playerid, killerid, reason)
 
     // Sucide
     else ResetPlayerKillStreak(playerid);
+
+    // Drop cash
+    DropMoneyFromPlayer(playerid);
     return 1;
 }
 
@@ -165,7 +170,7 @@ public OnPlayerClickMap(playerid, Float:fX,  Float:fY, Float:fZ)
     if (GetPlayerAdmin(playerid) >= 5)
     {
         // Move player
-        if (IsPlayerInAnyVehicle(playerid))
+        if (!IsPlayerInAnyVehicle(playerid))
             SetPlayerPos(playerid, fX, fY, fZ);
 
         // Move car
@@ -183,7 +188,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
         if (weaponid != WEAPON_FLAMETHROWER)
         {
             // Hit sound (ding)
-            PlayerPlaySound(issuerid, 17802, 0.0, 0.0, 0.0);
+            PlayerPlaySound(issuerid, 17802, 0, 0, 0);
         }
 
         // Extra damage multiplier
@@ -223,6 +228,13 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
         // Deal extra damage to player
         GivePlayerDamage(playerid, amount * multiplier);
     }
+    return 1;
+}
+
+public OnPlayerPickUpDynamicPickup(playerid, pickupid)
+{
+    // Pickup cash
+    CheckPlayerMoneyDropPickup(playerid, pickupid);
     return 1;
 }
 

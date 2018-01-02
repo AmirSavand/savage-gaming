@@ -44,6 +44,7 @@ In this mode, you can only kill enemy team (3 teams in total)
 - Announce what players do (purchase cars, double kills, etc)
 - Custom damage system for balance between weapons
 - Show car engine to player
+- Drop money pickups on death
 
 ### Players
 
