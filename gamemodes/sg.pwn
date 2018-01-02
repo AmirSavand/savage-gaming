@@ -85,7 +85,7 @@ public OnGameModeInit()
     EnableStuntBonusForAll(false);
     ShowPlayerMarkers(PLAYER_MARKERS_MODE_GLOBAL);
     DisableInteriorEnterExits();
-    // UsePlayerPedAnims();
+    UsePlayerPedAnims();
 
     // Gang Skins
     AddGangSkins();
