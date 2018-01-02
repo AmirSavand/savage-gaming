@@ -46,10 +46,10 @@ new const perks[][iPerk] = {
     {"More primary ammo",               "+0.3",     0.3},
     {"More secondary ammo",             "+0.3",     0.3},
     {"More lethal ammo",                "+2",       2.0},
-    {"RPG on spawn",                    "+1",       1.0},
-    {"HS Rocket on spawn",              "+2",       2.0},
+    {"RPG on spawn",                    "+2",       2.0},
+    {"HS Rocket on spawn",              "+1",       1.0},
     {"Armor on spawn",                  "+40",     40.0},
-    {"Nitro on vehicle enter",          "x10",   1010.0},
+    {"Nitro on vehicle purchase",       "x10",   1010.0},
     {"More engine on vehicle purchase", "+100",  1000.0},
     {"Explode on death",                    "",     0.0}
 };
@@ -82,32 +82,25 @@ public OnPlayerSpawn(playerid)
     LoadPlayerPerks(playerid);
 
     // Apply perks
-    new perk;
-
-    perk = DoesPlayerHavePerk(playerid, "More primary ammo");
-    if (perk != INVALID_PERK_ID)
-        CallRemoteFunction("GivePlayerPrimaryAmmo", "if", playerid, perks[perk][value]);
-
-    perk = DoesPlayerHavePerk(playerid, "More secondary ammo");
-    if (perk != INVALID_PERK_ID)
-        CallRemoteFunction("GivePlayerSecondaryAmmo", "if", playerid, perks[perk][value]);
-
-    perk = DoesPlayerHavePerk(playerid, "More lethal ammo");
-    if (perk != INVALID_PERK_ID)
-        CallRemoteFunction("GivePlayerLethalAmmo", "ii", playerid, floatround(perks[perk][value]));
-
-    perk = DoesPlayerHavePerk(playerid, "RPG on spawn");
-    if (perk != INVALID_PERK_ID)
-        GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, floatround(perks[perk][value]));
-
-    perk = DoesPlayerHavePerk(playerid, "HS Rocket on spawn");
-    if (perk != INVALID_PERK_ID)
-        GivePlayerWeapon(playerid, WEAPON_HEATSEEKER, floatround(perks[perk][value]));
-
-    perk = DoesPlayerHavePerk(playerid, "Armor on spawn");
+    new perk = DoesPlayerHavePerk(playerid, "Armor on spawn");
     if (perk != INVALID_PERK_ID)
         SetPlayerArmour(playerid, GetArmour(playerid) + perks[perk][value]);
 
+    return 1;
+}
+
+public OnPlayerDeath(playerid, killerid, reason)
+{
+    // Apply perk
+    new perk = DoesPlayerHavePerk(playerid, "Explode on death");
+    if (perk != INVALID_PERK_ID)
+    {
+        // Get positon
+        IMPORT_PLAYER_POS;
+
+        // Create explosion
+        CreateExplosion(pPos[0], pPos[1], pPos[2], 0, 10.0);
+    }
     return 1;
 }
 
@@ -158,9 +151,42 @@ forward OnPlayerPurchaseVehicle(playerid, vehicleid);
 public  OnPlayerPurchaseVehicle(playerid, vehicleid)
 {
     // Apply perk
-    new perk = DoesPlayerHavePerk(playerid, "More engine on vehicle purchase");
+    new perk;
+
+    perk = DoesPlayerHavePerk(playerid, "More engine on vehicle purchase");
     if (perk != INVALID_PERK_ID)
         SetVehicleHealth(vehicleid, GetVehicleEngine(vehicleid) + perks[perk][value]);
+
+    perk = DoesPlayerHavePerk(playerid, "Nitro on vehicle purchase");
+    if (perk != INVALID_PERK_ID)
+        AddVehicleComponent(vehicleid, floatround(perks[perk][value]));
+}
+
+forward OnPlayerRearmWeaponClass(playerid);
+public  OnPlayerRearmWeaponClass(playerid)
+{
+    // Apply perk
+    new perk;
+
+    perk = DoesPlayerHavePerk(playerid, "More primary ammo");
+    if (perk != INVALID_PERK_ID)
+        CallRemoteFunction("GivePlayerPrimaryAmmo", "if", playerid, perks[perk][value]);
+
+    perk = DoesPlayerHavePerk(playerid, "More secondary ammo");
+    if (perk != INVALID_PERK_ID)
+        CallRemoteFunction("GivePlayerSecondaryAmmo", "if", playerid, perks[perk][value]);
+
+    perk = DoesPlayerHavePerk(playerid, "More lethal ammo");
+    if (perk != INVALID_PERK_ID)
+        CallRemoteFunction("GivePlayerLethalAmmo", "ii", playerid, floatround(perks[perk][value]));
+
+    perk = DoesPlayerHavePerk(playerid, "RPG on spawn");
+    if (perk != INVALID_PERK_ID)
+        GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, floatround(perks[perk][value]));
+
+    perk = DoesPlayerHavePerk(playerid, "HS Rocket on spawn");
+    if (perk != INVALID_PERK_ID)
+        GivePlayerWeapon(playerid, WEAPON_HEATSEEKER, floatround(perks[perk][value]));
 }
 
 // Functions
