@@ -8,8 +8,6 @@
 
 // Defines
 
-#define SERVER_TITLE                "Savage Gaming"
-
 #define MAX_RANDOM_PACKAGES         4
 
 #define RANDOM_PACKAGE_CASH         0
@@ -72,7 +70,7 @@ new const ranks[] = { // Money per rank upgrade
 
 main()
 {
-    printf("\n > Starting %s gamemode by Amir Savand.\n", SERVER_TITLE);
+    print("\n > Starting Savage Gaming gamemode by Amir Savand.\n");
 }
 
 // Callbacks
@@ -94,7 +92,7 @@ public OnGameModeInit()
     SetTimer("OnServerUpdate", TIME_SERVER_UPDATE, 1);
 
     // Title Textdraw
-    InitialTitleTextdraw(SERVER_TITLE);
+    InitialTitleTextdraw("Savage Gaming");
     return 1;
 }
 

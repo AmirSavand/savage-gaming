@@ -67,10 +67,10 @@ public OnPlayerConnect(playerid)
 public OnPlayerRequestClass(playerid, classid)
 {
     // Set player and camera to selection point
-    SetPlayerPos(playerid, 681.66, -474.55, 16.53);
-    SetPlayerFacingAngle(playerid, 180.0);
-    SetPlayerCameraPos(playerid, 686.34, -477.57, 16.33);
-    SetPlayerCameraLookAt(playerid, 681.66, -474.55, 16.53);
+    SetPlayerPos(playerid, -1971.66, 140.65, 27.68);
+    SetPlayerFacingAngle(playerid, 90);
+    SetPlayerCameraPos(playerid, -1974.65, 137.84, 27.68);
+    SetPlayerCameraLookAt(playerid, -1971.66, 140.65, 27.68);
     return 1;
 }
 

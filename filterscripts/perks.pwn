@@ -46,7 +46,7 @@ new const perks[][iPerk] = {
     {"More primary ammo",               "+0.3",     0.3},
     {"More secondary ammo",             "+0.3",     0.3},
     {"More lethal ammo",                "+2",       2.0},
-    {"RPG on spawn",                    "+2",       2.0},
+    {"RPG on spawn",                    "+1",       1.0},
     {"HS Rocket on spawn",              "+1",       1.0},
     {"Armor on spawn",                  "+40",     40.0},
     {"Nitro on vehicle purchase",       "x10",   1010.0},
