@@ -236,19 +236,31 @@ public OnEnterExitModShop(playerid, enterexit, interiorid)
     }
 }
 
+public OnVehicleRespray(playerid, vehicleid, color1, color2)
+{
+    // Index
+    new i = GetCarIndex(vehicleid);
+
+    // Check db and update for purchaseable cars (not one time only cars)
+    if (i == -1 && Car[i][type] != TYPE_PURCHASE) return 1;
+
+    // Store colors
+    Car[i][color][0] = color1;
+    Car[i][color][1] = color2;
+    return 1;
+}
+
 public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
 {
     // Index
     new i = GetCarIndex(vehicleid);
 
-    // Check db
-    if (i == -1) return;
-
-    // Update for purchaseable cars (not one time only)
-    if (Car[i][type] != TYPE_PURCHASE) return;
+    // Check db and update for purchaseable cars (not one time only cars)
+    if (i == -1 && Car[i][type] != TYPE_PURCHASE) return 1;
 
     // Update paint job
     Car[i][color][2] = paintjobid;
+    return 1;
 }
 
 // Public functions
@@ -423,6 +435,7 @@ UpdateCar(index) // Save all car data to database (except position)
     mysql_format(db, qry, sizeof(qry), "UPDATE cars SET type=%i, owner=%i, price=%i, engine=%i, comps='%s', colors='%s' WHERE id=%i",
         Car[i][type], Car[i][owner], Car[i][price], Car[i][engine], Car[i][compsRaw], Car[i][colorsRaw], Car[i][uid]);
     mysql_query(db, qry, false);
+
     return 1;
 }
 
@@ -575,20 +588,21 @@ CMD:sellcar(playerid) // Sell current car
 
     // Index
     new i = GetCarIndex(PVI);
+    new sellPrice = floatround(Car[i][price] * CAR_SELL_FACTOR);
 
     // Is db car
     if (i == -1 || Car[i][type] != TYPE_PURCHASE || Car[i][owner] != GetPVarInt(playerid, "id"))
         return AlertPlayerText(playerid, "~r~~h~Not in your car");
 
     // Give back some of car money
-    GivePlayerMoney(playerid, floatround(Car[i][price] * CAR_SELL_FACTOR));
+    GivePlayerMoney(playerid, sellPrice);
 
     // Remove from car
     RemovePlayerFromVehicle(playerid);
 
     // Reset ownership
     Car[i][owner] = 0;
-    AlertPlayerDialog(playerid, "Info", sprintf("{00FF00}You'ved soled your vehicle for %i%s of its price ($%s)!", CAR_SELL_FACTOR, "%%", Car[i][price]));
+    AlertPlayerDialog(playerid, "Info", sprintf("{00FF00}You've sold your vehicle!\n\n{DDDDDD}Sold price: {00FF00}$%i\n{DDDDDD}Original price: {00FF00}$%i", sellPrice, Car[i][price]));
     UpdateCar(i);
 
     // Event
@@ -773,14 +787,33 @@ CMD:setcarowner(playerid, params[]) // Change car owner and update to db
     new i = GetCarIndex(PVI);
     
     // Check db car
-    if (i == -1)
-        return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+    if (i == -1) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
 
     // Set owner
-    Car[i][owner] = GetPVarInt(playerid, "id");
+    Car[i][owner] = GetPVarInt(carOwner, "id");
     AlertPlayerText(playerid, "~p~~b~Owner set");
+    UpdateCar(i);
+    return 1;
+}
 
-    // Update info
+CMD:resetcarowner(playerid, params[]) // Reset car owner and update to db
+{
+    if (!GetPlayerAdmin(playerid)) 
+        return 0;
+
+    // Is in a car
+    if (!IsPlayerInAnyVehicle(playerid))
+        return AlertPlayerText(playerid, "~r~~h~Not in vehicle");
+
+    // Index
+    new i = GetCarIndex(PVI);
+    
+    // Check db car
+    if (i == -1) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+
+    // Set owner
+    Car[i][owner] = 0;
+    AlertPlayerText(playerid, "~p~~b~Owner reset");
     UpdateCar(i);
     return 1;
 }
