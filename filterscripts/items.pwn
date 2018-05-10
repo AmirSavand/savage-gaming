@@ -120,9 +120,6 @@ public OnPlayerSpawn(playerid)
         cache_get_value_int(i, "count", playerItem[playerid][item]);
     }
 
-    // Debug
-    Log(sprintf("Loaded %i items for player %s", cache_num_rows(), GetName(playerid)), "items.txt");
-
     cache_delete(cache);
     return 1;
 }
