@@ -119,9 +119,15 @@ stock GetStringNumber(preString[], reward)
 
 stock FPlayer(playerid, string[])
 {
-    // Alert players
     new str[500];
     format(str, sizeof(str), "> {00FF00}%s {DDDDDD}%s", GetName(playerid), string);
+    return str;
+}
+
+stock FPlayerText(playerid, color[], string[])
+{
+    new str[200];
+    format(str, sizeof(str), "%s%s %s", color, GetName(playerid), string);
     return str;
 }
 
