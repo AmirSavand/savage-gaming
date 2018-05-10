@@ -225,11 +225,8 @@ public OnEnterExitModShop(playerid, enterexit, interiorid)
         // Index
         new i = GetCarIndex(PVI);
 
-        // Check db
-        if (i == -1) return;
-
-        // Update for purchaseable cars (not one time only)
-        if (Car[i][type] != TYPE_PURCHASE) return;
+        // Check db and update for purchaseable cars (not one time only cars)
+        if (i == -1 || Car[i][type] != TYPE_PURCHASE) return;
 
         // Save mods
         UpdateCar(i);
@@ -242,7 +239,7 @@ public OnVehicleRespray(playerid, vehicleid, color1, color2)
     new i = GetCarIndex(vehicleid);
 
     // Check db and update for purchaseable cars (not one time only cars)
-    if (i == -1 && Car[i][type] != TYPE_PURCHASE) return 1;
+    if (i == -1 || Car[i][type] != TYPE_PURCHASE) return 1;
 
     // Store colors
     Car[i][color][0] = color1;
@@ -256,7 +253,7 @@ public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
     new i = GetCarIndex(vehicleid);
 
     // Check db and update for purchaseable cars (not one time only cars)
-    if (i == -1 && Car[i][type] != TYPE_PURCHASE) return 1;
+    if (i == -1 || Car[i][type] != TYPE_PURCHASE) return 1;
 
     // Update paint job
     Car[i][color][2] = paintjobid;
