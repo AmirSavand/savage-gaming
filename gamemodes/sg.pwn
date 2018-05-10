@@ -26,6 +26,7 @@
 #define MODE_FREEROAM               1
 #define MODE_FFA                    2
 #define MODE_TDM                    3
+#define MODE_CTF                    4
 
 // Includes
 
@@ -378,7 +379,7 @@ public  OnPlayerKillStreakEnded(playerid, enderid, killStreak)
     if (killStreak >= 5)
     {
         // Announce
-        AlertPlayers(FPlayer(enderid, sprintf("ended {FF0000}%s's %i kill streak!", GetName(playerid), killStreak)));
+        AlertPlayers(FPlayer(enderid, sprintf("ended {FF0000}%s's %ix kill streak!", GetName(playerid), killStreak)));
     }
 }
 
@@ -426,12 +427,13 @@ CMD:mode(playerid, params[])
     // Check params
     new mode;
     if (sscanf(params, "i", mode))
-        return AlertPlayerError(playerid, "> Command usage: /mode [mode]");
+        return AlertPlayerError(playerid, "> Command usage: /mode [1-4]");
 
     // Unload modes
     SendRconCommand("unloadfs modes/freeroam");
     SendRconCommand("unloadfs modes/tdm");
     SendRconCommand("unloadfs modes/ffa");
+    SendRconCommand("unloadfs modes/ctf");
 
     // Load mode
     switch (mode)
@@ -439,6 +441,7 @@ CMD:mode(playerid, params[])
         case MODE_FREEROAM: SendRconCommand("loadfs modes/freeroam");
         case MODE_FFA:      SendRconCommand("loadfs modes/ffa");
         case MODE_TDM:      SendRconCommand("loadfs modes/tdm");
+        case MODE_CTF:      SendRconCommand("loadfs modes/ctf");
     }
 
     // For all players
