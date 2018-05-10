@@ -44,29 +44,33 @@ stock DestroyDropMoney()
     }
 }
 
-stock bool:IsDropMoneyPickup(pickupid)
+stock GetPickupDropMoneyIndex(pickupid)
 {
     // Check all drop money pickups
     for (new i; i < MAX_DROP_MONEY; i++)
     {
         // Check match
-        if (pickupid == dropMoney[i]) return true;
+        if (pickupid == dropMoney[i]) return i;
     }
 
     // No match
-    return false;
+    return -1;
 }
 
 stock CheckPlayerMoneyDropPickup(playerid, pickupid, amount = DROP_MONEY_AMOUNT)
 {
+    // Get index
+    new i = GetPickupDropMoneyIndex(pickupid);
+
     // Is dropped money
-    if (IsDropMoneyPickup(pickupid))
+    if (GetPickupDropMoneyIndex(pickupid) != -1)
     {
         // Give player money and destroy pickup
         GivePlayerMoney(playerid, amount);
-        DestroyDynamicPickup(pickupid);
         AlertPlayerText(playerid, sprintf("~g~~h~+%i", amount));
         PlayerPlaySound(playerid, 1083, 0, 0, 0);
+        DestroyDynamicPickup(pickupid);
+        dropMoney[i] = 0;
     }
 }
 
