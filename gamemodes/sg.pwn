@@ -10,6 +10,9 @@
 
 #define MAX_RANDOM_PACKAGES         4
 
+#define DROP_MONEY_PICKUPS          10
+#define DROP_MONEY_AMOUNT           5
+
 #define RANDOM_PACKAGE_CASH         0
 #define RANDOM_PACKAGE_AR           1
 #define RANDOM_PACKAGE_RPG          2

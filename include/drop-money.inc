@@ -5,15 +5,14 @@
 * To make player pickup cash call CheckPlayerMoneyDropPickup() on pickup.
 * To make player drop cash call CheckPlayerMoneyDrop().
 *
+* Requires defines: DROP_MONEY_PICKUPS (10), DROP_MONEY_AMOUNT (5)
+*
 * by Amir Savand
 */
 
 // Defines
 
 #define MAX_DROP_MONEY      500
-
-#define DROP_MONEY_PICKUPS  10
-#define DROP_MONEY_AMOUNT   5
 
 // Variables
 
