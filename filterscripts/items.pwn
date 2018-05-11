@@ -251,9 +251,6 @@ public  GivePlayerRandomItem(playerid)
 forward GivePlayersRandomItem();
 public  GivePlayersRandomItem()
 {
-    // Debug
-    Log(sprintf("Attept to give players random item (%i/%i online)", CountPlayers(), RANDOM_ITEM_MIN_PLAYER), "items.txt");
-
     // Check min players for random item
     if (CountPlayers() < RANDOM_ITEM_MIN_PLAYER)
         return 0;
