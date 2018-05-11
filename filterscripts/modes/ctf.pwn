@@ -190,7 +190,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
             {
                 // Reward player
                 GivePlayerMoney(playerid, FLAG_CAPTURE_REWARD);
-                AlertPlayerText(playerid, "~g~~h~+2000");
+                AlertPlayerText(playerid, sprintf("~g~~h~+%i", FLAG_CAPTURE_REWARD));
                 PlayerPlaySound(playerid, FLAG_CAPTURE_SOUND, 0, 0, 0);
 
                 // Announce players

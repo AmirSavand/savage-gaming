@@ -21,6 +21,9 @@
 #define KILL_STREAK_MONEY           1000
 #define KILL_STREAK_MONEY_2         2000
 
+#define KILL_REWARD                 100
+#define KILL_REWARD_DOUBLE          300
+
 #define TIME_SERVER_UPDATE          500
 
 #define MODE_FREEROAM               1
@@ -140,8 +143,8 @@ public OnPlayerDeath(playerid, killerid, reason)
     if (killerid != INVALID_PLAYER_ID)
     {
         // Reward and heal killer
-        AlertPlayerText(killerid, "~g~~h~+100");
-        GivePlayerMoney(killerid, 100);
+        AlertPlayerText(killerid, sprintf("~g~~h~+%i", KILL_REWARD));
+        GivePlayerMoney(killerid, KILL_REWARD);
         SetPlayerHealth(killerid, 100);
 
         // Kill streak handling
@@ -324,7 +327,7 @@ public  OnPlayerKillStreak(playerid, killStreak)
         case 10: // Money
         {
             GivePlayerMoney(playerid, KILL_STREAK_MONEY);
-            AlertPlayerText(playerid, "~g~~h~+1000");
+            AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_STREAK_MONEY));
             str = "got {00FF00}$1000 {DDDDDD}from 10 kill streak.";
         }
         case 15: // Grenade
@@ -348,7 +351,7 @@ public  OnPlayerKillStreak(playerid, killStreak)
         case 30: // Money (2)
         {
             GivePlayerMoney(playerid, KILL_STREAK_MONEY_2);
-            AlertPlayerText(playerid, "~g~~h~+2000");
+            AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_STREAK_MONEY_2));
             str = "got {00FF00}$2000 {DDDDDD}from 30 kill streak.";
         }
     }
@@ -364,9 +367,9 @@ public  OnPlayerKillStreak(playerid, killStreak)
 forward OnPlayerDoubleKill(playerid);
 public  OnPlayerDoubleKill(playerid)
 {
-    // Show player 2x kill money
-    AlertPlayerText(playerid, "~g~~h~+400"); // Combined with the last kill
-    GivePlayerMoney(playerid, 200);
+    // Reward player and announce (show combined money)
+    GivePlayerMoney(playerid, KILL_REWARD_DOUBLE);
+    AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_REWARD + KILL_REWARD_DOUBLE));
 
     // Alert players
     AlertPlayers(FPlayer(playerid, "performed a {FF0000}Double Kill!"));
