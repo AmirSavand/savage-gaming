@@ -150,21 +150,8 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 {
-    // Random package
-    if (pickupid == randomPackage)
-    {
-        // Destroy it and its mapicon
-        DestroyDynamicPickup(randomPackage);
-        DestroyDynamicMapIcon(randomPackageMapicon);
-
-        randomPackage = 0;
-
-        // Call remote so gamemode will handle it
-        CallRemoteFunction("OnPlayerPickupRandomPackage", "i", playerid);
-    }
-
     // Flag pickup
-    else if (pickupid == flagPickup)
+    if (pickupid == flagPickup)
     {
         // Destroy the flag and create player base
         DestroyFlag();
@@ -200,6 +187,19 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
             }
         }
     }
+
+    // Random package
+    else if (pickupid == randomPackage)
+    {
+        // Destroy it and its mapicon
+        DestroyDynamicPickup(randomPackage);
+        DestroyDynamicMapIcon(randomPackageMapicon);
+
+        randomPackage = 0;
+
+        // Call remote so gamemode will handle it
+        CallRemoteFunction("OnPlayerPickupRandomPackage", "i", playerid);
+    }
 }
 
 // Functions
@@ -229,6 +229,8 @@ DestroyPlayerBase(playerid)
     // Destroy player base pickup and mapicon
     DestroyDynamicPickup(playerBase[playerid][pickup]);
     DestroyDynamicMapIcon(playerBase[playerid][mapicon]);
+
+    playerBase[playerid][pickup] = 0;
 }
 
 CreateFlag(onplayerid = INVALID_PLAYER_ID)
@@ -264,5 +266,4 @@ DestroyFlag()
     DestroyDynamicMapIcon(flagMapicon);
 
     flagPickup = 0;
-    flagMapicon = 0;
 }
