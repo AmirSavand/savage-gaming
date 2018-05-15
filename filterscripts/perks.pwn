@@ -51,7 +51,7 @@ new const perks[][iPerk] = {
     {"Armor on spawn",                  "+40",     40.0},
     {"Nitro on vehicle purchase",       "x10",   1010.0},
     {"More engine on vehicle purchase", "+100",  1000.0},
-    {"Explode on death",                    "",     0.0}
+    {"Explode on death",                "",         0.0}
 };
 
 // Callbacks
