@@ -164,6 +164,19 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
         AlertPlayersText(FPlayerText(playerid, "~r~~h~", "~w~captured flag"));
     }
 
+    // Random package
+    else if (pickupid == randomPackage)
+    {
+        // Destroy it and its mapicon
+        DestroyDynamicPickup(randomPackage);
+        DestroyDynamicMapIcon(randomPackageMapicon);
+
+        randomPackage = 0;
+
+        // Call remote so gamemode will handle it
+        CallRemoteFunction("OnPlayerPickupRandomPackage", "i", playerid);
+    }
+
     // Base pickup
     else if (flagBearer == playerid)
     {
@@ -186,19 +199,6 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
                 CreateFlag();
             }
         }
-    }
-
-    // Random package
-    else if (pickupid == randomPackage)
-    {
-        // Destroy it and its mapicon
-        DestroyDynamicPickup(randomPackage);
-        DestroyDynamicMapIcon(randomPackageMapicon);
-
-        randomPackage = 0;
-
-        // Call remote so gamemode will handle it
-        CallRemoteFunction("OnPlayerPickupRandomPackage", "i", playerid);
     }
 }
 
