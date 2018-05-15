@@ -165,7 +165,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
     }
 
     // Base pickup
-    else if (flagBearer != -1)
+    else if (flagBearer == playerid)
     {
         // For all players
         for (new i; i < MAX_PLAYERS; i++)
