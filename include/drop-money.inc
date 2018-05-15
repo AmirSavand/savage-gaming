@@ -60,17 +60,17 @@ stock GetPickupDropMoneyIndex(pickupid)
 stock CheckPlayerMoneyDropPickup(playerid, pickupid, amount = DROP_MONEY_AMOUNT)
 {
     // Get index
-    new i = GetPickupDropMoneyIndex(pickupid);
+    new index = GetPickupDropMoneyIndex(pickupid);
 
     // Is dropped money
-    if (GetPickupDropMoneyIndex(pickupid) != -1)
+    if (index != -1)
     {
         // Give player money and destroy pickup
         GivePlayerMoney(playerid, amount);
         AlertPlayerText(playerid, sprintf("~g~~h~+%i", amount));
         PlayerPlaySound(playerid, 1083, 0, 0, 0);
         DestroyDynamicPickup(pickupid);
-        dropMoney[i] = 0;
+        dropMoney[index] = 0;
     }
 }
 
