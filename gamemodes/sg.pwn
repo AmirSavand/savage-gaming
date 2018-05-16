@@ -415,6 +415,20 @@ public  OnPlayerRankUp(playerid, rank, cost)
     AlertPlayers(FPlayer(playerid, sprintf("is now {FF00FF}Rank %i", rank)));
 }
 
+
+forward OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Float:center[3]);
+public  OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Float:center[3])
+{
+    // Alert player
+    AlertPlayerDialog(playerid, "{FF0000}Alert", "Get back in the battle zone!");
+
+    // Get positon
+    IMPORT_PLAYER_POS;
+
+    // Create explosion
+    CreateExplosion(pPos[0], pPos[1], pPos[2], 0, 10.0);
+}
+
 // Commands
 
 CMD:rankup(playerid)
