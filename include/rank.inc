@@ -39,6 +39,7 @@ UpgradePlayerRank(playerid)
         return 0;
     }
 
+    // Get rank
     new rank = GetPVarInt(playerid, "rank");
 
     // Upgrade player rank
