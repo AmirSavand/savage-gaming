@@ -17,6 +17,9 @@
 #define PRESSED(%0) (((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
 #define HOLDING(%0) ((newkeys & (%0)) == (%0))
 
+#undef  MAX_PLAYERS
+#define MAX_PLAYERS 200
+
 //
 // Colors defines
 //
@@ -111,6 +114,16 @@ stock GetStringNumber(preString[], reward)
     new str[128];
     format(str, sizeof(str), "%s%i", preString, reward);
     return str;
+}
+
+stock KillTimers(timers[], len)
+{
+    // For all timers
+    for (new t; t < len; t++)
+    {
+        // Kill timer
+        KillTimer(timers[t]);
+    }
 }
 
 //
