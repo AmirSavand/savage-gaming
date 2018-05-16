@@ -10,6 +10,9 @@
 
 #define FILTERSCRIPT
 
+#define BATTLE_ZONE_DISTANCE    200.0
+#define BATTLE_ZONE_CENTER      {662.0, -546.0, 16.0}
+
 // Variables
 
 new const Float:playerSpawns[][4] = {
@@ -43,6 +46,8 @@ new const Float:randomPackageSpawns[][3] = {
     {681.32, -600.05, 16.18}
 };
 
+new timer[2];
+
 // Includes
 
 #include <a_samp>
@@ -50,6 +55,7 @@ new const Float:randomPackageSpawns[][3] = {
 
 #include "../../include/common"
 #include "../../include/random-package.inc"
+#include "../../include/battle-zone.inc"
 
 // Callbacks
 
@@ -61,9 +67,16 @@ public OnFilterScriptInit()
     for (new i = 0; i < MAX_PLAYERS; i++)
         InitialPlayer(i);
 
-    // Start spawning random packages
-    SetTimer("SpawnRandomPackage", 60000, 1);
+    // Timers
+    timer[0] = SetTimer("SpawnRandomPackage", 60000, 1);
+    timer[1] = SetTimer("CheckPlayerBattleZoneDistance", 5000, 1);
     return 1;
+}
+
+public OnFilterScriptExit()
+{
+    // Kill timers
+    KillTimers(timer, sizeof(timer));
 }
 
 public OnPlayerConnect(playerid)
