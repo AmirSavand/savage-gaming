@@ -9,9 +9,12 @@
 // Defines
 
 #define FILTERSCRIPT
-#define MAX_TEAMS           3
-#define DIALOG_TEAM         600
-#define BASE_DISTANCE       20
+#define MAX_TEAMS               3
+#define DIALOG_TEAM             600
+#define BASE_DISTANCE           20
+
+#define BATTLE_ZONE_DISTANCE    200.0
+#define BATTLE_ZONE_CENTER      {-1511.0, 2635.0, 55.0}
 
 // Variables
 
@@ -48,6 +51,8 @@ new const Float:randomPackageSpawns[][3] = {
     {-1483.40, 2613.75, 58.78}
 };
 
+new timer[2];
+
 // Includes
 
 #include <a_samp>
@@ -56,6 +61,7 @@ new const Float:randomPackageSpawns[][3] = {
 
 #include "../../include/common"
 #include "../../include/random-package.inc"
+#include "../../include/battle-zone.inc"
 
 // Callbacks
 
@@ -75,8 +81,9 @@ public OnFilterScriptInit()
     for (new i; i < MAX_PLAYERS; i++)
         InitialPlayer(i);
 
-    // Start spawning random packages
-    SetTimer("SpawnRandomPackage", 45000, 1);
+    // Set timers
+    timer[0] = SetTimer("SpawnRandomPackage", 45000, 1);
+    timer[1] = SetTimer("CheckPlayerBattleZoneDistance", 5000, 1);
     return 1;
 }
 
@@ -88,6 +95,9 @@ public OnFilterScriptExit()
         DestroyDynamicMapIcon(teamMapicons[t]);
         DestroyDynamic3DTextLabel(teamLabels[t]);
     }
+
+    // Kill
+    KillTimers(timer, sizeof(timer));
     return 1;
 }
 
