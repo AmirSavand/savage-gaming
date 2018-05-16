@@ -81,7 +81,7 @@ main()
 public OnGameModeInit()
 {
     // Game mode functions
-    SetGameModeText("Freeroam FFA TDM");
+    SetGameModeText("Freeroam FFA TDM CTF");
     AllowInteriorWeapons(false);
     EnableStuntBonusForAll(false);
     ShowPlayerMarkers(PLAYER_MARKERS_MODE_GLOBAL);
