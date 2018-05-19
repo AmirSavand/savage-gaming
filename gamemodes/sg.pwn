@@ -10,6 +10,7 @@
 
 #define MAX_RANDOM_PACKAGES         4
 #define MAX_DROP_MONEY              1000
+#define MAX_RANK                    10
 
 #define DROP_MONEY_PICKUPS          10
 #define DROP_MONEY_AMOUNT           5
@@ -28,6 +29,8 @@
 #define KILL_REWARD                 100
 #define KILL_REWARD_DOUBLE          300
 
+#define RANK_COST_FACTOR            10000
+
 #define TIME_SERVER_UPDATE          500
 
 #define MODE_FREEROAM               1
@@ -41,14 +44,6 @@
 #include <streamer>
 #include <sscanf>
 #include <zcmd>
-
-// Variables
-
-new const ranks[] = { // Money per rank upgrade
-        0,
-    10000, 20000, 30000, 40000,  50000,
-    60000, 70000, 80000, 90000, 100000
-};
 
 // Includes
 
@@ -122,9 +117,14 @@ public OnPlayerDisconnect(playerid)
 
 public OnPlayerSpawn(playerid)
 {
-    // Alert player if upgrade available
+    // Rankup available?
     if (CanPlayerUpgradeRank(playerid))
-        AlertPlayerDialog(playerid, "Info", "{00FF00}New rank available!\n{DDDDDD}Type /rankup to pay for upgrade to next rank.");
+    {
+        // Let player know about it
+        new str[500];
+        format(str, sizeof(str), "Type /rankup to pay for upgrade to next rank.\n\nUpgrade cost: {00FF00}$%i", GetPlayerNextRankCost(playerid));
+        AlertPlayerDialog(playerid, "{00FF00}New Rank Available", str);
+    }
 
     // Fix default -$100
     GivePlayerMoney(playerid, 100);
@@ -467,6 +467,9 @@ CMD:mode(playerid, params[])
     {
         // Kill em
         SetPlayerHealth(i, 0);
+
+        // Force selection
+        ForceClassSelection(i);
     }
     return 1;
 }

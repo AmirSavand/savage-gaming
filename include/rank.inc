@@ -2,12 +2,19 @@
 * Rank
 *
 * Purchase and upgrade to next rank for players.
-* Requires ranks[] (money per rank starting with 0)
+*
+* Events: OnPlayerRankUp(playerid, rank, cost)
+* Requires: RANK_COST_FACTOR (10000), MAX_RANK (20)
 *
 * by Amir Savand
 */
 
 // Functions
+
+GetPlayerNextRankCost(playerid)
+{
+    return (1 + GetPVarInt(playerid, "rank")) * RANK_COST_FACTOR;
+}
 
 CanPlayerUpgradeRank(playerid)
 {
@@ -15,19 +22,16 @@ CanPlayerUpgradeRank(playerid)
     new nextRank = GetPVarInt(playerid, "rank") + 1;
 
     // Is there a next rank?
-    if (nextRank >= sizeof(ranks))
+    if (nextRank >= MAX_RANK)
         return -1;
 
-    // Money required for next rank
-    new nextRankMoney = ranks[nextRank];
-
-    // Has enough money
-    return HasEnoughMoney(playerid, nextRankMoney);
+    // Has enough money for next rank?
+    return HasEnoughMoney(playerid, GetPlayerNextRankCost(playerid));
 }
 
 UpgradePlayerRank(playerid)
 {
-    // Can upgrade
+    // Can upgrade?
     if (!CanPlayerUpgradeRank(playerid))
     {
         // If not enough money, alert
@@ -36,19 +40,22 @@ UpgradePlayerRank(playerid)
 
         // Stop upgrading
         else AlertPlayerText(playerid, "~r~~h~upgrade not available");
-        return 0;
     }
 
-    // Get rank
-    new rank = GetPVarInt(playerid, "rank");
+    // Upgrade
+    else
+    {
+        // Get rank and cost of next rank
+        new rank = GetPVarInt(playerid, "rank");
+        new cost = GetPlayerNextRankCost(playerid);
 
-    // Upgrade player rank
-    SetPVarInt(playerid, "rank", rank + 1);
+        // Upgrade player rank
+        SetPVarInt(playerid, "rank", rank + 1);
 
-    // Get money
-    GivePlayerMoney(playerid, -ranks[rank + 1]);
+        // Make payment
+        GivePlayerMoney(playerid, -cost);
 
-    // Event
-    CallRemoteFunction("OnPlayerRankUp", "iii", playerid, rank + 1, -ranks[rank + 1]);    
-    return 1;
+        // Event
+        CallRemoteFunction("OnPlayerRankUp", "iii", playerid, rank + 1, cost);
+    }
 }
