@@ -145,7 +145,7 @@ CMD:getmoney(playerid, params[]) // Get money
 CMD:addmoney(playerid, params[]) // Add money (from server)
 {
     // Check admin
-    if (GetPlayerAdmin(playerid) <= 5)
+    if (GetPlayerAdmin(playerid) < 5)
         return 0;
 
     // Check params
