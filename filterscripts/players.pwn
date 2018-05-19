@@ -52,6 +52,29 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 public OnPlayerConnect(playerid)
 {
+    LoadPlayer(playerid);
+    return 1;
+}
+
+public OnPlayerDisconnect(playerid, reason)
+{
+    SavePlayer(playerid);
+    return 1;
+}
+
+// Events
+
+forward OnPlayerChangeName(playerid);
+public  OnPlayerChangeName(playerid)
+{
+    SavePlayer(playerid);
+    LoadPlayer(playerid);
+}
+
+// Functions
+
+LoadPlayer(playerid)
+{
     new qry[500];
     mysql_format(db, qry, sizeof(qry), "SELECT * FROM players WHERE name='%e'", GetName(playerid));
     new Cache:cache = mysql_query(db, qry);
@@ -87,24 +110,15 @@ public OnPlayerConnect(playerid)
     }
 
     cache_delete(cache);
-    return 1;
 }
-
-public OnPlayerDisconnect(playerid, reason)
-{
-    SavePlayer(playerid);
-    return 1;
-}
-
-// Functions
 
 SavePlayer(playerid)
 {
     if (GetPVarInt(playerid, "id") < 1)
         return 0;
 
-    new qry[2000]; mysql_format(db, qry, sizeof(qry), "UPDATE players SET money=%i, rank=%i, kills=%i WHERE name='%e'", 
-        GetPlayerMoney(playerid), GetPVarInt(playerid, "rank"), GetPVarInt(playerid, "kills"), GetName(playerid));
+    new qry[2000]; mysql_format(db, qry, sizeof(qry), "UPDATE players SET money=%i, rank=%i, kills=%i WHERE id=%i", 
+        GetPlayerMoney(playerid), GetPVarInt(playerid, "rank"), GetPVarInt(playerid, "kills"), GetPVarInt(playerid, "id"));
     mysql_tquery(db, qry);
     return 1;
 }
