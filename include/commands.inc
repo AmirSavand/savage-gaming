@@ -162,3 +162,23 @@ CMD:addmoney(playerid, params[]) // Add money (from server)
 }
 
 CMD:setname(playerid, params[]) // Set player name
+{
+    // Check admin
+    if (GetPlayerAdmin(playerid) < 5)
+        return 0;
+
+    // Check params
+    new targetid, name[MAX_PLAYER_NAME];
+    if (sscanf(params, "us", targetid, name))
+        return AlertPlayerError(playerid, "> Command usage: /setname [player] [name]");
+
+    // Announce
+    AlertPlayers(FPlayer(targetid, sprintf("name changed to {00FF00}%s", name)));
+
+    // Change target name
+    SetPlayerName(targetid, name);
+
+    // Event
+    CallRemoteFunction("OnPlayerChangeName", "i", playerid);
+    return 1;
+}
