@@ -415,14 +415,15 @@ public  OnPlayerRankUp(playerid, rank, cost)
 forward OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Float:center[3]);
 public  OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Float:center[3])
 {
-    // Alert player
-    AlertPlayerDialog(playerid, "{FF0000}Alert", "Get back in the battle zone!");
+    // Don't effect when player has parachute
+    if (GetPlayerWeapon(playerid) == WEAPON_PARACHUTE) {
+        return;
+    }
 
-    // Get positon
+    // Create exposion and alert player
     IMPORT_PLAYER_POS;
-
-    // Create explosion
     CreateExplosion(pPos[0], pPos[1], pPos[2], 0, 10.0);
+    AlertPlayerDialog(playerid, "{FF0000}Alert", "Get back in the battle zone!");
 }
 
 // Commands
