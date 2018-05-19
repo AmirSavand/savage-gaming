@@ -160,3 +160,5 @@ CMD:addmoney(playerid, params[]) // Add money (from server)
     AlertPlayers(FPlayer(targetid, sprintf("recieved {00FF00}$%i {DDDDDD}from server.", amount)));
     return 1;
 }
+
+CMD:setname(playerid, params[]) // Set player name
