@@ -62,6 +62,7 @@ new timer[2];
 #include "../../include/common"
 #include "../../include/random-package.inc"
 #include "../../include/battle-zone.inc"
+#include "../../include/first-blood.inc"
 
 // Callbacks
 
@@ -151,6 +152,13 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
         // Call remote so gamemode will handle it
         CallRemoteFunction("OnPlayerPickupRandomPackage", "i", playerid);
     }
+}
+
+public OnPlayerDeath(playerid, killerid, reason)
+{
+    // First blood
+    CheckFirstBlood(killerid);
+    return 1;
 }
 
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
