@@ -10,7 +10,7 @@
 
 #define MAX_RANDOM_PACKAGES         4
 #define MAX_DROP_MONEY              1000
-#define MAX_RANK                    10
+#define MAX_RANK                    22
 
 #define DROP_MONEY_PICKUPS          10
 #define DROP_MONEY_AMOUNT           5

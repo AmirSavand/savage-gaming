@@ -16,14 +16,11 @@ GetPlayerNextRankCost(playerid)
     return (1 + GetPVarInt(playerid, "rank")) * RANK_COST_FACTOR;
 }
 
-CanPlayerUpgradeRank(playerid)
+bool:CanPlayerUpgradeRank(playerid) // If is max rank, returns -1 and id doesn't have enough money, returns 0
 {
-    // Next rank to upgrade
-    new nextRank = GetPVarInt(playerid, "rank") + 1;
-
     // Is there a next rank?
-    if (nextRank >= MAX_RANK)
-        return -1;
+    if (GetPVarInt(playerid, "rank") >= MAX_RANK)
+        return false;
 
     // Has enough money for next rank?
     return HasEnoughMoney(playerid, GetPlayerNextRankCost(playerid));
@@ -35,7 +32,7 @@ UpgradePlayerRank(playerid)
     if (!CanPlayerUpgradeRank(playerid))
     {
         // If not enough money, alert
-        if (CanPlayerUpgradeRank(playerid) != -1)
+        if (!HasEnoughMoney(playerid, GetPlayerNextRankCost(playerid)))
             AlertPlayerText(playerid, "~r~~h~not enough money");
 
         // Stop upgrading
