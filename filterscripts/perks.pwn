@@ -10,11 +10,12 @@
 
 #define FILTERSCRIPT
 
-#define DIALOG_PERKS    700
+#define DIALOG_PERKS        700
+#define DIALOG_PERKS_ALERT  701
 
-#define MAX_PERKS       100
+#define MAX_PERKS           100
 
-#define INVALID_PERK_ID -1
+#define INVALID_PERK_ID     -1
 
 // Includes
 
@@ -33,7 +34,8 @@ enum iPerk
 {
     name[100],
     addition[50],
-    Float:value
+    Float:value,
+    rank
 };
 
 // Variables
@@ -42,16 +44,16 @@ new bool:playerPerks[MAX_PLAYERS][MAX_PERKS];
 new bool:isPlayerLoaded[MAX_PLAYERS];
 
 new const perks[][iPerk] = {
-    {"More ammo on pickup",             "+0.3",     0.3},
-    {"More primary ammo",               "+0.3",     0.3},
-    {"More secondary ammo",             "+0.3",     0.3},
-    {"More lethal ammo",                "+2",       2.0},
-    {"RPG on spawn",                    "+1",       1.0},
-    {"HS Rocket on spawn",              "+1",       1.0},
-    {"Armor on spawn",                  "+40",     40.0},
-    {"Nitro on vehicle purchase",       "x10",   1010.0},
-    {"More engine on vehicle purchase", "+100",  1000.0},
-    {"Explode on death",                "",         0.0}
+    {"More ammo on pickup",             "+0.3",    0.3, 3},
+    {"More primary ammo",               "+0.3",    0.3, 1},
+    {"More secondary ammo",             "+0.3",    0.3, 1},
+    {"More lethal ammo",                "+2",      2.0, 2},
+    {"RPG on spawn",                    "+1",      1.0, 2},
+    {"HS Rocket on spawn",              "+1",      1.0, 2},
+    {"Armor on spawn",                  "+25",    25.0, 1},
+    {"Nitro on vehicle purchase",       "x10",  1010.0, 1},
+    {"More engine on vehicle purchase", "+50",   500.0, 1},
+    {"Explode on death",                "",        0.0, 4}
 };
 
 // Callbacks
@@ -113,23 +115,32 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
-    // Selected a perk
-    if (dialogid == DIALOG_PERKS && response)
+    if (response)
     {
-        // If player reached perks limit (and trying to enable)
-        if (CountPlayerPerks(playerid) >= GetPlayerMaxPerks(playerid) && !playerPerks[playerid][listitem])
+        // Selected a perk
+        if (dialogid == DIALOG_PERKS)
         {
-            // Error player
-            AlertPlayerDialog(playerid, "Info", "{FF0000}You can't activate anymore perks!\n{DDDDDD}You need to rank up or deactivate other perks.");
+            // If player reached perks limit (and trying to enable)
+            if (CountPlayerPerks(playerid) + perks[listitem][rank] > GetPlayerMaxPerks(playerid) && !playerPerks[playerid][listitem])
+            {
+                // Error player
+                AlertPlayerDialog(playerid, "Info", "{FF0000}You can't activate anymore perks!\n{DDDDDD}You need to rank up or deactivate other perks.", DIALOG_PERKS_ALERT);
+            }
+
+            // Player can activate more perks
+            else
+            {
+                // Toggle perk status
+                playerPerks[playerid][listitem] = !playerPerks[playerid][listitem];
+
+                // Show perks again
+                ShowPlayerPerks(playerid);
+            }
         }
 
-        // Player can activate more perks
-        else
+        // Closed alert
+        else if (dialogid == DIALOG_PERKS_ALERT)
         {
-            // Toggle perk status
-            playerPerks[playerid][listitem] = !playerPerks[playerid][listitem];
-
-            // Show perks again
             ShowPlayerPerks(playerid);
         }
     }
@@ -251,7 +262,11 @@ LoadPlayerPerks(playerid) // Load perks form db
 ShowPlayerPerks(playerid) // Perks dialog
 {
     // Dialog string
-    new str[2000] = "ADDITION\tPERK\tSTATUS\n";
+    new str[2000] = "PERK\tADDITION\tRANK\tSTATUS\n";
+    new title[200];
+
+    // Title
+    format(title, sizeof(title), "Perks {00FF00}%i / %i Used {FF00FF}Rank %i", CountPlayerPerks(playerid), GetPlayerMaxPerks(playerid), GetPVarInt(playerid, "rank"));
 
     // Add all perks
     for (new i; i < sizeof(perks); i++)
@@ -261,14 +276,14 @@ ShowPlayerPerks(playerid) // Perks dialog
         new deactive[20] = "{DDDDDD}Deactive";
 
         // Add perk detail to dialog string
-        strcat(str, sprintf("{00FF00}%s\t{DDDDDD}%s\t%s\n", perks[i][addition], perks[i][name], playerPerks[playerid][i] ? active : deactive));
+        strcat(str, sprintf("%s\t{00FF00}%s\t%i\t%s\n", perks[i][name], perks[i][addition], perks[i][rank], playerPerks[playerid][i] ? active : deactive));
     }
 
     // Show perks
-    ShowPlayerDialog(playerid, DIALOG_PERKS, DIALOG_STYLE_TABLIST_HEADERS, sprintf("Perks {00FF00}(%i/%i)", CountPlayerPerks(playerid), GetPlayerMaxPerks(playerid)), str, "Toggle", "Close");
+    ShowPlayerDialog(playerid, DIALOG_PERKS, DIALOG_STYLE_TABLIST_HEADERS, title, str, "Toggle", "Close");
 }
 
-CountPlayerPerks(playerid) // Number of player's activated perks
+CountPlayerPerks(playerid) // Number of player's activated perks (plus their ranks)
 {
     // Count
     new count;
@@ -280,7 +295,7 @@ CountPlayerPerks(playerid) // Number of player's activated perks
         if (playerPerks[playerid][i])
         {
             // Count it
-            count++;
+            count += perks[i][rank];
         }
     }
     return count;
