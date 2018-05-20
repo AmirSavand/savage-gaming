@@ -49,6 +49,7 @@ new flagBearer = -1;
 
 #include "../../include/common"
 #include "../../include/random-package.inc"
+#include "../../include/first-blood.inc"
 
 // Variables
 
@@ -131,6 +132,9 @@ public OnPlayerDeath(playerid, killerid, reason)
         // Drop flag to player position
         CreateFlag(playerid);
     }
+
+    // First blood
+    CheckFirstBlood(killerid);
     return 1;
 }
 
