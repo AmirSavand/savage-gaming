@@ -4,6 +4,8 @@
 * Weapon class and selection for players.
 * Call GivePlayerClassWeapons() to give player ammo of current class.
 *
+* Events: OnPlayerPickupDeathPickup(playerid)
+*
 * by Amir Savand
 */
 
@@ -111,9 +113,13 @@ public OnPlayerDeath(playerid, killerid, reason)
     // Position
     IMPORT_PLAYER_POS;
 
-    // Respawn death pickup
-    DestroyDynamicPickup(deathPickup[playerid]);
-    deathPickup[playerid] = CreateDynamicPickup(1254, 1, pPos[0], pPos[1], pPos[2]);
+    // Check if prevent
+    if (CallRemoteFunction("CanPlayerDropAmmoOnDeath", "i", playerid) != 0)
+    {
+        // Respawn death pickup
+        DestroyDynamicPickup(deathPickup[playerid]);
+        deathPickup[playerid] = CreateDynamicPickup(1254, 1, pPos[0], pPos[1], pPos[2]);
+    }
     return 1;
 }
 

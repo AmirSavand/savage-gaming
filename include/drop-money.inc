@@ -5,7 +5,8 @@
 * To make player pickup cash call CheckPlayerMoneyDropPickup() on pickup.
 * To make player drop cash call CheckPlayerMoneyDrop().
 *
-* Requires defines: DROP_MONEY_PICKUPS (10), DROP_MONEY_AMOUNT (5), MAX_DROP_MONEY (500)
+* Events: CanPlayerDropMoneyOnDeath(playerid), OnPlayerDropMoneyOnDeath(playerid)
+* Requires: DROP_MONEY_PICKUPS (10), DROP_MONEY_AMOUNT (5), MAX_DROP_MONEY (500)
 *
 * by Amir Savand
 */
@@ -75,6 +76,13 @@ stock DropMoneyFromPlayer(playerid, pickups = DROP_MONEY_PICKUPS)
     // Get positon
     IMPORT_PLAYER_POS;
 
-    // Drop money
-    DropMoney(pPos[0], pPos[1], pPos[2], pickups);
+    // Check if prevent
+    if (CallRemoteFunction("CanPlayerDropMoneyOnDeath", "i", playerid) != 0)
+    {
+        // Drop money
+        DropMoney(pPos[0], pPos[1], pPos[2], pickups);
+
+        // Event
+        CallRemoteFunction("OnPlayerDropMoneyOnDeath", "i", playerid);
+    }
 }

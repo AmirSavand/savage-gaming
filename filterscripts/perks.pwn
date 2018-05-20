@@ -53,6 +53,8 @@ new const perks[][iPerk] = {
     {"Armor on spawn",                  "+25",    25.0, 1},
     {"Nitro on vehicle purchase",       "x10",  1010.0, 1},
     {"More engine on vehicle purchase", "+50",   500.0, 1},
+    {"No money drop on death",          "",        0.0, 2},
+    {"No ammo drop on death",           "",        0.0, 2},
     {"Explode on death",                "",        0.0, 4}
 };
 
@@ -198,6 +200,20 @@ public  OnPlayerRearmWeaponClass(playerid)
     perk = DoesPlayerHavePerk(playerid, "HS Rocket on spawn");
     if (perk != INVALID_PERK_ID)
         GivePlayerWeapon(playerid, WEAPON_HEATSEEKER, floatround(perks[perk][value]));
+}
+
+forward CanPlayerDropMoneyOnDeath(playerid);
+public  CanPlayerDropMoneyOnDeath(playerid)
+{
+    // Apply perks
+    return DoesPlayerHavePerk(playerid, "No money drop on death") ? 0 : 1;
+}
+
+forward CanPlayerDropAmmoOnDeath(playerid);
+public  CanPlayerDropAmmoOnDeath(playerid)
+{
+    // Apply perks
+    return DoesPlayerHavePerk(playerid, "No ammo drop on death") ? 0 : 1;
 }
 
 // Functions
