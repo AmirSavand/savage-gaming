@@ -322,9 +322,9 @@ stock AlertPlayerText(playerid, const message[])
     return GameTextForPlayer(playerid, message, 3000, 4);
 }
 
-stock AlertPlayerDialog(playerid, title[], message[])
+stock AlertPlayerDialog(playerid, title[], message[], dialigid = 0)
 {
-    return ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, title, message, "Ok", "");
+    return ShowPlayerDialog(playerid, dialigid, DIALOG_STYLE_MSGBOX, title, message, "Ok", "");
 }
 
 // For all players
@@ -352,11 +352,11 @@ stock AlertPlayersText(const message[])
     }
 }
 
-stock AlertPlayersDialog(const title[], const message[])
+stock AlertPlayersDialog(const title[], const message[], dialogid = 0)
 {
     for (new i; i < MAX_PLAYERS; i++)
     {
-        AlertPlayerDialog(i, title, message);
+        AlertPlayerDialog(i, title, message, dialogid);
     }
 }
 
