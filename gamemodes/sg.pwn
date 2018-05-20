@@ -28,6 +28,7 @@
 
 #define KILL_REWARD                 100
 #define KILL_REWARD_DOUBLE          300
+#define KILL_REWARD_FIRST_BLOOD     300
 
 #define RANK_COST_FACTOR            10000
 
@@ -424,6 +425,17 @@ public  OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Fl
     IMPORT_PLAYER_POS;
     CreateExplosion(pPos[0], pPos[1], pPos[2], 0, 10.0);
     AlertPlayerDialog(playerid, "{FF0000}Alert", "Get back in the battle zone!");
+}
+
+forward OnPlayerFirstBlood(playerid);
+public  OnPlayerFirstBlood(playerid)
+{
+    // Reward player and announce (show combined money)
+    GivePlayerMoney(playerid, KILL_REWARD_DOUBLE);
+    AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_REWARD + KILL_REWARD_FIRST_BLOOD));
+
+    // Announce
+    AlertPlayers(FPlayer(playerid, "drew {00FF00}First Blood!"));
 }
 
 // Commands
