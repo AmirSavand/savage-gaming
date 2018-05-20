@@ -56,6 +56,7 @@ new timer[2];
 #include "../../include/common"
 #include "../../include/random-package.inc"
 #include "../../include/battle-zone.inc"
+#include "../../include/first-blood.inc"
 
 // Callbacks
 
@@ -108,6 +109,13 @@ public OnPlayerSpawn(playerid)
     SetPlayerPos(playerid, playerSpawns[i][0], playerSpawns[i][1], playerSpawns[i][2]);
     SetPlayerFacingAngle(playerid, playerSpawns[i][3]);
     SetCameraBehindPlayer(playerid);
+    return 1;
+}
+
+public OnPlayerDeath(playerid, killerid, reason)
+{
+    // First blood
+    CheckFirstBlood(killerid);
     return 1;
 }
 
