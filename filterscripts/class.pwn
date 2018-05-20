@@ -114,7 +114,8 @@ public OnPlayerDeath(playerid, killerid, reason)
     IMPORT_PLAYER_POS;
 
     // Check if prevent
-    if (CallRemoteFunction("CanPlayerDropAmmoOnDeath", "i", playerid) != 0)
+    printf("PreventPlayerDropAmmoOnDeath: %i", CallRemoteFunction("PreventPlayerDropAmmoOnDeath", "i", playerid));
+    if (CallRemoteFunction("PreventPlayerDropAmmoOnDeath", "i", playerid) != 1)
     {
         // Respawn death pickup
         DestroyDynamicPickup(deathPickup[playerid]);

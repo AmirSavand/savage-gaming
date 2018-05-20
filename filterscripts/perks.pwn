@@ -202,18 +202,18 @@ public  OnPlayerRearmWeaponClass(playerid)
         GivePlayerWeapon(playerid, WEAPON_HEATSEEKER, floatround(perks[perk][value]));
 }
 
-forward CanPlayerDropMoneyOnDeath(playerid);
-public  CanPlayerDropMoneyOnDeath(playerid)
+forward PreventPlayerDropMoneyOnDeath(playerid);
+public  PreventPlayerDropMoneyOnDeath(playerid)
 {
     // Apply perks
-    return DoesPlayerHavePerk(playerid, "No money drop on death") ? 0 : 1;
+    return DoesPlayerHavePerk(playerid, "No money drop on death") != INVALID_PERK_ID ? 1 : 0;
 }
 
-forward CanPlayerDropAmmoOnDeath(playerid);
-public  CanPlayerDropAmmoOnDeath(playerid)
+forward PreventPlayerDropAmmoOnDeath(playerid);
+public  PreventPlayerDropAmmoOnDeath(playerid)
 {
     // Apply perks
-    return DoesPlayerHavePerk(playerid, "No ammo drop on death") ? 0 : 1;
+    return DoesPlayerHavePerk(playerid, "No ammo drop on death") != INVALID_PERK_ID ? 1 : 0;
 }
 
 // Functions
