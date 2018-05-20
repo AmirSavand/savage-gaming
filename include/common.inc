@@ -198,12 +198,6 @@ stock bool:HasEnoughMoney(playerid, amount = 0)
     return GetPlayerMoney(playerid) >= amount;
 }
 
-stock bool:IsPlayerSpawned(playerid)
-{
-    new playerState = GetPlayerState(playerid);
-    return ((playerState >= 1 && playerState <= 6) || playerState == 8);
-}
-
 stock SetPlayerMoney(playerid, amount = 0)
 {
     ResetPlayerMoney(playerid);
@@ -288,6 +282,22 @@ stock bool:DoesPlayerHaveWeapon(playerid, weaponid)
     }
 
     return false;
+}
+
+stock bool:IsPlayerSkydiving(playerid)
+{
+    return 958 <= GetPlayerAnimationIndex(playerid) <= 962 && GetPlayerWeapon(playerid) == 46 && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT;
+}
+
+stock bool:IsPlayerParachuting(playerid)
+{
+    return 963 <= GetPlayerAnimationIndex(playerid) <= 979 && GetPlayerWeapon(playerid) == 46 && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT;
+}
+
+stock bool:IsPlayerSpawned(playerid)
+{
+    new pState = GetPlayerState(playerid);
+    return 0 <= playerid < MAX_PLAYERS && pState != PLAYER_STATE_NONE && pState != PLAYER_STATE_WASTED && pState != PLAYER_STATE_SPECTATING;
 }
 
 // For a single player

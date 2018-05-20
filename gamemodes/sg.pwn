@@ -416,8 +416,8 @@ public  OnPlayerRankUp(playerid, rank, cost)
 forward OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Float:center[3]);
 public  OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Float:center[3])
 {
-    // Don't effect when player has parachute
-    if (GetPlayerWeapon(playerid) == WEAPON_PARACHUTE) {
+    // Don't effect when player...
+    if (IsPlayerSkydiving(playerid) || IsPlayerParachuting(playerid) || !IsPlayerSpawned(playerid)) {
         return;
     }
 
