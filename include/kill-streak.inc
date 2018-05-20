@@ -6,6 +6,8 @@
 * Check OnPlayerKillStreakEnded() to announce ending kill streak
 * Call CheckPlayerKillStreak() from OnPlayerDeath()
 *
+* Events: OnPlayerKillStreakEnded(playerid, killerid, killStreak)
+*
 * by Amir Savand
 */
 

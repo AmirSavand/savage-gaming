@@ -376,14 +376,14 @@ public  OnPlayerDoubleKill(playerid)
     AlertPlayers(FPlayer(playerid, "performed a {FF0000}Double Kill!"));
 }
 
-forward OnPlayerKillStreakEnded(playerid, enderid, killStreak);
-public  OnPlayerKillStreakEnded(playerid, enderid, killStreak)
+forward OnPlayerKillStreakEnded(playerid, killerid, killStreak);
+public  OnPlayerKillStreakEnded(playerid, killerid, killStreak)
 {
     // 5 kill streak
     if (killStreak >= 5)
     {
         // Announce
-        AlertPlayers(FPlayer(enderid, sprintf("ended {FF0000}%s's %ix kill streak!", GetName(playerid), killStreak)));
+        AlertPlayers(FPlayer(killerid, sprintf("ended {FF0000}%s's %ix kill streak!", GetName(playerid), killStreak)));
     }
 }
 
