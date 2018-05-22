@@ -266,7 +266,7 @@ forward SkyDivePlayer(playerid);
 public  SkyDivePlayer(playerid)
 {
     // Send player to sky
-    IMPORT_PLAYER_POS; SetPlayerPos(playerid, pPos[0] + 100, pPos[1] + 100, pPos[2] + 500);
+    IMPORT_PLAYER_POS; SetPlayerPos(playerid, pPos[0] + 100, pPos[1] + 100, pPos[2] + 400);
 
     // Give parachute
     GivePlayerWeapon(playerid, WEAPON_PARACHUTE, 1);
@@ -315,7 +315,7 @@ CMD:giveitem(playerid, params[])
 
     // Check usage
     if (sscanf(params, "ui", targetid, item))
-        return AlertPlayerError(playerid, "> Command usage: /giveitem [player] [item]");
+        return AlertPlayerDialog(playerid, "Command Usage", "/giveitem [player] [item]");
 
     // Check id
     if (!IsValidIndex(sizeof(itemNames), item))

@@ -10,7 +10,7 @@
 
 #define FILTERSCRIPT
 
-#define BATTLE_ZONE_DISTANCE    200.0
+#define BATTLE_ZONE_DISTANCE    250.0
 #define BATTLE_ZONE_CENTER      {662.0, -546.0, 16.0}
 
 // Variables

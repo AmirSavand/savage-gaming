@@ -299,7 +299,7 @@ public  OnPlayerPickupRandomPackage(playerid)
     }
 
     // Announce
-    AlertPlayersText(FPlayerText(playerid, "~w~collected ~y~~h~random pacakge"));
+    AlertPlayersText(FPlayerText(playerid, "~w~collected ~y~random pacakge"));
 }
 
 forward OnPlayerPurchaseVehicle(playerid, vehicleid);
