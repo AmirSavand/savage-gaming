@@ -32,7 +32,7 @@ CheckPlayerKillStreak(playerid, killedid)
     if (playerKillStreak[playerid] >= 3)
     {
         // Event
-        CallRemoteFunction("OnPlayerKillStreak", "ii", playerid, playerKillStreak);
+        CallRemoteFunction("OnPlayerKillStreak", "ii", playerid, playerKillStreak[playerid]);
     }
 
     // Check for double kill
