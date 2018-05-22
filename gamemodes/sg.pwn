@@ -70,6 +70,10 @@
 
 #include "../include/drop-money"
 
+// Variables
+
+new firstBloodPlayer = INVALID_PLAYER_ID; // Used to show player reward
+
 // Main
 
 main()
@@ -149,9 +153,15 @@ public OnPlayerDeath(playerid, killerid, reason)
     if (killerid != INVALID_PLAYER_ID)
     {
         // Reward and heal killer
-        AlertPlayerText(killerid, sprintf("~g~~h~+%i", KILL_REWARD));
         GivePlayerMoney(killerid, KILL_REWARD);
         SetPlayerHealth(killerid, 100);
+
+        // Show killer money if not just drew first blood (handled else where)
+        if (firstBloodPlayer != killerid)
+            AlertPlayerText(killerid, sprintf("~g~~h~+%i", KILL_REWARD));
+
+        // Reset first blood (used for showing)
+        firstBloodPlayer = INVALID_PLAYER_ID;
 
         // Kill streak handling
         CheckPlayerKillStreak(killerid, playerid);
@@ -435,6 +445,9 @@ public  OnPlayerFirstBlood(playerid)
 
     // Announce
     ShowPlayersCoolTextdraw(FPlayerText(playerid, "~w~drew ~r~~h~First Blood"));
+
+    // Store it so OnPlayerDeath knows
+    firstBloodPlayer = playerid;
 }
 
 forward OnPlayerCaptureFlag(playerid);
