@@ -92,17 +92,8 @@ public OnPlayerSpawn(playerid)
 
 public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 {
-    // If random package
-    if (pickupid == randomPackage)
-    {
-        // Destroy it and its mapicon
-        DestroyDynamicPickup(randomPackage);
-        DestroyDynamicMapIcon(randomPackageMapicon);
-        randomPackage = 0;
-
-        // Call remote so gamemode will handle it
-        CallRemoteFunction("OnPlayerPickupRandomPackage", "i", playerid);
-    }
+    // Check for package
+    CheckRandomPackage(playerid, pickupid);
 }
 
 // Public functions

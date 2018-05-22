@@ -12,7 +12,24 @@
 new randomPackage;
 new randomPackageMapicon;
 
-// Public functions
+// Functions
+
+bool:CheckRandomPackage(playerid, pickupid)
+{
+    // If random package
+    if (pickupid == randomPackage)
+    {
+        // Destroy it and its mapicon
+        DestroyDynamicPickup(randomPackage);
+        DestroyDynamicMapIcon(randomPackageMapicon);
+        randomPackage = 0;
+
+        // Call remote so gamemode will handle it
+        CallRemoteFunction("OnPlayerPickupRandomPackage", "i", playerid);
+        return true;
+    }
+    return false;
+}
 
 forward SpawnRandomPackage();
 public  SpawnRandomPackage()

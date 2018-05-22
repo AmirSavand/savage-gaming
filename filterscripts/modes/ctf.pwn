@@ -155,6 +155,9 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 {
+    // Check for package
+    CheckRandomPackage(playerid, pickupid);
+
     // Flag pickup
     if (pickupid == flagPickup)
     {
@@ -167,19 +170,6 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 
         // Event
         CallRemoteFunction("OnPlayerCaptureFlag", "i", playerid);
-    }
-
-    // Random package
-    else if (pickupid == randomPackage)
-    {
-        // Destroy it and its mapicon
-        DestroyDynamicPickup(randomPackage);
-        DestroyDynamicMapIcon(randomPackageMapicon);
-
-        randomPackage = 0;
-
-        // Call remote so gamemode will handle it
-        CallRemoteFunction("OnPlayerPickupRandomPackage", "i", playerid);
     }
 
     // Base pickup
