@@ -40,10 +40,13 @@ CheckPlayerKillStreak(playerid, killedid)
     {
         // Event
         CallRemoteFunction("OnPlayerDoubleKill", "i", playerid);
+
+        // Reset so player won't double kill 2 times
+        playerLastKill[playerid] = 0;
     }
 
     // Save last kill time
-    else playerLastKill[playerid] = gettime();
+    playerLastKill[playerid] = gettime();
 
     // If killed player had a kill streak
     if (playerKillStreak[killedid] >= 3)
