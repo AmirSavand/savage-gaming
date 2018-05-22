@@ -157,9 +157,6 @@ public OnPlayerDeath(playerid, killerid, reason)
         CheckPlayerKillStreak(killerid, playerid);
     }
 
-    // Sucide
-    else ResetPlayerKillStreak(playerid);
-
     // Drop cash
     DropMoneyFromPlayer(playerid);
     return 1;
