@@ -130,10 +130,10 @@ stock KillTimers(timers[], len)
 // Formats
 //
 
-stock FPlayer(playerid, string[])
+stock FPlayer(playerid, string[], pre[] = "> ")
 {
     new str[500];
-    format(str, sizeof(str), "> {00FF00}%s {DDDDFF}%s", GetName(playerid), string);
+    format(str, sizeof(str), "%s{00FF00}%s {DDDDFF}%s", pre, GetName(playerid), string);
     return str;
 }
 

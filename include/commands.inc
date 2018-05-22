@@ -155,7 +155,7 @@ CMD:addmoney(playerid, params[]) // Add money (from server)
     GivePlayerMoney(targetid, amount);
 
     // Announce
-    AlertPlayersDialog("Info", FPlayerText(targetid, sprintf("recieved {00FF00}$%i {DDDDFF}from server.", amount)));
+    AlertPlayersDialog("Info", FPlayer(targetid, sprintf("recieved {00FF00}$%i {DDDDFF}from server.", amount), ""));
     return 1;
 }
 

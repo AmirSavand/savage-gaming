@@ -145,7 +145,7 @@ public OnPlayerDeath(playerid, killerid, reason)
     // Send death message (reason)
     SendDeathMessage(killerid, playerid, reason);
 
-    // If not sucide
+    // Killed by a player
     if (killerid != INVALID_PLAYER_ID)
     {
         // Reward and heal killer
@@ -375,7 +375,7 @@ public  OnPlayerDoubleKill(playerid)
     AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_REWARD + KILL_REWARD_DOUBLE));
 
     // Alert players
-    AlertPlayers(FPlayer(playerid, "performed a {FF0000}Double Kill!"));
+    ShowPlayersCoolTextdraw(FPlayerText(playerid, "performed a ~r~~h~Double Kill!"));
 }
 
 forward OnPlayerKillStreakEnded(playerid, killerid, killStreak);
@@ -426,7 +426,7 @@ public  OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Fl
     // Create exposion and alert player
     IMPORT_PLAYER_POS;
     CreateExplosion(pPos[0] + 1, pPos[1] + 1, pPos[2] + 1, 0, 3.0);
-    AlertPlayerDialog(playerid, "{FF0000}Alert", "Get back in the battle zone!");
+    AlertPlayerDialog(playerid, "Alert", "Get back in the battle zone!");
 }
 
 forward OnPlayerFirstBlood(playerid);
