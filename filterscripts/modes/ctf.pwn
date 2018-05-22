@@ -224,7 +224,7 @@ CreatePlayerBase(playerid)
 
     // Store player base
     playerBase[playerid][pickup]  = CreateDynamicPickup(19135, 1, pos[0], pos[1], pos[2]);
-    playerBase[playerid][mapicon] = CreateDynamicMapIcon(pos[0], pos[1], pos[2], 0, cYellow, -1, -1, playerid, 1000, MAPICON_GLOBAL);
+    playerBase[playerid][mapicon] = CreateDynamicMapIcon(pos[0], pos[1], pos[2], 0, cYellow, -1, -1, playerid, 2000);
 }
 
 DestroyPlayerBase(playerid)
@@ -259,7 +259,7 @@ CreateFlag(onplayerid = INVALID_PLAYER_ID, killerid = INVALID_PLAYER_ID)
 
     // Create the flag pickup and mapicon
     flagPickup  = CreateDynamicPickup(19306, 1, pos[0], pos[1], pos[2]);
-    flagMapicon = CreateDynamicMapIcon(pos[0], pos[1], pos[2], 19, 0, -1, -1, -1, 1000, MAPICON_GLOBAL);
+    flagMapicon = CreateDynamicMapIcon(pos[0], pos[1], pos[2], 19, 0, -1, -1, -1, 2000);
 }
 
 DestroyFlag()
