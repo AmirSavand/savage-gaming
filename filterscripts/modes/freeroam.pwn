@@ -9,8 +9,8 @@
 // Defines
 
 #define FILTERSCRIPT
-#define REGENERATION_AMOUNT     30
-#define REGENERATION_INTERVAL   1000
+#define REGENERATION_AMOUNT     10
+#define REGENERATION_INTERVAL   500
 
 // Variables
 
@@ -48,7 +48,7 @@ public OnFilterScriptInit()
 
     // Initial all players
     for (new i = 0; i < MAX_PLAYERS; i++)
-        InitialPlayer(i);
+        SetupPlayer(i);
 
     // Start spawning random packages
     SetTimer("SpawnRandomPackage", 60000, 1);
@@ -60,7 +60,7 @@ public OnFilterScriptInit()
 
 public OnPlayerConnect(playerid)
 {
-    InitialPlayer(playerid);
+    SetupPlayer(playerid);
     return 1;
 }
 
@@ -78,7 +78,7 @@ public OnPlayerSpawn(playerid)
 {
     // Initial player again (if not already)
     if (GetPlayerTeam(playerid) != NO_TEAM)
-        InitialPlayer(playerid);
+        SetupPlayer(playerid);
 
     // Get random spawn point
     new i = Ran(0, sizeof(playerSpawns));
@@ -117,7 +117,7 @@ public  RegeneratePlayers()
 
 // Functions
 
-InitialPlayer(playerid)
+SetupPlayer(playerid)
 {
     // Random color and no team
     SetPlayerColor(playerid, playerColors[Ran(0, sizeof(playerColors))]);

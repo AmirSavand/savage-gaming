@@ -13,10 +13,10 @@ CMD:pm(playerid, params[])
     new str[200], mStr[500], targetid;
 
     if (!sscanf(params, "us[144]", targetid, str))
-        return AlertPlayerError(playerid, "> Command usage: /pm [player] [message]");
+        return AlertPlayerDialog(playerid, "Command Usage", "/pm [player] [message]");
 
     if (!IsPlayerConnected(targetid) || targetid == playerid)
-        return AlertPlayerError(playerid, "> Player not found");
+        return AlertPlayerText(playerid, "~r~~h~Player not found");
 
     // Announce sender
     format(mStr, sizeof(mStr), "> PM to %s: {FFFFFF}%s", GetName(targetid), str);
@@ -30,25 +30,23 @@ CMD:pm(playerid, params[])
 
 CMD:money(playerid, params[])
 {
-    new str[200], targetid, amount;
+    new targetid, amount;
 
     if (sscanf(params, "ui", targetid, amount))
-        return AlertPlayerError(playerid, "> Command usage: /money [player] [amount]");
+        return AlertPlayerDialog(playerid, "Command Usage", "/money [player] [amount]");
 
     if (!IsPlayerConnected(targetid) || targetid == playerid)
-        return AlertPlayerError(playerid, "> Player not found");
+        return AlertPlayerText(playerid, "Player not found");
 
     if (amount < 1 || amount > GetPlayerMoney(playerid) || GetPlayerMoney(playerid) < 1)
-        return AlertPlayerError(playerid, "> You don't have that much money");
+        return AlertPlayerText(playerid, "~r~~h~You don't have that much money");
 
     // Announce sender
-    format(str, sizeof(str), "> You sent $%i to %s", amount, GetName(targetid));
-    AlertPlayerSuccess(playerid, str);
+    AlertPlayerDialog(playerid, "Info", sprintf("{DDDDFF}Sent {00FF00}$%i {DDDDFF}to {00FF00}%s", amount, GetName(targetid)));
     GivePlayerMoney(playerid, -amount);
 
     // Announce reciever
-    format(str, sizeof(str), "> %s (%i) sent you $%i", GetName(playerid), playerid, amount);
-    AlertPlayerSuccess(targetid, str);
+    AlertPlayerDialog(playerid, "Info", sprintf("{DDDDFF}Recieved {00FF00}$%i {DDDDFF}from {00FF00}%s", amount, GetName(playerid)));
     GivePlayerMoney(targetid, amount);
     return 1;
 }
@@ -97,7 +95,7 @@ CMD:telto(playerid, params[]) // Teleport to a player
     // Check params
     new targetid;
     if (sscanf(params, "u", targetid))
-        return AlertPlayerError(playerid, "> Command usage: /telto [player]");
+        return AlertPlayerDialog(playerid, "Command Usage", "/telto [player]");
 
     // Check player
     if (!IsPlayerConnected(targetid))
@@ -135,7 +133,7 @@ CMD:getmoney(playerid, params[]) // Get money
     // Check params
     new amount;
     if (sscanf(params, "i", amount))
-        return AlertPlayerError(playerid, "> Command usage: /getmoney [amount]");
+        return AlertPlayerDialog(playerid, "Command Usage", "/getmoney [amount]");
 
     // Give money
     GivePlayerMoney(playerid, amount);
@@ -151,13 +149,13 @@ CMD:addmoney(playerid, params[]) // Add money (from server)
     // Check params
     new targetid, amount;
     if (sscanf(params, "ui", targetid, amount))
-        return AlertPlayerError(playerid, "> Command usage: /addmoney [player] [amount]");
+        return AlertPlayerDialog(playerid, "Command Usage", "/addmoney [player] [amount]");
 
     // Add money to target
     GivePlayerMoney(targetid, amount);
 
-    // Alert sender and reciever
-    AlertPlayers(FPlayer(targetid, sprintf("recieved {00FF00}$%i {DDDDDD}from server.", amount)));
+    // Announce
+    AlertPlayersDialog("Info", FPlayer(targetid, sprintf("recieved {00FF00}$%i {DDDDFF}from server.", amount)));
     return 1;
 }
 
@@ -170,7 +168,7 @@ CMD:setname(playerid, params[]) // Set player name
     // Check params
     new targetid, name[MAX_PLAYER_NAME];
     if (sscanf(params, "us", targetid, name))
-        return AlertPlayerError(playerid, "> Command usage: /setname [player] [name]");
+        return AlertPlayerDialog(playerid, "Command Usage", "/setname [player] [name]");
 
     // Announce
     AlertPlayers(FPlayer(targetid, sprintf("name changed to {00FF00}%s", name)));

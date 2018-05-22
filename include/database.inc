@@ -14,7 +14,7 @@ new MySQL:db;
 
 // Functions
 
-InitialDatabase()
+SetupDatabase()
 {
     // Allow mysql duplicate
     mysql_global_options(DUPLICATE_CONNECTIONS, true);
@@ -23,7 +23,10 @@ InitialDatabase()
     db = mysql_connect("localhost", "sg", "password", "sg");
 
     // Failed
-    if (mysql_errno() != 0) print(" > Failed to connect to database.");
+    if (mysql_errno() != 0) {
+        print(" > Failed to connect to database, exiting...");
+        SendRconCommand("exit");
+    }
 }
 
 CloseDatabase()

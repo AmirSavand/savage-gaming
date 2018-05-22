@@ -12,7 +12,7 @@ new Text3D:playerLabel[MAX_PLAYERS];
 
 // Functions
 
-InitialPlayerLabel(playerid, text[])
+SetupPlayerLabel(playerid, text[])
 {
     // Create and attach 3D text
     playerLabel[playerid] = CreateDynamic3DTextLabel(text, cGrey, 0, 0, 0.5, 60, playerid, INVALID_VEHICLE_ID, 1);

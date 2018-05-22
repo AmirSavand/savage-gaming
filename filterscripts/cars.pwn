@@ -85,10 +85,10 @@ public OnFilterScriptInit()
     print("\n > Cars filterscript by Amir Savand.\n");
 
     // Connect to database
-    InitialDatabase();
+    SetupDatabase();
 
     // Load all vehicles
-    InitializeCars();
+    SetupCars();
     return 1;
 }
 
@@ -101,7 +101,7 @@ public OnFilterScriptExit()
 
 public OnGameModeInit()
 {
-    InitializeCars();
+    SetupCars();
     return 1;
 }
 
@@ -213,7 +213,7 @@ public OnVehicleSpawn(vehicleid)
     SetPlayerHealth(vehicleid, Car[i][engine]);
 
     // Load mods
-    InitializeCarMods(i);
+    SetupCarMods(i);
     return 1;
 }
 
@@ -286,7 +286,7 @@ DestroyCars() // Destroy all db and admin cars
         DestroyVehicle(adminCar[i]);
 }
 
-InitializeCars() // Fetch all cars from db and store data in Car[][]
+SetupCars() // Fetch all cars from db and store data in Car[][]
 {
     // Don't load if already loaded
     if (loaded) return;
@@ -320,7 +320,7 @@ InitializeCars() // Fetch all cars from db and store data in Car[][]
         format(Car[i][compsRaw],  MAX_COMP_STRING,  "%s", comps);
         format(Car[i][colorsRaw], MAX_COLOR_STRING, "%s", colors);
 
-        InitializeCar(i);
+        SetupCar(i);
     }
 
     // Get pool size
@@ -328,7 +328,7 @@ InitializeCars() // Fetch all cars from db and store data in Car[][]
     cache_delete(cache);
 }
 
-InitializeCar(i) // Create car and load data (color, mods, engine, etc...)
+SetupCar(i) // Create car and load data (color, mods, engine, etc...)
 {
     // Check db
     if (i == -1) return 0;
@@ -355,13 +355,13 @@ InitializeCar(i) // Create car and load data (color, mods, engine, etc...)
     SetVehicleHealth(Car[i][id], Car[i][engine]);
 
     // Components
-    InitializeCarMods(i);
+    SetupCarMods(i);
 
     // Return its db id
     return Car[i][id];
 }
 
-InitializeCarMods(i) // Initial all car mods (comps, colors, paintjob, etc...)
+SetupCarMods(i) // Initial all car mods (comps, colors, paintjob, etc...)
 {
     // Check db
     if (i == -1) return 0;
@@ -509,7 +509,7 @@ CMD:addcar(playerid, params[]) // Create a db car in current position (model is 
     Car[ps][pos][3] = pPos[3];
 
     // Create the car
-    InitializeCar(ps);
+    SetupCar(ps);
     cache_delete(cache);
     return 1;
 }
@@ -615,7 +615,7 @@ CMD:reloadcars(playerid) // Delete the car from db
 
     // Reload cars
     loaded = false;
-    InitializeCars();
+    SetupCars();
 
     // Alert
     AlertPlayerText(playerid, "~b~~h~Reloaded cars");

@@ -3,6 +3,8 @@
 *
 * Capture The Flag mode, take the flag and return it to base, kill everyone in the proccess.
 *
+* Events: OnPlayerCaptureFlag(playerid), OnPlayerDropFlag(playerid, killerid), OnPlayerReturnFlag(playerid, reward)
+*
 * by Amir Savand
 */
 
@@ -11,7 +13,6 @@
 #define FILTERSCRIPT
 
 #define FLAG_CAPTURE_REWARD  2000
-#define FLAG_CAPTURE_SOUND  50004
 
 // Variables
 
@@ -70,7 +71,7 @@ public OnFilterScriptInit()
 
     // Initial all players
     for (new i = 0; i < MAX_PLAYERS; i++)
-        InitialPlayer(i);
+        SetupPlayer(i);
 
     // Start spawning random packages
     SetTimer("SpawnRandomPackage", 60000, 1);
@@ -88,7 +89,7 @@ public OnFilterScriptExit()
 
 public OnPlayerConnect(playerid)
 {
-    InitialPlayer(playerid);
+    SetupPlayer(playerid);
     return 1;
 }
 
@@ -106,7 +107,7 @@ public OnPlayerSpawn(playerid)
 {
     // Initial player again (if not already)
     if (GetPlayerTeam(playerid) != NO_TEAM)
-        InitialPlayer(playerid);
+        SetupPlayer(playerid);
 
     // Get random spawn point
     new i = Ran(0, sizeof(playerSpawns));
@@ -130,7 +131,7 @@ public OnPlayerDeath(playerid, killerid, reason)
     if (flagBearer == playerid)
     {
         // Drop flag to player position
-        CreateFlag(playerid);
+        CreateFlag(playerid, killerid);
     }
 
     // First blood
@@ -164,8 +165,8 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
         // Store bearer
         flagBearer = playerid;
 
-        // Announce captured
-        AlertPlayersText(FPlayerText(playerid, "~r~~h~", "~w~captured flag"));
+        // Event
+        CallRemoteFunction("OnPlayerCaptureFlag", "i", playerid);
     }
 
     // Random package
@@ -192,11 +193,9 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
             {
                 // Reward player
                 GivePlayerMoney(playerid, FLAG_CAPTURE_REWARD);
-                AlertPlayerText(playerid, sprintf("~g~~h~+%i", FLAG_CAPTURE_REWARD));
-                PlayerPlaySound(playerid, FLAG_CAPTURE_SOUND, 0, 0, 0);
 
-                // Announce players
-                AlertPlayers(FPlayer(playerid, "returned the {FF0000}Flag!"));
+                // Event
+                CallRemoteFunction("OnPlayerReturnFlag", "ii", playerid, FLAG_CAPTURE_REWARD);
 
                 // Recreate the flag and destroy base
                 DestroyPlayerBase(playerid);
@@ -208,7 +207,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 
 // Functions
 
-InitialPlayer(playerid)
+SetupPlayer(playerid)
 {
     // Random color and no team
     SetPlayerColor(playerid, playerColors[Ran(0, sizeof(playerColors))]);
@@ -237,7 +236,7 @@ DestroyPlayerBase(playerid)
     playerBase[playerid][pickup] = 0;
 }
 
-CreateFlag(onplayerid = INVALID_PLAYER_ID)
+CreateFlag(onplayerid = INVALID_PLAYER_ID, killerid = INVALID_PLAYER_ID)
 {
     // Flag position
     new Float:pos[3]; pos = flagPos;
@@ -255,7 +254,7 @@ CreateFlag(onplayerid = INVALID_PLAYER_ID)
         GetPlayerPos(onplayerid, pos[0], pos[1], pos[2]);
     
         // Announce dropped
-        AlertPlayersText("~w~flag dropped");
+        CallRemoteFunction("OnPlayerDropFlag", "ii", onplayerid, killerid);
     }
 
     // Create the flag pickup and mapicon

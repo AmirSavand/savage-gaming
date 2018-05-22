@@ -66,7 +66,7 @@ public OnFilterScriptInit()
 
     // Initial all players
     for (new i = 0; i < MAX_PLAYERS; i++)
-        InitialPlayer(i);
+        SetupPlayer(i);
 
     // Timers
     timer[0] = SetTimer("SpawnRandomPackage", 60000, 1);
@@ -82,7 +82,7 @@ public OnFilterScriptExit()
 
 public OnPlayerConnect(playerid)
 {
-    InitialPlayer(playerid);
+    SetupPlayer(playerid);
     return 1;
 }
 
@@ -100,7 +100,7 @@ public OnPlayerSpawn(playerid)
 {
     // Initial player again (if not already)
     if (GetPlayerTeam(playerid) != NO_TEAM)
-        InitialPlayer(playerid);
+        SetupPlayer(playerid);
 
     // Get random spawn point
     new i = Ran(0, sizeof(playerSpawns));
@@ -137,7 +137,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 
 // Functions
 
-InitialPlayer(playerid)
+SetupPlayer(playerid)
 {
     // Random color and no team
     SetPlayerColor(playerid, playerColors[Ran(0, sizeof(playerColors))]);

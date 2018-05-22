@@ -25,7 +25,7 @@ public OnFilterScriptInit()
 {
     print("\n > Players filterscript by Amir Savand.\n");
 
-    InitialDatabase();
+    SetupDatabase();
     return 1;
 }
 

@@ -133,14 +133,14 @@ stock KillTimers(timers[], len)
 stock FPlayer(playerid, string[])
 {
     new str[500];
-    format(str, sizeof(str), "> {00FF00}%s {DDDDDD}%s", GetName(playerid), string);
+    format(str, sizeof(str), "> {00FF00}%s {DDDDFF}%s", GetName(playerid), string);
     return str;
 }
 
-stock FPlayerText(playerid, color[], string[])
+stock FPlayerText(playerid, string[], color[] = "~g~~h~")
 {
     new str[200];
-    format(str, sizeof(str), "%s%s %s", color, GetName(playerid), string);
+    format(str, sizeof(str), "%s%s ~w~%s", color, GetName(playerid), string);
     return str;
 }
 
@@ -302,22 +302,22 @@ stock bool:IsPlayerSpawned(playerid)
 
 // For a single player
 
-stock AlertPlayer(playerid, const message[])
+stock AlertPlayer(playerid, message[])
 {
     return SendClientMessage(playerid, cGrey, message);
 }
 
-stock AlertPlayerSuccess(playerid, const message[])
+stock AlertPlayerSuccess(playerid, message[])
 {
     return SendClientMessage(playerid, cGreen, message);
 }
 
-stock AlertPlayerError(playerid, const message[])
+stock AlertPlayerError(playerid, message[])
 {
     return SendClientMessage(playerid, cRed, message);
 }
 
-stock AlertPlayerText(playerid, const message[])
+stock AlertPlayerText(playerid, message[])
 {
     return GameTextForPlayer(playerid, message, 3000, 4);
 }
@@ -329,30 +329,30 @@ stock AlertPlayerDialog(playerid, title[], message[], dialigid = 0)
 
 // For all players
 
-stock AlertPlayers(const message[])
+stock AlertPlayers(message[])
 {
     return SendClientMessageToAll(cGrey, message);
 }
 
-stock AlertPlayersSuccess(const message[])
+stock AlertPlayersSuccess(message[])
 {
     return SendClientMessageToAll(cGreen, message);
 }
 
-stock AlertPlayersError(const message[])
+stock AlertPlayersError(message[])
 {
     return SendClientMessageToAll(cRed, message);
 }
 
-stock AlertPlayersText(const message[])
+stock AlertPlayersText(message[])
 {
     for (new i; i < MAX_PLAYERS; i++)
     {
-        GameTextForPlayer(i, message, 3000, 4);
+        AlertPlayerText(i, message);
     }
 }
 
-stock AlertPlayersDialog(const title[], const message[], dialogid = 0)
+stock AlertPlayersDialog(title[], message[], dialogid = 0)
 {
     for (new i; i < MAX_PLAYERS; i++)
     {

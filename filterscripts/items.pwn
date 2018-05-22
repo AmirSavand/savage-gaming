@@ -76,7 +76,7 @@ public OnFilterScriptInit()
     SetTimer("GivePlayersRandomItem", RANDOM_ITEM_TIME, true);
 
     // Connect to db
-    InitialDatabase();
+    SetupDatabase();
     return 1;
 }
 

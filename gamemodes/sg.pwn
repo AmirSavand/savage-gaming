@@ -32,6 +32,8 @@
 
 #define RANK_COST_FACTOR            10000
 
+#define COOL_TEXTDRAW_TIME          5
+
 #define TIME_SERVER_UPDATE          500
 
 #define MODE_FREEROAM               1
@@ -61,6 +63,8 @@
 #include "../include/engine-textdraw"
 
 #include "../include/title-textdraw"
+
+#include "../include/cool-textdraw"
 
 #include "../include/kill-streak"
 
@@ -92,7 +96,7 @@ public OnGameModeInit()
     SetTimer("OnServerUpdate", TIME_SERVER_UPDATE, 1);
 
     // Title Textdraw
-    InitialTitleTextdraw("Savage Gaming");
+    SetupTitleTextdraw("Savage Gaming");
     return 1;
 }
 
@@ -102,10 +106,11 @@ public OnPlayerConnect(playerid)
     SendDeathMessage(INVALID_PLAYER_ID, playerid, 200);
 
     // Initial text draw
-    InitialEngineTextdraw(playerid);
+    SetupEngineTextdraw(playerid);
+    SetupPlayerCoolTextdraw(playerid);
 
     // Player label
-    InitialPlayerLabel(playerid, "...");
+    SetupPlayerLabel(playerid, "...");
     return 1;
 }
 
@@ -297,17 +302,14 @@ public  OnPlayerPickupRandomPackage(playerid)
     }
 
     // Announce
-    AlertPlayers(FPlayer(playerid, "collected random pacakge!"));
+    AlertPlayersText(FPlayerText(playerid, "~w~collected ~y~~h~random pacakge"));
 }
 
 forward OnPlayerPurchaseVehicle(playerid, vehicleid);
 public  OnPlayerPurchaseVehicle(playerid, vehicleid)
 {
-    // Purchase message
-    new str[100]; format(str, sizeof(str), "purchased {FFFF00}%s", GetCarName(vehicleid));
-
-    // Alert everyone
-    AlertPlayers(FPlayer(playerid, str));
+    // Announce
+    ShowPlayersCoolTextdraw(FPlayerText(playerid, sprintf("purchased ~y~%s", GetCarName(vehicleid))));
 }
 
 forward OnPlayerKillStreak(playerid, killStreak);
@@ -323,37 +325,37 @@ public  OnPlayerKillStreak(playerid, killStreak)
         {
             GivePlayerWeapon(playerid, WEAPON_MINIGUN, KILL_STREAK_MINIGUN);
             AlertPlayerText(playerid, "~b~~h~Minigun");
-            str = "got {FF0000}Minigun {DDDDDD}from 5 kill streak.";
+            str = "got ~r~~h~Minigun ~w~from 5 kill streak.";
         }
         case 10: // Money
         {
             GivePlayerMoney(playerid, KILL_STREAK_MONEY);
             AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_STREAK_MONEY));
-            str = "got {00FF00}$1000 {DDDDDD}from 10 kill streak.";
+            str = "got {00FF00}$1000 ~w~from 10 kill streak.";
         }
         case 15: // Grenade
         {
             GivePlayerWeapon(playerid, WEAPON_GRENADE, KILL_STREAK_GRENADE);
             AlertPlayerText(playerid, "~b~~h~RPG");
-            str = "got many {FF0000}Grenades {DDDDDD}from 15 kill streak.";
+            str = "got many ~r~~h~Grenades ~w~from 15 kill streak.";
         }
         case 20: // Jetpack
         {
             SetPlayerSpecialAction(playerid, SPECIAL_ACTION_USEJETPACK);
             AlertPlayerText(playerid, "~b~~h~JETPACK");
-            str = "got {FF0000}Jetpack {DDDDDD}from 20 kill streak.";
+            str = "got ~r~~h~Jetpack ~w~from 20 kill streak.";
         }
         case 25: // RPG
         {
             GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, KILL_STREAK_RPG);
             AlertPlayerText(playerid, "~b~~h~RPG");
-            str = "got {FF0000}RPG {DDDDDD}from 25 kill streak.";
+            str = "got ~r~~h~RPG ~w~from 25 kill streak.";
         }
         case 30: // Money (2)
         {
             GivePlayerMoney(playerid, KILL_STREAK_MONEY_2);
             AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_STREAK_MONEY_2));
-            str = "got {00FF00}$2000 {DDDDDD}from 30 kill streak.";
+            str = "got {00FF00}$2000 ~w~from 30 kill streak.";
         }
     }
 
@@ -361,7 +363,7 @@ public  OnPlayerKillStreak(playerid, killStreak)
     if (str[0])
     {
         // Announce
-        AlertPlayers(FPlayer(playerid, str));
+        ShowPlayersCoolTextdraw(FPlayerText(playerid, str));
     }
 }
 
@@ -383,7 +385,7 @@ public  OnPlayerKillStreakEnded(playerid, killerid, killStreak)
     if (killStreak >= 5)
     {
         // Announce
-        AlertPlayers(FPlayer(killerid, sprintf("ended {FF0000}%s's %ix kill streak!", GetName(playerid), killStreak)));
+        ShowPlayersCoolTextdraw(FPlayerText(killerid, sprintf("ended ~g~~h~%s's ~r~~h~%ix kill streak", GetName(playerid), killStreak)));
     }
 }
 
@@ -410,7 +412,7 @@ forward OnPlayerRankUp(playerid, rank, cost);
 public  OnPlayerRankUp(playerid, rank, cost)
 {
     // Announce
-    AlertPlayers(FPlayer(playerid, sprintf("is now {FF00FF}Rank %i", rank)));
+    ShowPlayersCoolTextdraw(FPlayerText(playerid, sprintf("~w~is now ~p~Rank %i", rank)));
 }
 
 forward OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Float:center[3]);
@@ -423,7 +425,7 @@ public  OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Fl
 
     // Create exposion and alert player
     IMPORT_PLAYER_POS;
-    CreateExplosion(pPos[0], pPos[1], pPos[2], 0, 10.0);
+    CreateExplosion(pPos[0] + 1, pPos[1] + 1, pPos[2] + 1, 0, 3.0);
     AlertPlayerDialog(playerid, "{FF0000}Alert", "Get back in the battle zone!");
 }
 
@@ -435,7 +437,30 @@ public  OnPlayerFirstBlood(playerid)
     AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_REWARD + KILL_REWARD_FIRST_BLOOD));
 
     // Announce
-    AlertPlayers(FPlayer(playerid, "drew {00FF00}First Blood!"));
+    ShowPlayersCoolTextdraw(FPlayerText(playerid, "~w~drew ~r~~h~First Blood"));
+}
+
+forward OnPlayerCaptureFlag(playerid);
+public  OnPlayerCaptureFlag(playerid)
+{
+    // Announce
+    ShowPlayersCoolTextdraw(FPlayerText(playerid, "~w~captured the ~r~~h~Flag"));
+}
+
+forward OnPlayerDropFlag(playerid, killerid);
+public  OnPlayerDropFlag(playerid, killerid)
+{
+    // Announce
+    ShowPlayersCoolTextdraw(FPlayerText(playerid, "~w~dropped the ~r~~h~Flag"));
+}
+
+forward OnPlayerReturnFlag(playerid, reward);
+public  OnPlayerReturnFlag(playerid, reward)
+{
+    // Announce
+    ShowPlayersCoolTextdraw(FPlayerText(playerid, "~w~returned the ~r~~h~Flag"));
+    AlertPlayerText(playerid, sprintf("~g~~h~+%i", reward));
+    PlayerPlaySound(playerid, 50004, 0, 0, 0);
 }
 
 // Commands

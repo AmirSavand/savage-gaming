@@ -2,7 +2,7 @@
 * Ttile Textdraw
 *
 * Title or server name on top right of player screen
-* Call InitialTitleTextdraw() at OnGameModeInit()
+* Call SetupTitleTextdraw() at OnGameModeInit()
 *
 * by Amir Savand
 */
@@ -13,7 +13,7 @@ new Text:titleTextdrawText;
 
 // Functions
 
-InitialTitleTextdraw(text[])
+SetupTitleTextdraw(text[])
 {
     // Create textdraw and set position top right
     titleTextdrawText = TextDrawCreate(604.847106, 5.083336, text);

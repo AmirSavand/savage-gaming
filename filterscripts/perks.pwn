@@ -65,7 +65,7 @@ public OnFilterScriptInit()
     print("\n > Perks filterscript by Amir Savand.\n");
 
     // Connect to db
-    InitialDatabase();
+    SetupDatabase();
     return 1;
 }
 

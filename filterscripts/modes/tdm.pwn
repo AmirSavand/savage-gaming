@@ -80,7 +80,7 @@ public OnFilterScriptInit()
 
     // Initial all players for TDM
     for (new i; i < MAX_PLAYERS; i++)
-        InitialPlayer(i);
+        SetupPlayer(i);
 
     // Set timers
     timer[0] = SetTimer("SpawnRandomPackage", 45000, 1);
@@ -104,7 +104,7 @@ public OnFilterScriptExit()
 
 public OnPlayerConnect(playerid)
 {
-    InitialPlayer(playerid);
+    SetupPlayer(playerid);
     return 1;
 }
 
@@ -122,7 +122,7 @@ public OnPlayerSpawn(playerid)
 {
     // Initial player again (if not already)
     if (GetPlayerTeam(playerid) == NO_TEAM)
-        InitialPlayer(playerid);
+        SetupPlayer(playerid);
 
     // Get player team
     new t = GetPlayerTeam(playerid);
@@ -197,7 +197,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
 // Functions
 
-InitialPlayer(playerid)
+SetupPlayer(playerid)
 {
     // Random team for player
     AssignPlayerTeam(playerid, Ran(0, MAX_TEAMS));

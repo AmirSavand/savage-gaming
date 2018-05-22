@@ -12,7 +12,7 @@ new PlayerText:engineTextdraw[MAX_PLAYERS][2]; // Text - Value
 
 // Functions
 
-InitialEngineTextdraw(playerid)
+SetupEngineTextdraw(playerid)
 {
     engineTextdraw[playerid][0] = CreatePlayerTextDraw(playerid, 558, 390, "Engine");
     PlayerTextDrawLetterSize(playerid, engineTextdraw[playerid][0], 0.337, 1.69);
