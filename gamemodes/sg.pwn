@@ -316,7 +316,7 @@ public  OnPlayerCollectRandomPackage(playerid)
         }
         case RANDOM_PACKAGE_RANDOM_ITEM: // Random items
         {
-            CallRemoteFunction("GivePlayerRandomItem", "ii", playerid, RANDOM_PACKAGE_AMOUNT_RANDOM_ITEM);
+            CallRemoteFunction("GivePlayerRandomItem", "iii", playerid, RANDOM_PACKAGE_AMOUNT_RANDOM_ITEM, RANDOM_PACKAGE_AMOUNT_RANDOM_ITEM);
             AlertPlayerText(playerid, sprintf("~y~+%i Random Items", RANDOM_PACKAGE_AMOUNT_RANDOM_ITEM));
         }
     }
