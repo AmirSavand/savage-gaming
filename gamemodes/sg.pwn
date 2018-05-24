@@ -137,8 +137,7 @@ public OnPlayerSpawn(playerid)
     if (CanPlayerUpgradeRank(playerid))
     {
         // Let player know about it
-        new str[500];
-        format(str, sizeof(str), "Type /rankup to pay for upgrade to next rank.\n\nUpgrade cost: {00FF00}$%i", GetPlayerNextRankCost(playerid));
+        new str[200]; str = sprintf("Type /rankup to pay for upgrade to next rank.\n\nUpgrade cost: {00FF00}$%i", GetPlayerNextRankCost(playerid));
         AlertPlayerDialog(playerid, "{00FF00}New Rank Available", str);
     }
 
@@ -530,5 +529,59 @@ CMD:mode(playerid, params[])
         // Force selection
         ForceClassSelection(i);
     }
+    return 1;
+}
+
+CMD:key(playerid) return cmd_keys(playerid);
+CMD:keys(playerid)
+{
+    // Commands
+    new keys[1000];
+
+    strcat(keys, "{00FF00}Keys:\n\n");
+    strcat(keys, "{DDDDEE}Y: /items\n\n");
+    strcat(keys, "{DDDDEE}N: Not set yet.\n\n");
+    strcat(keys, "{DDDDEE}H: Not set yet.\n\n");
+
+    AlertPlayerDialog(playerid, "Keys", keys);
+    return 1;
+}
+
+CMD:cmd(playerid) return cmd_cmds(playerid);
+CMD:cmds(playerid)
+{
+    // Commands
+    new cmds[1000];
+
+    strcat(cmds, "{00FF00}.:: Global ::.\n\n");
+    strcat(cmds, "{DDDDEE}/class /perks /rankup /items /keys /killme /money\n\n");
+
+    strcat(cmds, "{00FF00}.:: Items ::.\n\n");
+    strcat(cmds, "{DDDDEE}/items /giveitem /sellitem\n\n");
+
+    AlertPlayerDialog(playerid, "Comamnds", cmds);
+    return 1;
+}
+
+CMD:acmd(playerid) return cmd_acmds(playerid);
+CMD:acmds(playerid)
+{
+    // Check admin
+    if (!GetPlayerAdmin(playerid))
+        return 0;
+
+    // Commands
+    new cmds[1000];
+
+    strcat(cmds, "{00FF00}.:: Global ::.\n\n");
+    strcat(cmds, "{DDDDEE}/clear /jetpack /telto /givemoney /giveguns /setname /setskin\n\n");
+
+    strcat(cmds, "{00FF00}.:: Cars ::.\n\n");
+    strcat(cmds, "{DDDDEE}/scar /addcar /delcar /updatecar /setcartype /setcarprice /setcarengine /setcarpos /setcarowner /resetcarowner /blow\n\n");
+
+    strcat(cmds, "{00FF00}.:: Items ::.\n\n");
+    strcat(cmds, "{DDDDEE}/giveitem");
+
+    AlertPlayerDialog(playerid, "Admin Comamnds", cmds);
     return 1;
 }
