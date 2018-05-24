@@ -44,7 +44,7 @@
 #define PVI                         GetPlayerVehicleID(playerid)
 #define IMPORT_PLAYER_POS           new Float: pPos[4]; GetPlayerPos(playerid, pPos[0], pPos[1], pPos[2]); GetPlayerFacingAngle(playerid, pPos[3])
 #define IMPORT_PLAYER_POS_FROM_P    new Float: pPos[4]; GetPlayerPos(p,        pPos[0], pPos[1], pPos[2]); GetPlayerFacingAngle(p,        pPos[3])
-#define IMPORT_PLAYER_POS_AS_TARGET new Float: tPos[4]; GetPlayerPos(targetid, tPos[0], tPos[1], tPos[2]); GetPlayerFacingAngle(playerid, tPos[3])
+#define IMPORT_PLAYER_POS_AS_TARGET new Float: tPos[4]; GetPlayerPos(target,   tPos[0], tPos[1], tPos[2]); GetPlayerFacingAngle(playerid, tPos[3])
 
 //
 // Variables

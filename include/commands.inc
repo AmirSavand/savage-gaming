@@ -10,44 +10,44 @@
 
 CMD:pm(playerid, params[])
 {
-    new str[200], mStr[500], targetid;
+    new str[200], mStr[500], target;
 
-    if (!sscanf(params, "us[144]", targetid, str))
+    if (!sscanf(params, "us[144]", target, str))
         return AlertPlayerDialog(playerid, "Command Usage", "/pm [player] [message]");
 
-    if (!IsPlayerConnected(targetid) || targetid == playerid)
+    if (!IsPlayerConnected(target) || target == playerid)
         return AlertPlayerText(playerid, "~r~~h~Player not found");
 
     // Announce sender
-    format(mStr, sizeof(mStr), "> PM to %s: {FFFFFF}%s", GetName(targetid), str);
+    format(mStr, sizeof(mStr), "> PM to %s: {FFFFFF}%s", GetName(target), str);
     AlertPlayerSuccess(playerid, mStr);
 
     // Announce reciever
     format(mStr, sizeof(mStr), "> PM from %s (%i): {FFFFFF}%s", GetName(playerid), playerid, str);
-    AlertPlayerSuccess(targetid, mStr);
+    AlertPlayerSuccess(target, mStr);
     return 1;
 }
 
 CMD:money(playerid, params[])
 {
-    new targetid, amount;
+    new target, amount;
 
-    if (sscanf(params, "ui", targetid, amount))
+    if (sscanf(params, "ui", target, amount))
         return AlertPlayerDialog(playerid, "Command Usage", "/money [player] [amount]");
 
-    if (!IsPlayerConnected(targetid) || targetid == playerid)
+    if (!IsPlayerConnected(target) || target == playerid)
         return AlertPlayerText(playerid, "Player not found");
 
     if (amount < 1 || amount > GetPlayerMoney(playerid) || GetPlayerMoney(playerid) < 1)
         return AlertPlayerText(playerid, "~r~~h~You don't have that much money");
 
     // Announce sender
-    AlertPlayerDialog(playerid, "Info", sprintf("{DDDDFF}Sent {00FF00}$%i {DDDDFF}to {00FF00}%s", amount, GetName(targetid)));
+    AlertPlayerDialog(playerid, "Info", sprintf("{DDDDFF}Sent {00FF00}$%i {DDDDFF}to {00FF00}%s", amount, GetName(target)));
     GivePlayerMoney(playerid, -amount);
 
     // Announce reciever
     AlertPlayerDialog(playerid, "Info", sprintf("{DDDDFF}Recieved {00FF00}$%i {DDDDFF}from {00FF00}%s", amount, GetName(playerid)));
-    GivePlayerMoney(targetid, amount);
+    GivePlayerMoney(target, amount);
     return 1;
 }
 
@@ -93,19 +93,19 @@ CMD:telto(playerid, params[]) // Teleport to a player
         return 0;
 
     // Check params
-    new targetid;
-    if (sscanf(params, "u", targetid))
+    new target;
+    if (sscanf(params, "u", target))
         return AlertPlayerDialog(playerid, "Command Usage", "/telto [player]");
 
     // Check player
-    if (!IsPlayerConnected(targetid))
+    if (!IsPlayerConnected(target))
         return AlertPlayerText(playerid, "~r~~h~Player is not connected");
 
     // Teleport player
     IMPORT_PLAYER_POS_AS_TARGET;
     SetPlayerPos(playerid, tPos[0]+1, tPos[1]+1, tPos[2]+2);
-    SetPlayerVirtualWorld(playerid, GetPlayerVirtualWorld(targetid));
-    SetPlayerInterior(playerid, GetPlayerInterior(targetid));
+    SetPlayerVirtualWorld(playerid, GetPlayerVirtualWorld(target));
+    SetPlayerInterior(playerid, GetPlayerInterior(target));
     return 1;
 }
 
@@ -147,15 +147,15 @@ CMD:addmoney(playerid, params[]) // Add money (from server)
         return 0;
 
     // Check params
-    new targetid, amount;
-    if (sscanf(params, "ui", targetid, amount))
+    new target, amount;
+    if (sscanf(params, "ui", target, amount))
         return AlertPlayerDialog(playerid, "Command Usage", "/addmoney [player] [amount]");
 
     // Add money to target
-    GivePlayerMoney(targetid, amount);
+    GivePlayerMoney(target, amount);
 
     // Announce
-    AlertPlayersDialog("Info", FPlayer(targetid, sprintf("recieved {00FF00}$%i {DDDDFF}from server.", amount), ""));
+    AlertPlayersDialog("Info", FPlayer(target, sprintf("recieved {00FF00}$%i {DDDDFF}from server.", amount), ""));
     return 1;
 }
 
@@ -166,17 +166,17 @@ CMD:setname(playerid, params[]) // Set player name
         return 0;
 
     // Check params
-    new targetid, name[MAX_PLAYER_NAME];
-    if (sscanf(params, "us", targetid, name))
+    new target, name[MAX_PLAYER_NAME];
+    if (sscanf(params, "us", target, name))
         return AlertPlayerDialog(playerid, "Command Usage", "/setname [player] [name]");
 
     // Announce
-    AlertPlayers(FPlayer(targetid, sprintf("name changed to {00FF00}%s", name)));
+    AlertPlayers(FPlayer(target, sprintf("name changed to {00FF00}%s", name)));
 
     // Change target name
-    SetPlayerName(targetid, name);
+    SetPlayerName(target, name);
 
     // Event
-    CallRemoteFunction("OnPlayerChangeName", "i", playerid);
+    CallRemoteFunction("OnPlayerChangeName", "is", target, name);
     return 1;
 }
