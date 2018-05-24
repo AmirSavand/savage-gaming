@@ -434,7 +434,6 @@ public  OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Fl
     // Create exposion and alert player
     IMPORT_PLAYER_POS;
     CreateExplosion(pPos[0] + 1, pPos[1] + 1, pPos[2] + 1, 0, 3.0);
-    AlertPlayerDialog(playerid, "Alert", "Get back in the battle zone!");
 }
 
 forward OnPlayerFirstBlood(playerid);
@@ -449,6 +448,7 @@ public  OnPlayerFirstBlood(playerid)
 
     // Store it so OnPlayerDeath knows
     firstBloodPlayer = playerid;
+    ShowPlayerCoolTextdraw(playerid, "Get back in the ~r~~h~Battle Zone!");
 }
 
 forward OnPlayerCaptureFlag(playerid);
