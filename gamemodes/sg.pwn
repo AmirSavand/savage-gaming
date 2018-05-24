@@ -8,39 +8,44 @@
 
 // Defines
 
-#define MAX_RANDOM_PACKAGES         4
-#define MAX_DROP_MONEY              1000
-#define MAX_RANK                    22
+#define MAX_RANDOM_PACKAGES                 4
+#define MAX_DROP_MONEY                      1000
+#define MAX_RANK                            22
 
-#define DROP_MONEY_PICKUPS          10
-#define DROP_MONEY_AMOUNT           5
+#define DROP_MONEY_PICKUPS                  10
+#define DROP_MONEY_AMOUNT                   5
 
-#define RANDOM_PACKAGE_CASH         0
-#define RANDOM_PACKAGE_AR           1
-#define RANDOM_PACKAGE_RPG          2
-#define RANDOM_PACKAGE_RANDOM_ITEM  3
+#define RANDOM_PACKAGE_CASH                 0
+#define RANDOM_PACKAGE_AR                   1
+#define RANDOM_PACKAGE_RPG                  2
+#define RANDOM_PACKAGE_RANDOM_ITEM          3
 
-#define KILL_STREAK_MINIGUN         100
-#define KILL_STREAK_MINIGUN_2       150
-#define KILL_STREAK_RPG             20
-#define KILL_STREAK_RPG_2           40
-#define KILL_STREAK_MONEY           3000
-#define KILL_STREAK_MONEY_2         5000
+#define RANDOM_PACKAGE_AMOUNT_CASH          500
+#define RANDOM_PACKAGE_AMOUNT_ARMOR         200
+#define RANDOM_PACKAGE_AMOUNT_RPG           4
+#define RANDOM_PACKAGE_AMOUNT_RANDOM_ITEM   2
 
-#define KILL_REWARD                 100
-#define KILL_REWARD_DOUBLE          300
-#define KILL_REWARD_FIRST_BLOOD     300
+#define KILL_STREAK_MINIGUN                 100
+#define KILL_STREAK_MINIGUN_2               150
+#define KILL_STREAK_RPG                     20
+#define KILL_STREAK_RPG_2                   40
+#define KILL_STREAK_MONEY                   3000
+#define KILL_STREAK_MONEY_2                 5000
 
-#define RANK_COST_FACTOR            10000
+#define KILL_REWARD                         100
+#define KILL_REWARD_DOUBLE                  300
+#define KILL_REWARD_FIRST_BLOOD             300
 
-#define COOL_TEXTDRAW_TIME          5
+#define RANK_COST_FACTOR                    10000
 
-#define TIME_SERVER_UPDATE          500
+#define COOL_TEXTDRAW_TIME                  5
 
-#define MODE_FREEROAM               1
-#define MODE_FFA                    2
-#define MODE_TDM                    3
-#define MODE_CTF                    4
+#define TIME_SERVER_UPDATE                  500
+
+#define MODE_FREEROAM                       1
+#define MODE_FFA                            2
+#define MODE_TDM                            3
+#define MODE_CTF                            4
 
 // Includes
 
@@ -270,6 +275,13 @@ public  OnServerUpdate()
     }
 }
 
+forward OnPlayerGetItem(playerid, itemName[], amount);
+public  OnPlayerGetItem(playerid, itemName[], amount)
+{
+    // Alert player
+    AlertPlayerDialog(playerid, "Info", sprintf("{DDDDFF}You've got an item: {FFFF00}%s {DDDDFF}(x%i)", itemName, amount));
+}
+
 forward OnPlayerPickupRandomPackage(playerid);
 public  OnPlayerPickupRandomPackage(playerid)
 {
@@ -289,28 +301,28 @@ public  OnPlayerPickupRandomPackage(playerid)
     {
         case RANDOM_PACKAGE_CASH: // Cash
         {
-            GivePlayerMoney(playerid, 600);
-            AlertPlayerText(playerid, "~g~~h~+600");
+            GivePlayerMoney(playerid, RANDOM_PACKAGE_AMOUNT_CASH);
+            AlertPlayerText(playerid, sprintf("~g~~h~+%i", RANDOM_PACKAGE_AMOUNT_CASH));
         }
         case RANDOM_PACKAGE_AR  : // Armor
         {
-            SetPlayerArmour(playerid, 200);
-            AlertPlayerText(playerid, "~b~~h~+200 Armour");
+            SetPlayerArmour(playerid, GetArmour(playerid) + RANDOM_PACKAGE_AMOUNT_ARMOR);
+            AlertPlayerText(playerid, sprintf("~b~~h~+%i Amour", RANDOM_PACKAGE_AMOUNT_ARMOR));
         }
         case RANDOM_PACKAGE_RPG: // RPG
         {
-            GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, 3);
-            AlertPlayerText(playerid, "~b~~h~3 RPG");
+            GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, RANDOM_PACKAGE_AMOUNT_RPG);
+            AlertPlayerText(playerid, sprintf("~b~~h~+%i RPG", RANDOM_PACKAGE_AMOUNT_RPG));
         }
-        case RANDOM_PACKAGE_RANDOM_ITEM: // Random item
+        case RANDOM_PACKAGE_RANDOM_ITEM: // Random items
         {
-            CallRemoteFunction("GivePlayerRandomItem", "i", playerid);
-            AlertPlayerText(playerid, "~b~~h~Random Item");
+            CallRemoteFunction("GivePlayerRandomItem", "ii", playerid, RANDOM_PACKAGE_AMOUNT_RANDOM_ITEM);
+            AlertPlayerText(playerid, sprintf("~y~+%i Random Items", RANDOM_PACKAGE_AMOUNT_RANDOM_ITEM));
         }
     }
 
     // Announce
-    AlertPlayersText(FPlayerText(playerid, "~w~collected ~y~random pacakge"));
+    AlertPlayersText(FPlayerText(playerid, "~w~collected ~y~random pacakge"), playerid);
 }
 
 forward OnPlayerPurchaseVehicle(playerid, vehicleid);
@@ -318,6 +330,31 @@ public  OnPlayerPurchaseVehicle(playerid, vehicleid)
 {
     // Announce
     ShowPlayersCoolTextdraw(FPlayerText(playerid, sprintf("purchased ~y~%s", GetCarName(vehicleid))));
+}
+
+forward OnPlayerFirstBlood(playerid);
+public  OnPlayerFirstBlood(playerid)
+{
+    // Reward player and announce (show combined money)
+    GivePlayerMoney(playerid, KILL_REWARD_DOUBLE);
+    AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_REWARD + KILL_REWARD_FIRST_BLOOD));
+
+    // Announce
+    ShowPlayersCoolTextdraw(FPlayerText(playerid, "~w~drew ~r~~h~First Blood"));
+
+    // Store it so OnPlayerDeath knows
+    firstBloodPlayer = playerid;
+}
+
+forward OnPlayerDoubleKill(playerid);
+public  OnPlayerDoubleKill(playerid)
+{
+    // Reward player and announce (show combined money)
+    GivePlayerMoney(playerid, KILL_REWARD_DOUBLE);
+    AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_REWARD + KILL_REWARD_DOUBLE));
+
+    // Alert players
+    ShowPlayersCoolTextdraw(FPlayerText(playerid, "performed a ~r~~h~Double Kill!"));
 }
 
 forward OnPlayerKillStreak(playerid, streak);
@@ -375,17 +412,6 @@ public  OnPlayerKillStreak(playerid, streak)
     }
 }
 
-forward OnPlayerDoubleKill(playerid);
-public  OnPlayerDoubleKill(playerid)
-{
-    // Reward player and announce (show combined money)
-    GivePlayerMoney(playerid, KILL_REWARD_DOUBLE);
-    AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_REWARD + KILL_REWARD_DOUBLE));
-
-    // Alert players
-    ShowPlayersCoolTextdraw(FPlayerText(playerid, "performed a ~r~~h~Double Kill!"));
-}
-
 forward OnPlayerKillStreakEnded(playerid, killerid, killStreak);
 public  OnPlayerKillStreakEnded(playerid, killerid, killStreak)
 {
@@ -401,13 +427,13 @@ forward OnPlayerAttemptToUseItem(playerid, item, itemName[]);
 public  OnPlayerAttemptToUseItem(playerid, item, itemName[])
 {
     // Using items that required you to be in a car
-    if (isequal(itemName, "Car Tools"))
+    if (isequal(itemName, "Car Tools") || isequal(itemName, "Nitros"))
     {
         // Can't repair car if not in a car
         if (!IsPlayerInAnyVehicle(playerid))
         {
             // Alert
-            AlertPlayerText(playerid, "~r~~h~Not in vehicle");
+            AlertPlayerDialog(playerid, "Info", "You need to be in a vehicle to use this item.");
             return 0;
         }
     }
@@ -434,20 +460,6 @@ public  OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Fl
     // Create exposion and alert player
     IMPORT_PLAYER_POS;
     CreateExplosion(pPos[0] + 1, pPos[1] + 1, pPos[2] + 1, 0, 3.0);
-}
-
-forward OnPlayerFirstBlood(playerid);
-public  OnPlayerFirstBlood(playerid)
-{
-    // Reward player and announce (show combined money)
-    GivePlayerMoney(playerid, KILL_REWARD_DOUBLE);
-    AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_REWARD + KILL_REWARD_FIRST_BLOOD));
-
-    // Announce
-    ShowPlayersCoolTextdraw(FPlayerText(playerid, "~w~drew ~r~~h~First Blood"));
-
-    // Store it so OnPlayerDeath knows
-    firstBloodPlayer = playerid;
     ShowPlayerCoolTextdraw(playerid, "Get back in the ~r~~h~Battle Zone!");
 }
 
