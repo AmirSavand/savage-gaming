@@ -224,6 +224,7 @@ DestroyPlayerBase(playerid)
     DestroyDynamicMapIcon(playerBase[playerid][mapicon]);
 
     playerBase[playerid][pickup] = 0;
+    playerBase[playerid][mapicon] = 0;
 }
 
 CreateFlag(onplayerid = INVALID_PLAYER_ID, killerid = INVALID_PLAYER_ID)
@@ -259,4 +260,5 @@ DestroyFlag()
     DestroyDynamicMapIcon(flagMapicon);
 
     flagPickup = 0;
+    flagMapicon = 0;
 }

@@ -23,6 +23,7 @@ bool:CheckRandomPackage(playerid, pickupid)
         DestroyDynamicPickup(randomPackage);
         DestroyDynamicMapIcon(randomPackageMapicon);
         randomPackage = 0;
+        randomPackageMapicon = 0;
 
         // Call remote so gamemode will handle it
         CallRemoteFunction("OnPlayerPickupRandomPackage", "i", playerid);
