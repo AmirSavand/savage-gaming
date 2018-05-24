@@ -36,7 +36,7 @@
 #define KILL_REWARD_DOUBLE                  300
 #define KILL_REWARD_FIRST_BLOOD             300
 
-#define RANK_COST_FACTOR                    10000
+#define RANK_COST_FACTOR                    5000 + 10000
 
 #define COOL_TEXTDRAW_TIME                  5
 
