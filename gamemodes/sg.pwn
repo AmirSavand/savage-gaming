@@ -491,8 +491,8 @@ CMD:mode(playerid, params[])
 
     // Check params
     new mode;
-    if (sscanf(params, "i", mode))
-        return AlertPlayerError(playerid, "> Command usage: /mode [1-4]");
+    if (sscanf(params, "i", mode) || mode < MODE_FREEROAM || mode > MODE_CTF)
+        return AlertPlayerDialog(playerid, "Command Usage", "/mode [1-4]\n(Freeroam, FFA, TDM, CTF)");
 
     // Unload modes
     SendRconCommand("unloadfs modes/freeroam");
