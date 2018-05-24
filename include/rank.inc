@@ -36,7 +36,7 @@ UpgradePlayerRank(playerid)
             AlertPlayerText(playerid, "~r~~h~not enough money");
 
         // Stop upgrading
-        else AlertPlayerText(playerid, "~r~~h~upgrade not available");
+        else AlertPlayerDialog(playerid, "Info", "You're at max rank!");
     }
 
     // Upgrade
