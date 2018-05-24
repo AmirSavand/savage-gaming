@@ -3,7 +3,9 @@
 *
 * Items for players to consume/buy/sell.
 * Allow player to use items via OnPlayerAttemptToUseItem (return 1)
-* Know what item player gets via OnPlayerGetItem
+*
+* Events: OnPlayerGetItem(playerid, itemName, amount), OnPlayerAttemptToUseItem(playerid, item, itemName[])
+* Remotes: GivePlayerRandomItem(playerid, item, amount), GivePlayersRandomItem(item, amount)
 *
 * by Amir Savand
 */
@@ -227,29 +229,22 @@ public  GivePlayerItem(playerid, item, amount)
     // Add item
     playerItem[playerid][item] += amount;
 
-    // Alert
-    new str[500]; format(str, sizeof(str), "> You've got an item: {FFFF00}%s", itemNames[item]);
-    AlertPlayer(playerid, str);
-
     // Call remote
-    CallRemoteFunction("OnPlayerGetItem", "iii", playerid, item, amount);
-
-    // Return amount
-    return amount;
+    CallRemoteFunction("OnPlayerGetItem", "isi", playerid, itemNames[item], amount);
 }
 
-forward GivePlayerRandomItem(playerid);
-public  GivePlayerRandomItem(playerid)
+forward GivePlayerRandomItem(playerid, amount);
+public  GivePlayerRandomItem(playerid, amount)
 {
     // Random item index
     new item = Ran(1, sizeof(randomItems));
 
     // Give player the random item
-    return GivePlayerItem(playerid, item, 1);
+    GivePlayerItem(playerid, item, amount);
 }
 
-forward GivePlayersRandomItem();
-public  GivePlayersRandomItem()
+forward GivePlayersRandomItem(amount);
+public  GivePlayersRandomItem(amount)
 {
     // Check min players for random item
     if (CountPlayers() < RANDOM_ITEM_MIN_PLAYER)
@@ -257,7 +252,7 @@ public  GivePlayersRandomItem()
 
     // Give all players random item
     for (new i; i < MAX_PLAYERS; i++)
-        GivePlayerRandomItem(i);
+        GivePlayerRandomItem(i, amount);
 
     return 1;
 }
