@@ -282,8 +282,8 @@ public  OnPlayerGetItem(playerid, itemName[], amount)
     AlertPlayerDialog(playerid, "Info", sprintf("{DDDDFF}You've got an item: {FFFF00}%s {DDDDFF}(x%i)", itemName, amount));
 }
 
-forward OnPlayerPickupRandomPackage(playerid);
-public  OnPlayerPickupRandomPackage(playerid)
+forward OnPlayerCollectRandomPackage(playerid);
+public  OnPlayerCollectRandomPackage(playerid)
 {
     // Get random index from packages
     new package = Ran(0, MAX_RANDOM_PACKAGES);
@@ -292,7 +292,7 @@ public  OnPlayerPickupRandomPackage(playerid)
     if (DoesPlayerHaveWeapon(playerid, WEAPON_MINIGUN) && package == RANDOM_PACKAGE_RPG)
     {
         // Give another package
-        OnPlayerPickupRandomPackage(playerid);
+        OnPlayerCollectRandomPackage(playerid);
         return;
     }
 

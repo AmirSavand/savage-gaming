@@ -26,7 +26,7 @@ bool:CheckRandomPackage(playerid, pickupid)
         randomPackageMapicon = 0;
 
         // Call remote so gamemode will handle it
-        CallRemoteFunction("OnPlayerPickupRandomPackage", "i", playerid);
+        CallRemoteFunction("OnPlayerCollectRandomPackage", "i", playerid);
         return true;
     }
     return false;
