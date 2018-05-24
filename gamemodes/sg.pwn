@@ -21,10 +21,11 @@
 #define RANDOM_PACKAGE_RANDOM_ITEM  3
 
 #define KILL_STREAK_MINIGUN         100
+#define KILL_STREAK_MINIGUN_2       150
 #define KILL_STREAK_RPG             20
-#define KILL_STREAK_GRENADE         40
-#define KILL_STREAK_MONEY           1000
-#define KILL_STREAK_MONEY_2         2000
+#define KILL_STREAK_RPG_2           40
+#define KILL_STREAK_MONEY           3000
+#define KILL_STREAK_MONEY_2         5000
 
 #define KILL_REWARD                 100
 #define KILL_REWARD_DOUBLE          300
@@ -319,50 +320,50 @@ public  OnPlayerPurchaseVehicle(playerid, vehicleid)
     ShowPlayersCoolTextdraw(FPlayerText(playerid, sprintf("purchased ~y~%s", GetCarName(vehicleid))));
 }
 
-forward OnPlayerKillStreak(playerid, killStreak);
-public  OnPlayerKillStreak(playerid, killStreak)
+forward OnPlayerKillStreak(playerid, streak);
+public  OnPlayerKillStreak(playerid, streak)
 {
     // Announce string
     new str[200];
 
     // Reward player on kill streak
-    switch (killStreak)
+    switch (streak)
     {
         case 5: // Minigun
         {
             GivePlayerWeapon(playerid, WEAPON_MINIGUN, KILL_STREAK_MINIGUN);
             AlertPlayerText(playerid, "~b~~h~Minigun");
-            str = "got ~r~~h~Minigun ~w~from 5 kill streak.";
+            str = sprintf("got ~r~~h~Minigun ~w~from %i kill streak.", streak);
         }
         case 10: // Money
         {
             GivePlayerMoney(playerid, KILL_STREAK_MONEY);
             AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_STREAK_MONEY));
-            str = "got {00FF00}$1000 ~w~from 10 kill streak.";
+            str = sprintf("got ~g~~h~$%i ~w~from %i kill streak.", KILL_STREAK_MONEY, streak);
         }
-        case 15: // Grenade
-        {
-            GivePlayerWeapon(playerid, WEAPON_GRENADE, KILL_STREAK_GRENADE);
-            AlertPlayerText(playerid, "~b~~h~RPG");
-            str = "got many ~r~~h~Grenades ~w~from 15 kill streak.";
-        }
-        case 20: // Jetpack
-        {
-            SetPlayerSpecialAction(playerid, SPECIAL_ACTION_USEJETPACK);
-            AlertPlayerText(playerid, "~b~~h~JETPACK");
-            str = "got ~r~~h~Jetpack ~w~from 20 kill streak.";
-        }
-        case 25: // RPG
+        case 15: // RPG
         {
             GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, KILL_STREAK_RPG);
             AlertPlayerText(playerid, "~b~~h~RPG");
-            str = "got ~r~~h~RPG ~w~from 25 kill streak.";
+            str = sprintf("got ~r~~h~RPG ~w~from %i kill streak.", streak);
         }
-        case 30: // Money (2)
+        case 20: // Minigun (2)
+        {
+            GivePlayerWeapon(playerid, WEAPON_MINIGUN, KILL_STREAK_MINIGUN_2);
+            AlertPlayerText(playerid, "~b~~h~Minigun");
+            str = sprintf("got ~r~~h~Minigun ~w~from %i kill streak.", streak);
+        }
+        case 25: // Money (2)
         {
             GivePlayerMoney(playerid, KILL_STREAK_MONEY_2);
             AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_STREAK_MONEY_2));
-            str = "got {00FF00}$2000 ~w~from 30 kill streak.";
+            str = sprintf("got ~g~~h~$%i ~w~from %i kill streak.", KILL_STREAK_MONEY_2, streak);
+        }
+        case 30: // RPG (2)
+        {
+            GivePlayerWeapon(playerid, WEAPON_ROCKETLAUNCHER, KILL_STREAK_RPG_2);
+            AlertPlayerText(playerid, "~b~~h~RPG");
+            str = sprintf("got ~r~~h~RPG ~w~from %i kill streak.", streak);
         }
     }
 
