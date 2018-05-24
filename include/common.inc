@@ -344,11 +344,14 @@ stock AlertPlayersError(message[])
     return SendClientMessageToAll(cRed, message);
 }
 
-stock AlertPlayersText(message[])
+stock AlertPlayersText(message[], skipplayer = INVALID_PLAYER_ID)
 {
     for (new i; i < MAX_PLAYERS; i++)
     {
-        AlertPlayerText(i, message);
+        if (skipplayer != i)
+        {
+            AlertPlayerText(i, message);
+        }
     }
 }
 
