@@ -180,3 +180,23 @@ CMD:setname(playerid, params[]) // Set player name
     CallRemoteFunction("OnPlayerChangeName", "is", target, name);
     return 1;
 }
+
+
+CMD:setskin(playerid, params[]) // Set player skin
+{
+    // Check admin
+    if (!GetPlayerAdmin(playerid))
+        return 0;
+
+    // Check params
+    new target, skin;
+    if (sscanf(params, "ui", target, skin))
+        return AlertPlayerDialog(playerid, "Command Usage", "/setskin [player] [skin]");
+
+    // Change target skin
+    SetPlayerSkin(playerid, skin);
+
+    // Event
+    CallRemoteFunction("OnPlayerChangeSkin", "ii", target, skin);
+    return 1;
+}
