@@ -124,7 +124,7 @@ CMD:giveguns(playerid) // Give guns to a player
     return 1;
 }
 
-CMD:addmoney(playerid, params[]) // Add money (from server)
+CMD:givemoney(playerid, params[]) // Add money (from server)
 {
     // Check admin
     if (GetPlayerAdmin(playerid) < 5)
