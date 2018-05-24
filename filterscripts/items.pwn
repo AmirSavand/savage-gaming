@@ -66,7 +66,6 @@ new const randomItems[] = {
 
 new playerItem[MAX_PLAYERS][MAX_ITEMS];
 new playerItemSelection[MAX_PLAYERS][MAX_ITEMS];
-new bool:isPlayerLoaded[MAX_PLAYERS];
 
 // Callbacks
 
@@ -75,7 +74,7 @@ public OnFilterScriptInit()
     print("\n > Items filterscript by Amir Savand.\n");
 
     // Give player items every 10 minutes
-    SetTimer("GivePlayersRandomItem", RANDOM_ITEM_TIME, true);
+    SetTimerEx("GivePlayersRandomItem", RANDOM_ITEM_TIME, true, "i", 1);
 
     // Connect to db
     SetupDatabase();
@@ -99,33 +98,6 @@ public OnPlayerDisconnect(playerid)
     return 1;
 }
 
-public OnPlayerSpawn(playerid)
-{
-    new uid = GetPVarInt(playerid, "id");
-
-    // If already loaded
-    if (isPlayerLoaded[playerid] || !uid)
-        return 1;
-
-    // Set to loaded
-    isPlayerLoaded[playerid] = true;
-
-    // Load player
-    new qry[500]; mysql_format(db, qry, sizeof(qry), "SELECT item, count FROM items WHERE player=%i", uid);
-    new Cache:cache = mysql_query(db, qry);
-
-    // Add all items
-    for (new i; i < cache_num_rows(); i++)
-    {
-        new item;
-        cache_get_value_int(i, "item", item);
-        cache_get_value_int(i, "count", playerItem[playerid][item]);
-    }
-
-    cache_delete(cache);
-    return 1;
-}
-
 public OnDialogResponse(playerid, dialogid, response, listitem)
 {
     // Use selected item
@@ -141,11 +113,45 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
         // Show items
         cmd_items(playerid);
     }
-
     return 1;
 }
 
+// Events
+
+forward OnPlayerLoad(playerid, uid);
+public  OnPlayerLoad(playerid, uid)
+{
+    // Player loaded all database data, load items now
+    LoadPlayerItems(playerid);
+}
+
+forward OnPlayerSave(playerid, uid);
+public  OnPlayerSave(playerid, uid)
+{
+    // Player saved all database data, save items too
+    SavePlayerItems(playerid);
+}
+
 // Functions
+
+LoadPlayerItems(playerid)
+{
+    new uid = GetPVarInt(playerid, "id");
+
+    // Load player
+    new qry[500]; mysql_format(db, qry, sizeof(qry), "SELECT item, count FROM items WHERE player=%i", uid);
+    new Cache:cache = mysql_query(db, qry);
+
+    // Add all items
+    for (new i; i < cache_num_rows(); i++)
+    {
+        new item;
+        cache_get_value_int(i, "item", item);
+        cache_get_value_int(i, "count", playerItem[playerid][item]);
+    }
+
+    cache_delete(cache);
+}
 
 SavePlayerItems(playerid)
 {

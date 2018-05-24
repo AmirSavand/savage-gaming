@@ -4,6 +4,8 @@
 * Handle players loading and saving data
 * No password required so it's auto login
 *
+* Events: OnPlayerLoad(playerid, uid), OnPlayerSave(playerid, uid)
+*
 * by Amir Savand
 */
 
@@ -110,6 +112,9 @@ LoadPlayer(playerid)
     }
 
     cache_delete(cache);
+
+    // Event
+    CallRemoteFunction("OnPlayerLoad", "ii", playerid, GetPVarInt(playerid, "id"));
 }
 
 SavePlayer(playerid)
@@ -120,5 +125,8 @@ SavePlayer(playerid)
     new qry[2000]; mysql_format(db, qry, sizeof(qry), "UPDATE players SET money=%i, rank=%i, kills=%i WHERE id=%i", 
         GetPlayerMoney(playerid), GetPVarInt(playerid, "rank"), GetPVarInt(playerid, "kills"), GetPVarInt(playerid, "id"));
     mysql_tquery(db, qry);
+
+    // Event
+    CallRemoteFunction("OnPlayerSave", "ii", playerid, GetPVarInt(playerid, "id"));
     return 1;
 }

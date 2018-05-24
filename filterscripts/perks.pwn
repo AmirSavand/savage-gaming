@@ -40,9 +40,6 @@ enum iPerk
 
 // Variables
 
-new bool:playerPerks[MAX_PLAYERS][MAX_PERKS];
-new bool:isPlayerLoaded[MAX_PLAYERS];
-
 new const perks[][iPerk] = {
     {"More ammo on pickup",             "+0.3",    0.3, 3},
     {"More primary ammo",               "+0.3",    0.3, 1},
@@ -57,6 +54,8 @@ new const perks[][iPerk] = {
     {"No ammo drop on death",           "",        0.0, 2},
     {"Explode on death",                "",        0.0, 4}
 };
+
+new bool:playerPerks[MAX_PLAYERS][MAX_PERKS];
 
 // Callbacks
 
@@ -82,9 +81,6 @@ public OnFilterScriptExit()
 
 public OnPlayerSpawn(playerid)
 {
-    // Load up
-    LoadPlayerPerks(playerid);
-
     // Apply perks
     new perk = DoesPlayerHavePerk(playerid, "Armor on spawn");
     if (perk != INVALID_PERK_ID)
@@ -148,7 +144,21 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     }
 }
 
-// Public functiosn
+// Events
+
+forward OnPlayerLoad(playerid, uid);
+public  OnPlayerLoad(playerid, uid)
+{
+    // Player loaded all database data, load perks now
+    LoadPlayerPerks(playerid);
+}
+
+forward OnPlayerSave(playerid, uid);
+public  OnPlayerSave(playerid, uid)
+{
+    // Player saved all database data, save perks too
+    SavePlayerPerks(playerid);
+}
 
 forward OnPlayerPickupDeathPickup(playerid);
 public  OnPlayerPickupDeathPickup(playerid)
@@ -239,13 +249,6 @@ SavePlayerPerks(playerid) // Save perks to db
 LoadPlayerPerks(playerid) // Load perks form db
 {
     new uid = GetPVarInt(playerid, "id");
-
-    // If already loaded
-    if (isPlayerLoaded[playerid] || !uid)
-        return;
-
-    // Set to loaded
-    isPlayerLoaded[playerid] = true;
 
     // Load player
     new qry[500]; mysql_format(db, qry, sizeof(qry), "SELECT perk, status FROM perks WHERE player=%i", uid);
