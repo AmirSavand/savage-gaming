@@ -124,22 +124,6 @@ CMD:giveguns(playerid) // Give guns to a player
     return 1;
 }
 
-CMD:getmoney(playerid, params[]) // Get money
-{
-    // Check admin
-    if (!GetPlayerAdmin(playerid))
-        return 0;
-
-    // Check params
-    new amount;
-    if (sscanf(params, "i", amount))
-        return AlertPlayerDialog(playerid, "Command Usage", "/getmoney [amount]");
-
-    // Give money
-    GivePlayerMoney(playerid, amount);
-    return 1;
-}
-
 CMD:addmoney(playerid, params[]) // Add money (from server)
 {
     // Check admin
