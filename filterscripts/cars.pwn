@@ -610,7 +610,7 @@ CMD:sellcar(playerid) // Sell current car
 CMD:reloadcars(playerid) // Delete the car from db
 {
     // Check admin
-    if (GetPlayerAdmin(playerid) <= 5)
+    if (GetPlayerAdmin(playerid) < 5)
         return 0;
 
     // Reload cars
