@@ -538,10 +538,9 @@ CMD:keys(playerid)
     // Commands
     new keys[1000];
 
-    strcat(keys, "{00FF00}Keys:\n\n");
-    strcat(keys, "{DDDDEE}Y: /items\n\n");
-    strcat(keys, "{DDDDEE}N: Not set yet.\n\n");
-    strcat(keys, "{DDDDEE}H: Not set yet.\n\n");
+    strcat(keys, "Y -> /items\n");
+    strcat(keys, "N -> Not set yet.\n");
+    strcat(keys, "H -> Not set yet.\n");
 
     AlertPlayerDialog(playerid, "Keys", keys);
     return 1;
