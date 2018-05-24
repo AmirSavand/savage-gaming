@@ -130,8 +130,22 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
             if (Car[i][owner] == GetPVarInt(playerid, "id"))
                 return 1;
 
+            // Owner name to show
+            new ownerName[200] = "(Owner is Offline)";
+
+            // Check if owner is online
+            for (new p; p < MAX_PLAYERS; p++)
+            {
+                // If owner of car
+                if (IsPlayerConnected(p) && GetPVarInt(p, "id") == Car[i][owner])
+                {
+                    // Save name
+                    ownerName = sprintf("{00FF00}(%s){DDDDFF}", GetName(p));
+                }
+            }
+
             // Owned by another player
-            AlertPlayerDialog(playerid, "Info", "This vehicle is owned by another player.");
+            AlertPlayerDialog(playerid, "Info", sprintf("{DDDDFF}Vehicle is owned by another player %s.", ownerName));
             RemovePlayerFromVehicle(playerid);
             return 1;
         }
@@ -140,7 +154,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
         if (IsCarForPurchase(i))
         {
             // Show purchase dialog
-            new str[500]; format(str, sizeof(str), "You can buy this vehicle for {00FF00}$%i", Car[i][price]);
+            new str[500]; str = sprintf("You can buy this vehicle for {00FF00}$%i", Car[i][price]);
             ShowPlayerDialog(playerid, DIALOG_CARS, DIALOG_STYLE_MSGBOX, "Buy Vehicle", str, "{00FF00}Buy", "Cancel");
         }
     }
