@@ -429,8 +429,8 @@ UpdateCar(index) // Save all car data to database (except position)
     UpdateCarMods(index);
 
     // Update database
-    mysql_format(db, qry, sizeof(qry), "UPDATE cars SET type=%i, owner=%i, price=%i, engine=%i, comps='%s', colors='%s' WHERE id=%i",
-        Car[i][type], Car[i][owner], Car[i][price], Car[i][engine], Car[i][compsRaw], Car[i][colorsRaw], Car[i][uid]);
+    mysql_format(db, qry, sizeof(qry), "UPDATE cars SET type=%i, model=%i, owner=%i, price=%i, engine=%i, comps='%s', colors='%s' WHERE id=%i",
+        Car[i][type], Car[i][model], Car[i][owner], Car[i][price], Car[i][engine], Car[i][compsRaw], Car[i][colorsRaw], Car[i][uid]);
     mysql_query(db, qry, false);
 
     return 1;
@@ -731,6 +731,34 @@ CMD:setcartype(playerid, params[]) // Change car type and update to db
     // Set car type
     Car[i][type] = carType;
     AlertPlayerText(playerid, "~p~~b~Type changed");
+
+    // Update info
+    UpdateCar(i);
+    return 1;
+}
+
+CMD:setcarmodel(playerid, params[]) // Change car model and update to db
+{
+    if (!GetPlayerAdmin(playerid)) 
+        return 0;
+
+    // Is in a car
+    if (!IsPlayerInAnyVehicle(playerid))
+        return AlertPlayerText(playerid, "~r~~h~Not in vehicle");
+
+    // Get car index
+    new i = GetCarIndex(PVI);
+    if (i == -1)
+        return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+
+    // Get model (to set)
+    new carModel;
+    if (sscanf(params, "i", carModel))
+        return AlertPlayerText(playerid, "~r~~h~You must set model");
+
+    // Set car model
+    Car[i][model] = carModel;
+    AlertPlayerText(playerid, "~p~~b~Model changed");
 
     // Update info
     UpdateCar(i);
