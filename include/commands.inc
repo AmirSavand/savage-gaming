@@ -165,7 +165,6 @@ CMD:setname(playerid, params[]) // Set player name
     return 1;
 }
 
-
 CMD:setskin(playerid, params[]) // Set player skin
 {
     // Check admin
@@ -178,7 +177,7 @@ CMD:setskin(playerid, params[]) // Set player skin
         return AlertPlayerDialog(playerid, "Command Usage", "/setskin [player] [skin]");
 
     // Change target skin
-    SetPlayerSkin(playerid, skin);
+    SetPlayerSkin(target, skin);
 
     // Event
     CallRemoteFunction("OnPlayerChangeSkin", "ii", target, skin);
