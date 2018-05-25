@@ -33,14 +33,14 @@
 #define KILL_STREAK_MONEY_2                 5000
 
 #define KILL_REWARD                         100
-#define KILL_REWARD_DOUBLE                  300
-#define KILL_REWARD_FIRST_BLOOD             300
+#define KILL_REWARD_DOUBLE                  400
+#define KILL_REWARD_FIRST_BLOOD             900
 
 #define RANK_COST_FACTOR                    5000 + 10000
 
 #define COOL_TEXTDRAW_TIME                  5
 
-#define TIME_SERVER_UPDATE                  100
+#define TIME_SERVER_UPDATE                  200
 
 #define MODE_FREEROAM                       1
 #define MODE_FFA                            2
@@ -554,6 +554,8 @@ CMD:update(playerid)
     strcat(str, "Added speed indicator (km/h)\n");
     strcat(str, "Added mapicons of Pay n' Sprays and Mod Shops\n");
     strcat(str, "Added new perk: Armor Regeneration\n");
+    strcat(str, "First blood now gives $1,000\n");
+    strcat(str, "Double kill now gives $500\n");
     strcat(str, "Changed ranks: RPG, HS Rocket, More engine\n");
     strcat(str, "See command and shortcut list by typing /cmd /key\n");
     strcat(str, "See recent updates again by typing /update\n");
