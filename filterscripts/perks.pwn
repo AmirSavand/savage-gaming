@@ -27,6 +27,7 @@
 
 #include "../../include/common"
 #include "../../include/database"
+#include "../../include/regeneration"
 
 // Enum
 
@@ -41,21 +42,24 @@ enum iPerk
 // Variables
 
 new const perks[][iPerk] = {
-    {"More ammo on pickup",             "+0.3",    0.3, 3},
-    {"More primary ammo",               "+0.3",    0.3, 1},
-    {"More secondary ammo",             "+0.3",    0.3, 1},
-    {"More lethal ammo",                "+2",      2.0, 2},
-    {"RPG on spawn",                    "+1",      1.0, 2},
-    {"HS Rocket on spawn",              "+1",      1.0, 2},
-    {"Armor on spawn",                  "+25",    25.0, 1},
-    {"Nitro on vehicle purchase",       "x10",  1010.0, 1},
-    {"More engine on vehicle purchase", "+50",   500.0, 1},
-    {"No money drop on death",          "",        0.0, 2},
-    {"No ammo drop on death",           "",        0.0, 2},
-    {"Explode on death",                "",        0.0, 4}
+    {"More ammo on pickup",             "+0.3",        0.3, 3},
+    {"More primary ammo",               "+0.3",        0.3, 1},
+    {"More secondary ammo",             "+0.3",        0.3, 1},
+    {"More lethal ammo",                "+2",          2.0, 2},
+    {"RPG on spawn",                    "+1",          1.0, 3},
+    {"HS Rocket on spawn",              "+1",          1.0, 3},
+    {"Armor on spawn",                  "+25",        25.0, 1},
+    {"Armor regeneration",              "+25/10s",    25.0, 5},
+    {"Nitro on car purchase",           "x10",      1010.0, 1},
+    {"More engine on car purchase",     "+100",     1000.0, 1},
+    {"No money drop on death",          "",            0.0, 2},
+    {"No ammo drop on death",           "",            0.0, 2},
+    {"Explode on death",                "",            0.0, 4}
 };
 
 new bool:playerPerks[MAX_PLAYERS][MAX_PERKS];
+
+new armorTimer;
 
 // Callbacks
 
@@ -65,6 +69,9 @@ public OnFilterScriptInit()
 
     // Connect to db
     SetupDatabase();
+
+    // Armor timer
+    armorTimer = SetTimer("RegenerateArmor", 10000, true);
     return 1;
 }
 
@@ -73,6 +80,9 @@ public OnFilterScriptExit()
     // Save all players perks
     for (new i; i < MAX_PLAYERS; i++)
         SavePlayerPerks(i);
+
+    // Timer
+    KillTimer(armorTimer);
 
     // Close db
     CloseDatabase();
@@ -144,6 +154,21 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     }
 }
 
+// Forwards
+
+forward RegenerateArmor();
+public  RegenerateArmor()
+{
+    // Regenerate armor of all players
+    for (new i; i < MAX_PLAYERS; i++)
+    {
+        // Apply perk
+        new perk = DoesPlayerHavePerk(i, "Armor regeneration");
+        if (perk != INVALID_PERK_ID)
+            RegeneratePlayer(i, floatround(perks[perk][value]), false, true);
+    }
+}
+
 // Events
 
 forward OnPlayerLoad(playerid, uid);
@@ -176,11 +201,11 @@ public  OnPlayerPurchaseVehicle(playerid, vehicleid)
     // Apply perk
     new perk;
 
-    perk = DoesPlayerHavePerk(playerid, "More engine on vehicle purchase");
+    perk = DoesPlayerHavePerk(playerid, "More engine on car purchase");
     if (perk != INVALID_PERK_ID)
         SetVehicleHealth(vehicleid, GetVehicleEngine(vehicleid) + perks[perk][value]);
 
-    perk = DoesPlayerHavePerk(playerid, "Nitro on vehicle purchase");
+    perk = DoesPlayerHavePerk(playerid, "Nitro on car purchase");
     if (perk != INVALID_PERK_ID)
         AddVehicleComponent(vehicleid, floatround(perks[perk][value]));
 }

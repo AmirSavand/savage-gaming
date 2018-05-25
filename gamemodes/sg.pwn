@@ -553,6 +553,8 @@ CMD:update(playerid)
     strcat(str, "Sell items by typing /sellitem\n");
     strcat(str, "Added speed indicator (km/h)\n");
     strcat(str, "Added mapicons of Pay n' Sprays and Mod Shops\n");
+    strcat(str, "Added new perk: Armor Regeneration\n");
+    strcat(str, "Changed ranks: RPG, HS Rocket, More engine\n");
     strcat(str, "See command and shortcut list by typing /cmd /key\n");
     strcat(str, "See recent updates again by typing /update\n");
     
