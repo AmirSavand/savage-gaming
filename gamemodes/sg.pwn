@@ -60,6 +60,8 @@
 
 #include "../include/commands"
 
+#include "../include/mapicons"
+
 #include "../include/gang-skins"
 
 #include "../include/rank"
@@ -109,6 +111,9 @@ public OnGameModeInit()
 
     // Title Textdraw
     SetupTitleTextdraw("Savage Gaming");
+
+    // Mapicons
+    SetupMapicons(1000.0);
     return 1;
 }
 
@@ -546,6 +551,8 @@ CMD:update(playerid)
 
     strcat(str, "Ranks now cost 50 percent less ($5,000 for each rank)\n");
     strcat(str, "Sell items by typing /sellitem\n");
+    strcat(str, "Added speed indicator (km/h)\n");
+    strcat(str, "Added mapicons of Pay n' Sprays and Mod Shops\n");
     strcat(str, "See command and shortcut list by typing /cmd /key\n");
     strcat(str, "See recent updates again by typing /update\n");
     
