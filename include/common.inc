@@ -392,6 +392,14 @@ stock Float:GetVehicleEngine(vehicleid)
     new Float: engine;
     GetVehicleHealth(vehicleid, engine);
     return engine;
+}
+
+stock Float:GetVehicleSpeed(vehicleid)
+{
+    new Float: V[3]; GetVehicleVelocity(vehicleid, V[0], V[1], V[2]);
+    return floatsqroot(V[0] * V[0] + V[1] * V[1] + V[2] * V[2]) * 180.00;
+}
+
 //
 // Weapon stocks
 //
