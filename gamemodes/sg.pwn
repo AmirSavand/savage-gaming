@@ -40,7 +40,7 @@
 
 #define COOL_TEXTDRAW_TIME                  5
 
-#define TIME_SERVER_UPDATE                  500
+#define TIME_SERVER_UPDATE                  100
 
 #define MODE_FREEROAM                       1
 #define MODE_FFA                            2
@@ -67,6 +67,8 @@
 #include "../include/player-label"
 
 #include "../include/engine-textdraw"
+
+#include "../include/speed-textdraw"
 
 #include "../include/title-textdraw"
 
@@ -117,6 +119,7 @@ public OnPlayerConnect(playerid)
 
     // Initial text draw
     SetupEngineTextdraw(playerid);
+    SetupSpeedTextdraw(playerid);
     SetupPlayerCoolTextdraw(playerid);
 
     // Player label
@@ -274,6 +277,7 @@ public  OnServerUpdate()
 
         // Update textdraw
         UpdateEngineTextdraw(i);
+        UpdateSpeedTextdraw(i);
     }
 }
 
