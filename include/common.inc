@@ -126,6 +126,11 @@ stock KillTimers(timers[], len)
     }
 }
 
+stock Float:GetDistanceBetweenPoints(Float:rx1, Float:ry1, Float:rz1, Float:rx2, Float:ry2, Float:rz2)
+{
+    return floatadd(floatadd(floatsqroot(floatpower(floatsub(rx1,rx2),2)),floatsqroot(floatpower(floatsub(ry1,ry2),2))),floatsqroot(floatpower(floatsub(rz1,rz2),2)));
+}
+
 //
 // Formats
 //
