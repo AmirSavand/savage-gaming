@@ -121,6 +121,9 @@ public OnPlayerConnect(playerid)
 
     // Player label
     SetupPlayerLabel(playerid, "...");
+
+    // Show player recent changes
+    cmd_update(playerid);
     return 1;
 }
 
@@ -532,10 +535,23 @@ CMD:mode(playerid, params[])
     return 1;
 }
 
+CMD:updates(playerid) return cmd_update(playerid);
+CMD:update(playerid)
+{
+    new str[1000];
+
+    strcat(str, "Ranks now cost 50 percent less ($5,000 for each rank)\n");
+    strcat(str, "Sell items by typing /sellitem\n");
+    strcat(str, "See command and shortcut list by typing /cmd /key\n");
+    strcat(str, "See recent updates again by typing /update\n");
+    
+    AlertPlayerDialog(playerid, "{00FF00}Recent Changes (5-25)", str);
+    return 1;
+}
+
 CMD:key(playerid) return cmd_keys(playerid);
 CMD:keys(playerid)
 {
-    // Commands
     new keys[1000];
 
     strcat(keys, "Y -> /items\n");
@@ -549,11 +565,10 @@ CMD:keys(playerid)
 CMD:cmd(playerid) return cmd_cmds(playerid);
 CMD:cmds(playerid)
 {
-    // Commands
     new cmds[1000];
 
     strcat(cmds, "{00FF00}.:: Global ::.\n\n");
-    strcat(cmds, "{DDDDEE}/class /perks /rankup /items /keys /killme /money\n\n");
+    strcat(cmds, "{DDDDEE}/class /perks /rankup /items /keys /killme /money /updates\n\n");
 
     strcat(cmds, "{00FF00}.:: Items ::.\n\n");
     strcat(cmds, "{DDDDEE}/items /giveitem /sellitem\n\n");
@@ -569,7 +584,6 @@ CMD:acmds(playerid)
     if (!GetPlayerAdmin(playerid))
         return 0;
 
-    // Commands
     new cmds[1000];
 
     strcat(cmds, "{00FF00}.:: Global ::.\n\n");
