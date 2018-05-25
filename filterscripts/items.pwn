@@ -4,7 +4,7 @@
 * Items for players to consume/buy/sell.
 * Allow player to use items via OnPlayerAttemptToUseItem (return 1)
 *
-* Events: OnPlayerGetItem(playerid, itemName, amount), OnPlayerAttemptToUseItem(playerid, item, itemName[])
+* Events: OnPlayerGetItem(playerid, itemName, amount), OnPlayerSellItem(playerid, price, itemName, amount), OnPlayerAttemptToUseItem(playerid, item, itemName[])
 * Remotes: GivePlayerRandomItem(playerid, item, amount), GivePlayersRandomItem(item, amount)
 *
 * by Amir Savand
@@ -15,11 +15,14 @@
 #define FILTERSCRIPT
 
 #define DIALOG_ITEMS            300
+#define DIALOG_ITEMS_SELL       301
 
 #define MAX_ITEMS               8
 
 #define RANDOM_ITEM_TIME        10 * 60000
 #define RANDOM_ITEM_MIN_PLAYER  2
+
+#define ITEM_PRICE              500
 
 #define ITEM_HEALTH             1
 #define ITEM_ARMOUR             2
@@ -100,9 +103,16 @@ public OnPlayerDisconnect(playerid)
 
 public OnDialogResponse(playerid, dialogid, response, listitem)
 {
-    // Use selected item
-    if (response && dialogid == DIALOG_ITEMS)
-        UsePlayerItem(playerid, playerItemSelection[playerid][listitem]);
+    if (response)
+    {
+        // Use selected item
+        if (dialogid == DIALOG_ITEMS)
+            UsePlayerItem(playerid, playerItemSelection[playerid][listitem]);
+
+        // Sell selected item
+        if (dialogid == DIALOG_ITEMS_SELL)
+            SellPlayerItem(playerid, playerItemSelection[playerid][listitem]);
+    }
 }
 
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
@@ -214,6 +224,22 @@ UsePlayerItem(playerid, item)
     else return 0;
 }
 
+SellPlayerItem(playerid, item)
+{
+    // Check if has item
+    if (!playerItem[playerid][item] || !item)
+        return;
+
+    // Decrease item count
+    playerItem[playerid][item]--;
+
+    // Give player money
+    GivePlayerMoney(playerid, ITEM_PRICE);
+
+    // Event
+    CallRemoteFunction("OnPlayerSellItem", "iiis", playerid, ITEM_PRICE, item, itemNames[item]);
+}
+
 bool:HasPlayerAnyItems(playerid)
 {
     for (new i; i < MAX_ITEMS; i++)
@@ -303,6 +329,35 @@ CMD:items(playerid)
     }
 
     ShowPlayerDialog(playerid, DIALOG_ITEMS, DIALOG_STYLE_TABLIST_HEADERS, "Items", str, "Use", "Close");
+    return 1;
+}
+
+CMD:sellitem(playerid) return cmd_sellitems(playerid);
+CMD:sellitems(playerid)
+{
+    // Check items
+    if (!HasPlayerAnyItems(playerid))
+        return AlertPlayerText(playerid, "~r~~h~You have no items");
+
+    // Dialog string
+    new index, str[2000] = "ID\tITEM\tAMOUNT\tPRICE\n";
+
+    // Add all items
+    for (new i; i < MAX_ITEMS; i++)
+    {
+        // If has that item
+        if (playerItem[playerid][i] < 1) continue;
+
+        // Add item name and count
+        new istr[100]; format(istr, sizeof(istr), "%i\t{FFFF00}%s\t{DDDDDD}%i\t{00FF00}$%i\n", i, itemNames[i], playerItem[playerid][i], ITEM_PRICE);
+        strcat(str, istr);
+
+        // Store item index in menu
+        playerItemSelection[playerid][index] = i;
+        index++;
+    }
+
+    ShowPlayerDialog(playerid, DIALOG_ITEMS_SELL, DIALOG_STYLE_TABLIST_HEADERS, "Sell Item", str, "Use", "Close");
     return 1;
 }
 
