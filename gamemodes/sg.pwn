@@ -434,6 +434,13 @@ public  OnPlayerKillStreakEnded(playerid, killerid, killStreak)
     }
 }
 
+forward OnPlayerSellItem(playerid, price, item, itemName[]);
+public OnPlayerSellItem(playerid, price, item, itemName[])
+{
+    // Alert
+    AlertPlayerText(playerid, sprintf("Sold ~y~%s~n~~g~~h~+%i", itemName, price));
+}
+
 forward OnPlayerAttemptToUseItem(playerid, item, itemName[]);
 public  OnPlayerAttemptToUseItem(playerid, item, itemName[])
 {

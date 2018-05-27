@@ -195,6 +195,33 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
     }
 }
 
+public OnPlayerStateChange(playerid, newstate, oldstate)
+{
+    // Flag bearer can not be in any vehicle
+    if (IsPlayerInAnyVehicle(playerid) && flagBearer == playerid)
+    {
+        // Alert and remove from car
+        AlertPlayerDialog(playerid, "Info", "You can not get in any vehicle when bearing flag.");
+        RemovePlayerFromVehicle(playerid);
+    }
+    return 1;
+}
+
+// Events
+
+forward OnPlayerAttemptToUseItem(playerid, item, itemName[]);
+public  OnPlayerAttemptToUseItem(playerid, item, itemName[])
+{
+    // Flag bearer can not use skydive
+    if (isequal(itemName, "Sky Dive") && flagBearer == playerid)
+    {
+        // Alert
+        AlertPlayerDialog(playerid, "Info", "You can not get in any vehicle when bearing flag.");
+        return 0;
+    }
+    return 1;
+}
+
 // Functions
 
 SetupPlayer(playerid)
