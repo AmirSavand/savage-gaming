@@ -8,7 +8,7 @@
 
 // Defines
 
-#define MAX_RANDOM_PACKAGES                 4
+#define MAX_RANDOM_PACKAGES                 5
 #define MAX_DROP_MONEY                      1000
 #define MAX_RANK                            22
 
@@ -19,6 +19,7 @@
 #define RANDOM_PACKAGE_AR                   1
 #define RANDOM_PACKAGE_RPG                  2
 #define RANDOM_PACKAGE_RANDOM_ITEM          3
+#define RANDOM_PACKAGE_DOUBLE_DAMAGE        4
 
 #define RANDOM_PACKAGE_AMOUNT_CASH          500
 #define RANDOM_PACKAGE_AMOUNT_ARMOR         200
@@ -39,6 +40,8 @@
 #define RANK_COST_FACTOR                    5000 + 10000
 
 #define COOL_TEXTDRAW_TIME                  5
+
+#define DOUBLE_DAMAGE_DURATION              10000
 
 #define TIME_SERVER_UPDATE                  200
 
@@ -77,6 +80,8 @@
 #include "../include/cool-textdraw"
 
 #include "../include/kill-streak"
+
+#include "../include/double-damage"
 
 #include "../include/drop-money"
 
@@ -256,6 +261,13 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
             multiplier = multiplier * 2;
         }
 
+        // Double damage
+        if (IsPlayerDoubleDamage(issuerid))
+        {
+            // Double damage
+            multiplier = multiplier * 2;
+        }
+
         // Deal extra damage to player
         GivePlayerDamage(playerid, amount * multiplier);
     }
@@ -329,6 +341,11 @@ public  OnPlayerCollectRandomPackage(playerid)
         {
             CallRemoteFunction("GivePlayerRandomItem", "iii", playerid, RANDOM_PACKAGE_AMOUNT_RANDOM_ITEM, RANDOM_PACKAGE_AMOUNT_RANDOM_ITEM);
             AlertPlayerText(playerid, sprintf("~y~+%i Random Items", RANDOM_PACKAGE_AMOUNT_RANDOM_ITEM));
+        }
+        case RANDOM_PACKAGE_DOUBLE_DAMAGE: // Double damage
+        {
+            SetPlayerDoubleDamage(playerid);
+            AlertPlayerText(playerid, "~r~~h~2x Damage~n~~w~for 10 seconds");
         }
     }
 
@@ -561,6 +578,7 @@ CMD:update(playerid)
     strcat(str, "CTF: Flag bearer can not use skydive.\n");
     strcat(str, "CTF: You now get +20 Sniper on spawn.\n");
     strcat(str, "CTF: Added battle zone support.\n");
+    strcat(str, "CTF: New random package: 2x damage for 10 seconds.\n");
     strcat(str, "\n");
     strcat(str, "{00FF00}5-25{DDDDFF}\n\n");
     strcat(str, "Ranks now cost 50 percent less ($5,000 for each rank)\n");
