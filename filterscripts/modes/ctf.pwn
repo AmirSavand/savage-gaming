@@ -12,7 +12,9 @@
 
 #define FILTERSCRIPT
 
-#define FLAG_CAPTURE_REWARD  2000
+#define FLAG_CAPTURE_REWARD         2000
+
+#define SPAWN_WEAPON_SNIPER_AMMO    20
 
 // Variables
 
@@ -119,6 +121,9 @@ public OnPlayerSpawn(playerid)
 
     // Store spawn index
     playerBase[playerid][spawn] = i;
+
+    // Give sniper
+    GivePlayerWeapon(playerid, WEAPON_SNIPER, SPAWN_WEAPON_SNIPER_AMMO);
     return 1;
 }
 
