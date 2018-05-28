@@ -16,6 +16,9 @@
 
 #define SPAWN_WEAPON_SNIPER_AMMO    20
 
+#define BATTLE_ZONE_DISTANCE        250.0
+#define BATTLE_ZONE_CENTER          {-2466.7, 2331.6, 4.8}
+
 // Variables
 
 new const Float:playerSpawns[][4] = {
@@ -45,6 +48,8 @@ new flagMapicon;
 new flagPickup;
 new flagBearer = -1;
 
+new timer[2];
+
 // Includes
 
 #include <a_samp>
@@ -53,6 +58,7 @@ new flagBearer = -1;
 #include "../../include/common"
 #include "../../include/random-package.inc"
 #include "../../include/first-blood.inc"
+#include "../../include/battle-zone.inc"
 
 // Variables
 
@@ -75,8 +81,9 @@ public OnFilterScriptInit()
     for (new i = 0; i < MAX_PLAYERS; i++)
         SetupPlayer(i);
 
-    // Start spawning random packages
-    SetTimer("SpawnRandomPackage", 60000, 1);
+    // Timers
+    timer[0] = SetTimer("SpawnRandomPackage", 60000, 1);
+    timer[1] = SetTimer("CheckPlayerBattleZoneDistance", 5000, 1);
 
     // Initial flag
     CreateFlag();
@@ -85,8 +92,9 @@ public OnFilterScriptInit()
 
 public OnFilterScriptExit()
 {
+    // Kill and destroy
+    KillTimers(timer, sizeof(timer));
     DestroyFlag();
-    return 1;
 }
 
 public OnPlayerConnect(playerid)
