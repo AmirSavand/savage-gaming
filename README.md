@@ -40,10 +40,12 @@ In this mode, you can only kill enemy team (3 teams in total)
 In this mode, you capture the flag and return it to base, kill everyone in the proccess.
 
 - Random spawn points
+- Sniper rifle on spawn
 - Random packages to collect
 - Random color
 - One time vehicles to purchase (like BMX)
 - Flag and base map icon and pickup
+- Flag bearer can not get in any vehicle or use skydive item
 
 ## Features
 
