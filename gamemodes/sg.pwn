@@ -556,6 +556,12 @@ CMD:update(playerid)
 {
     new str[1000];
 
+    strcat(str, "{00FF00}5-28\n\n");
+    strcat(str, "CTF: Flag bearer can not get in any vehicle.\n");
+    strcat(str, "CTF: Flag bearer can not use skydive.\n");
+    strcat(str, "CTF: You now get +20 Sniper on spawn.\n");
+    strcat(str, "\n");
+    strcat(str, "{00FF00}5-25\n\n");
     strcat(str, "Ranks now cost 50 percent less ($5,000 for each rank)\n");
     strcat(str, "Sell items by typing /sellitem\n");
     strcat(str, "Added speed indicator (km/h)\n");
@@ -567,7 +573,7 @@ CMD:update(playerid)
     strcat(str, "See command and shortcut list by typing /cmd /key\n");
     strcat(str, "See recent updates again by typing /update\n");
     
-    AlertPlayerDialog(playerid, "{00FF00}Recent Changes (5-25)", str);
+    AlertPlayerDialog(playerid, "{00FF00}Recent Changes and Updates", str);
     return 1;
 }
 
