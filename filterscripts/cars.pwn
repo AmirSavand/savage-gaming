@@ -21,13 +21,15 @@
 #define TYPE_PURCHASE       2
 #define TYPE_PURCHASE_ONCE  3
 
+#define MAX_VEHICLE_UIDS    5000
+
 #define MAX_COMP_SLOTS      14
 #define MAX_COMP_LENGTH     5
-#define MAX_COMP_STRING     100
+#define MAX_COMP_STR        100
 
 #define MAX_COLOR_SLOTS     3
 #define MAX_COLOR_LENGTH    5
-#define MAX_COLOR_STRING    50
+#define MAX_COLOR_STR       50
 
 #define CAR_SELL_FACTOR     0.9
 
@@ -46,12 +48,12 @@
 
 enum iCar
 {
-    uid,
     type,
     model,
     engine,
     comp[MAX_COMP_SLOTS],
     color[MAX_COLOR_SLOTS],
+    bool:exists,
 
     owner,
     price,
@@ -60,15 +62,13 @@ enum iCar
     Float:pos[4],
 
     // Raw components separated by space
-    colorsRaw[MAX_COLOR_STRING],
-    compsRaw[MAX_COMP_STRING]
+    colorsRaw[MAX_COLOR_STR],
+    compsRaw[MAX_COMP_STR]
 }
 
-new Car[MAX_VEHICLES][iCar];
+new Car[MAX_VEHICLE_UIDS][iCar];
 
 new adminCar[MAX_PLAYERS] = -1;
-
-new ps;
 
 new bool:loaded = false;
 
@@ -117,17 +117,13 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
     // Got into a car
     if (newstate == PLAYER_STATE_DRIVER)
     {
-        // Index
-        new i = GetCarIndex(PVI);
-
-        // Check db car
-        if (i == -1) return 1;
-
+        new uid = GetCarUID(PVI);
+        
         // Car is owned
-        if (Car[i][owner] > 0)
+        if (Car[uid][owner] > 0)
         {
             // Owned by player
-            if (Car[i][owner] == GetPVarInt(playerid, "id"))
+            if (Car[uid][owner] == GetPVarInt(playerid, "id"))
                 return 1;
 
             // Owner name to show
@@ -137,7 +133,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
             for (new p; p < MAX_PLAYERS; p++)
             {
                 // If owner of car
-                if (IsPlayerConnected(p) && GetPVarInt(p, "id") == Car[i][owner])
+                if (IsPlayerConnected(p) && GetPVarInt(p, "id") == Car[uid][owner])
                 {
                     // Save name
                     ownerName = sprintf("{00FF00}(%s){DDDDFF}", GetName(p));
@@ -151,10 +147,10 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
         }
 
         // Car is available to purchase
-        if (IsCarForPurchase(i))
+        if (IsCarForPurchase(uid))
         {
             // Show purchase dialog
-            new str[500]; str = sprintf("You can buy this vehicle for {00FF00}$%i", Car[i][price]);
+            new str[500]; str = sprintf("You can buy this vehicle for {00FF00}$%i", Car[uid][price]);
             ShowPlayerDialog(playerid, DIALOG_CARS, DIALOG_STYLE_MSGBOX, "Buy Vehicle", str, "{00FF00}Buy", "Cancel");
         }
     }
@@ -166,14 +162,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem)
     // Purchase dialog
     if (dialogid == DIALOG_CARS)
     {
-        // Index
-        new i = GetCarIndex(PVI);
+        // Car UID
+        new uid = GetCarUID(PVI);
 
         // Wants to buy
         if (response)
         {
             // Has enough money?
-            if (!HasEnoughMoney(playerid, Car[i][price]))
+            if (!HasEnoughMoney(playerid, Car[uid][price]))
             {
                 // No money, remove and alert
                 RemovePlayerFromVehicle(playerid);
@@ -184,18 +180,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem)
             else 
             {
                 // Take money from player
-                GivePlayerMoney(playerid, -Car[i][price]);
+                GivePlayerMoney(playerid, -Car[uid][price]);
 
                 // Update ownership
-                Car[i][owner] = GetPVarInt(playerid, "id");
+                Car[uid][owner] = GetPVarInt(playerid, "id");
 
                 // Restore car engine and repair
                 RepairVehicle(PVI);
-                SetVehicleHealth(PVI, Car[i][engine]);
+                SetVehicleHealth(PVI, Car[uid][engine]);
 
                 // Update to db if purchased permanently (not one time car)
-                if (Car[i][type] != TYPE_PURCHASE_ONCE)
-                    UpdateCar(i);
+                if (Car[uid][type] != TYPE_PURCHASE_ONCE)
+                    UpdateCar(uid);
 
                 // Event
                 CallRemoteFunction("OnPlayerPurchaseVehicle", "ii", playerid, PVI);
@@ -209,25 +205,24 @@ public OnDialogResponse(playerid, dialogid, response, listitem)
 
 public OnVehicleSpawn(vehicleid)
 {
-    // Index
-    new i = GetCarIndex(vehicleid);
+    new uid = GetCarUID(vehicleid);
 
-    // Check db
-    if (i == -1) return 1;
+    // Check if db car
+    if (!uid) return 1;
 
     // Destroy if type is discard
-    if (Car[i][type] == TYPE_DISCARD)
+    if (Car[uid][type] == TYPE_DISCARD)
         DestroyVehicle(vehicleid);
 
     // Reset ownership if type is purchase once
-    if (Car[i][type] == TYPE_PURCHASE_ONCE)
-        Car[i][owner] = 0;
+    if (Car[uid][type] == TYPE_PURCHASE_ONCE)
+        Car[uid][owner] = 0;
 
     // Load engine
-    SetPlayerHealth(vehicleid, Car[i][engine]);
+    SetPlayerHealth(vehicleid, Car[uid][engine]);
 
     // Load mods
-    SetupCarMods(i);
+    SetupCarMods(uid);
     return 1;
 }
 
@@ -236,41 +231,44 @@ public OnEnterExitModShop(playerid, enterexit, interiorid)
     // Exited mod shop
     if (enterexit == 0)
     {
-        // Index
-        new i = GetCarIndex(PVI);
+        new uid = GetCarUID(PVI);
 
         // Check db and update for purchaseable cars (not one time only cars)
-        if (i == -1 || Car[i][type] != TYPE_PURCHASE) return;
+        if (!uid || Car[uid][type] != TYPE_PURCHASE) return;
 
         // Save mods
-        UpdateCar(i);
+        UpdateCar(uid);
     }
 }
 
 public OnVehicleRespray(playerid, vehicleid, color1, color2)
 {
-    // Index
-    new i = GetCarIndex(vehicleid);
+    new uid = GetCarUID(vehicleid);
 
     // Check db and update for purchaseable cars (not one time only cars)
-    if (i == -1 || Car[i][type] != TYPE_PURCHASE) return 1;
+    if (!uid || Car[uid][type] != TYPE_PURCHASE) return 1;
 
     // Store colors
-    Car[i][color][0] = color1;
-    Car[i][color][1] = color2;
+    Car[uid][color][0] = color1;
+    Car[uid][color][1] = color2;
+
+    // Store colors as raw
+    format(Car[uid][colorsRaw], MAX_COLOR_STR, "%i %i %i", Car[uid][color][0], Car[uid][color][1], Car[uid][color][2]);
     return 1;
 }
 
 public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
 {
-    // Index
-    new i = GetCarIndex(vehicleid);
+    new uid = GetCarUID(vehicleid);
 
     // Check db and update for purchaseable cars (not one time only cars)
-    if (i == -1 || Car[i][type] != TYPE_PURCHASE) return 1;
+    if (!uid || Car[uid][type] != TYPE_PURCHASE) return 1;
 
-    // Update paint job
-    Car[i][color][2] = paintjobid;
+    // Store paintjob
+    Car[uid][color][2] = paintjobid;
+
+    // Store colors as raw
+    format(Car[uid][colorsRaw], MAX_COLOR_STR, "%i %i %i", Car[uid][color][0], Car[uid][color][1], Car[uid][color][2]);
     return 1;
 }
 
@@ -282,8 +280,13 @@ public  OnPlayerUseItem(playerid, item, itemName[])
     // Repair car and is in a car
     if (isequal("Car Tools", itemName))
     {
+        new uid = GetCarUID(PVI);
+
         // Set health to saved engine
-        SetVehicleHealth(PVI, Car[GetCarIndex(PVI)][engine]);
+        if (uid) {
+            SetVehicleHealth(PVI, Car[uid][engine]);
+        }
+
     }
 }
 
@@ -292,8 +295,11 @@ public  OnPlayerUseItem(playerid, item, itemName[])
 DestroyCars() // Destroy all db and admin cars
 {
     // Destroy all db cars
-    for (new i; i < MAX_VEHICLES; i++)
-        DestroyVehicle(Car[i][id]);
+    for (new uid; uid < MAX_VEHICLE_UIDS; uid++)
+    {
+        Car[uid][exists] = false;
+        DestroyVehicle(Car[uid][id]);
+    }
 
     // Destroy all admin cars
     for (new i; i < MAX_PLAYERS; i++)
@@ -309,142 +315,128 @@ SetupCars() // Fetch all cars from db and store data in Car[][]
     DestroyCars();
 
     // Get all cars from db
-    new Cache:cache = mysql_query(db, "SELECT * FROM cars LIMIT 2000");
+    new Cache:cache = mysql_query(db, sprintf("SELECT * FROM cars LIMIT %i", MAX_VEHICLE_UIDS));
 
     // For each car
     for (new i; i < cache_num_rows(); i++)
     {
-        cache_get_value_name_int(i, "id",     Car[i][uid]);
-        cache_get_value_name_int(i, "type",   Car[i][type]);
-        cache_get_value_name_int(i, "owner",  Car[i][owner]);
-        cache_get_value_name_int(i, "price",  Car[i][price]);
-        cache_get_value_name_int(i, "model",  Car[i][model]);
-        cache_get_value_name_int(i, "engine", Car[i][engine]);
+        new uid; cache_get_value_name_int(i, "id", uid);
 
-        cache_get_value_name_float(i, "x", Car[i][pos][0]);
-        cache_get_value_name_float(i, "y", Car[i][pos][1]);
-        cache_get_value_name_float(i, "z", Car[i][pos][2]);
-        cache_get_value_name_float(i, "a", Car[i][pos][3]);
+        Car[uid][exists] = true;
+
+        cache_get_value_name_int(i, "type",   Car[uid][type]);
+        cache_get_value_name_int(i, "owner",  Car[uid][owner]);
+        cache_get_value_name_int(i, "price",  Car[uid][price]);
+        cache_get_value_name_int(i, "model",  Car[uid][model]);
+        cache_get_value_name_int(i, "engine", Car[uid][engine]);
+
+        cache_get_value_name_float(i, "x", Car[uid][pos][0]);
+        cache_get_value_name_float(i, "y", Car[uid][pos][1]);
+        cache_get_value_name_float(i, "z", Car[uid][pos][2]);
+        cache_get_value_name_float(i, "a", Car[uid][pos][3]);
 
         // Load raw car data
-        new comps[MAX_COMP_STRING];
-        new colors[MAX_COLOR_STRING];
+        new comps[MAX_COMP_STR];
+        new colors[MAX_COLOR_STR];
         cache_get_value_name(i, "comps",  comps);
         cache_get_value_name(i, "colors", colors);
-        format(Car[i][compsRaw],  MAX_COMP_STRING,  "%s", comps);
-        format(Car[i][colorsRaw], MAX_COLOR_STRING, "%s", colors);
+        format(Car[uid][compsRaw], MAX_COMP_STR, "%s", comps);
+        format(Car[uid][colorsRaw], MAX_COLOR_STR, "%s", colors);
 
-        SetupCar(i);
+        SetupCar(uid);
     }
 
-    // Get pool size
-    ps = cache_num_rows();
     cache_delete(cache);
 }
 
-SetupCar(i) // Create car and load data (color, mods, engine, etc...)
+SetupCar(uid) // Create car and load data (color, mods, engine, etc...)
 {
     // Check db
-    if (i == -1) return 0;
+    if (!uid || !Car[uid][exists]) return 0;
 
     // Destroy car if exists
-    DestroyVehicle(Car[i][id]);
+    DestroyVehicle(Car[uid][id]);
 
     // Setup components and colors
     new comps[MAX_COMP_SLOTS][MAX_COMP_LENGTH];
     new colors[MAX_COLOR_SLOTS][MAX_COLOR_LENGTH];
 
     // Make a list out of em
-    strexplode(comps, Car[i][compsRaw], " ");
-    strexplode(colors, Car[i][colorsRaw], " ");
+    strexplode(comps, Car[uid][compsRaw], " ");
+    strexplode(colors, Car[uid][colorsRaw], " ");
 
     // Store each component and color in its slot
-    for (new c; c < MAX_COMP_SLOTS;  c++) Car[i][comp][c]  = strval(comps[c]);
-    for (new c; c < MAX_COLOR_SLOTS; c++) Car[i][color][c] = strval(colors[c]);
+    for (new c; c < MAX_COMP_SLOTS;  c++) Car[uid][comp][c]  = strval(comps[c]);
+    for (new c; c < MAX_COLOR_SLOTS; c++) Car[uid][color][c] = strval(colors[c]);
 
     // Create vehicle
-    Car[i][id] = CreateVehicle(GetCarModel(i), Car[i][pos][0], Car[i][pos][1], Car[i][pos][2], Car[i][pos][3], -1, -1, RESPAWN_DELAY);
+    Car[uid][id] = CreateVehicle(GetCarModel(uid), Car[uid][pos][0], Car[uid][pos][1], Car[uid][pos][2], Car[uid][pos][3], -1, -1, RESPAWN_DELAY);
 
     // Set engine
-    SetVehicleHealth(Car[i][id], Car[i][engine]);
+    SetVehicleHealth(Car[uid][id], Car[uid][engine]);
 
     // Components
-    SetupCarMods(i);
+    SetupCarMods(uid);
 
-    // Return its db id
-    return Car[i][id];
+    // Return uid
+    return uid;
 }
 
-SetupCarMods(i) // Initial all car mods (comps, colors, paintjob, etc...)
+SetupCarMods(uid) // Initial all car mods (comps, colors, paintjob, etc...)
 {
-    // Check db
-    if (i == -1) return 0;
+    if (!uid) return 0;
 
     // For all saved component slots
     for (new c; c < MAX_COMP_SLOTS; c++)
     {
         // Add component from slot
-        if (Car[i][comp][c] > 0) AddVehicleComponent(Car[i][id], Car[i][comp][c]);
+        if (Car[uid][comp][c] > 0) AddVehicleComponent(Car[uid][id], Car[uid][comp][c]);
     }
 
     // Load the color and paintjob
-    ChangeVehicleColor(Car[i][id], GetCarColor(i, 0), GetCarColor(i, 1));
-    ChangeVehiclePaintjob(Car[i][id], Car[i][color][2]);
+    ChangeVehicleColor(Car[uid][id], Car[uid][color][0], Car[uid][color][1]);
+    ChangeVehiclePaintjob(Car[uid][id], Car[uid][color][2]);
     return 1;
 }
 
-GetCarModel(index) // Get the model of the car but return a random if it's 0
+GetCarModel(uid) // Get the model of the car but return a random if it's 0
 {
     // Random model
-    if (Car[index][model] == 0)
+    if (Car[uid][model] == 0)
         return freeCarModels[Ran(0, sizeof(freeCarModels))];
 
     // Original model
-    return Car[index][model];
+    return Car[uid][model];
 }
 
-GetCarColor(index, colorIndex) // Get car color and return a random if it's -1
+GetCarUID(vehicleid) // Find the index/UID of the car
 {
-    // Random model
-    if (Car[index][color][colorIndex] == -1)
-        return Ran(0, 128);
-
-    // Original model
-    return Car[index][color][colorIndex];
-}
-
-GetCarIndex(vehicleid) // Find the index of the car
-{
-    // Find car id in cars
-    for (new i; i <= ps; i++)
+    // Loop for all UIDs
+    for (new uid; uid < MAX_VEHICLE_UIDS; uid++)
     {
-        // Return index
-        if (Car[i][id] == vehicleid)
+        // If id of car matches the car id and exists
+        if (Car[uid][id] == vehicleid && Car[uid][exists])
         {
-            return i;
+            return uid;
         }
     }
     // Not found
-    return -1;
+    return 0;
 }
 
-UpdateCar(index) // Save all car data to database (except position)
+UpdateCar(uid) // Save all car data to database (except position)
 {
-    new qry[1000], i = index;
-
-    // If db car
-    if (index == -1)
-        return 0;
+    new qry[1000], i = uid;
 
     // If for one time purchase, reset owner
     if (Car[i][type] == TYPE_PURCHASE_ONCE) Car[i][owner] = 0;
 
     // Get components
-    UpdateCarMods(index);
+    UpdateCarMods(i);
 
     // Update database
     mysql_format(db, qry, sizeof(qry), "UPDATE cars SET type=%i, model=%i, owner=%i, price=%i, engine=%i, comps='%s', colors='%s' WHERE id=%i",
-        Car[i][type], Car[i][model], Car[i][owner], Car[i][price], Car[i][engine], Car[i][compsRaw], Car[i][colorsRaw], Car[i][uid]);
+        Car[i][type], Car[i][model], Car[i][owner], Car[i][price], Car[i][engine], Car[i][compsRaw], Car[i][colorsRaw], i);
     mysql_query(db, qry, false);
 
     return 1;
@@ -453,8 +445,8 @@ UpdateCar(index) // Save all car data to database (except position)
 UpdateCarMods(index) // Update all car mods to variable (comps, colors, etc...)
 {
     // Reset car components and colors string
-    strdel(Car[index][compsRaw],  0, MAX_COMP_STRING);
-    strdel(Car[index][colorsRaw], 0, MAX_COLOR_STRING);
+    strdel(Car[index][compsRaw],  0, MAX_COMP_STR);
+    strdel(Car[index][colorsRaw], 0, MAX_COLOR_STR);
 
     // Update colors (paintjob gets updated by callback)
     GetVehicleColor(Car[index][id], Car[index][color][0], Car[index][color][1]);
@@ -464,14 +456,14 @@ UpdateCarMods(index) // Update all car mods to variable (comps, colors, etc...)
     {
         // Store component in raw string
         Car[index][comp][c] = GetVehicleComponentInSlot(Car[index][id], c);
-        format(Car[index][compsRaw], MAX_COMP_STRING, "%s%i ", Car[index][compsRaw], Car[index][comp][c]);
+        format(Car[index][compsRaw], MAX_COMP_STR, "%s%i ", Car[index][compsRaw], Car[index][comp][c]);
     }
 
     // For all colors
     for (new c; c < 3; c++)
     {
         // Store colors in raw string
-        format(Car[index][colorsRaw], MAX_COLOR_STRING, "%s%i ", Car[index][colorsRaw], Car[index][color][c]);
+        format(Car[index][colorsRaw], MAX_COLOR_STR, "%s%i ", Car[index][colorsRaw], Car[index][color][c]);
     }
 }
 
@@ -485,71 +477,70 @@ IsCarForPurchase(index) // Check if vehicle type is for puchase (including once)
 
 CMD:addcar(playerid, params[]) // Create a db car in current position (model is optional)
 {
-    // Check admin
-    if (GetPlayerAdmin(playerid) <= 2)
+    if (GetPlayerAdmin(playerid) < 5)
         return 0;
 
-    new mod;
+    IMPORT_PLAYER_POS; new carModel;
 
-    // If mod is not given (random mod)
-    if (sscanf(params, "i", mod)) mod = 0;
+    // If model is not given (random model)
+    if (sscanf(params, "i", carModel)) carModel = 0;
 
-    // Get player position
-    IMPORT_PLAYER_POS;
-
-    // Get a if in a car
+    // Get angle if in a car
     if (IsPlayerInAnyVehicle(playerid))
         GetVehicleZAngle(PVI, pPos[3]);
 
     // Insert car to db
     new qry[1000];
-    mysql_format(db, qry, sizeof(qry), "INSERT INTO cars (model, x, y, z, a) VALUES (%i, %f, %f, %f, %f)", mod, pPos[0], pPos[1], pPos[2], pPos[3]);
+    mysql_format(db, qry, sizeof(qry), "INSERT INTO cars (model, x, y, z, a) VALUES (%i, %f, %f, %f, %f)", carModel, pPos[0], pPos[1], pPos[2], pPos[3]);
     new Cache:cache = mysql_query(db, qry);
 
-    // Increase pool size
-    ps++;
-
     // Store car data
-    Car[ps][uid]    = cache_insert_id();
-    Car[ps][model]  = mod;
-    Car[ps][type]   = TYPE_FREE;
-    Car[ps][owner]  = 0;
-    Car[ps][price]  = 0;
-    Car[ps][engine] = 1000;
+    new uid = cache_insert_id();
+    cache_delete(cache);
+    
+    Car[uid][exists] = true;
+    Car[uid][model]  = carModel;
+    Car[uid][type]   = TYPE_FREE;
+    Car[uid][owner]  = 0;
+    Car[uid][price]  = 0;
+    Car[uid][engine] = 1000;
 
-    Car[ps][pos][0] = pPos[0];
-    Car[ps][pos][1] = pPos[1];
-    Car[ps][pos][2] = pPos[2];
-    Car[ps][pos][3] = pPos[3];
+    Car[uid][pos][0] = pPos[0];
+    Car[uid][pos][1] = pPos[1];
+    Car[uid][pos][2] = pPos[2];
+    Car[uid][pos][3] = pPos[3];
+
+    Car[uid][color][0] = -1;
+    Car[uid][color][1] = -1;
+    Car[uid][color][2] = -1;
 
     // Create the car
-    SetupCar(ps);
-    cache_delete(cache);
+    SetupCar(uid);
     return 1;
 }
 
 CMD:delcar(playerid) // Delete the car from db
 {
-    // Check admin
-    if (GetPlayerAdmin(playerid) <= 3)
+    if (GetPlayerAdmin(playerid) < 5)
         return 0;
 
     // Is in a car
     if (!IsPlayerInAnyVehicle(playerid))
         return AlertPlayerText(playerid, "~r~~h~Not in vehicle");
 
-    new index = GetCarIndex(PVI);
-
-    // If found an index
-    if (index == -1)
-        return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+    new uid = GetCarUID(PVI);
+    if (!uid) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
 
     // Remove free vehicle from database
-    new qry[500]; mysql_format(db, qry, sizeof(qry), "DELETE FROM cars WHERE id=%i", Car[index][uid]);
-    mysql_tquery(db, qry);
+    new qry[500];
+    mysql_format(db, qry, sizeof(qry), "DELETE FROM cars WHERE id=%i", uid);
+    mysql_query(db, qry, false);
 
     // Remove vehicle in game
-    DestroyVehicle(Car[index][id]);
+    DestroyVehicle(Car[uid][id]);
+
+    // Set to deleted
+    Car[uid][exists] = false;
     return 1;
 }
 
@@ -564,7 +555,7 @@ CMD:scar(playerid, params[]) // Spawn admin car (model is optional)
     if (IsPlayerInAnyVehicle(playerid))
         GetVehicleZAngle(PVI, pPos[3]);
 
-    // Random carModel if not given
+    // Random car model if not given
     if (sscanf(params, "i", carModel)) carModel = Ran(400, 611);
 
     // Destroy admin car
@@ -582,12 +573,8 @@ CMD:scar(playerid, params[]) // Spawn admin car (model is optional)
     SetVehicleZAngle(vehicleid, pPos[3]);
     PutPlayerInVehicle(playerid, vehicleid, 0);
 
-    // Increase pool size
-    ps++;
-
-    // Store car id and set to discard
+    // Store admin car
     adminCar[playerid] = vehicleid;
-    Car[ps][type] = TYPE_DISCARD;
     return 1;
 }
 
@@ -597,12 +584,12 @@ CMD:sellcar(playerid) // Sell current car
     if (!IsPlayerInAnyVehicle(playerid))
         return AlertPlayerText(playerid, "~r~~h~Not in vehicle");
 
-    // Index
-    new i = GetCarIndex(PVI);
-    new sellPrice = floatround(Car[i][price] * CAR_SELL_FACTOR);
+    // UID and sell price
+    new uid = GetCarUID(PVI);
+    new sellPrice = floatround(Car[uid][price] * CAR_SELL_FACTOR);
 
     // Is db car
-    if (i == -1 || Car[i][type] != TYPE_PURCHASE || Car[i][owner] != GetPVarInt(playerid, "id"))
+    if (!uid || Car[uid][type] != TYPE_PURCHASE || Car[uid][owner] != GetPVarInt(playerid, "id"))
         return AlertPlayerText(playerid, "~r~~h~Not in your car");
 
     // Give back some of car money
@@ -612,9 +599,9 @@ CMD:sellcar(playerid) // Sell current car
     RemovePlayerFromVehicle(playerid);
 
     // Reset ownership
-    Car[i][owner] = 0;
-    AlertPlayerDialog(playerid, "Info", sprintf("{00FF00}You've sold your vehicle!\n\n{DDDDDD}Sold price: {00FF00}$%i\n{DDDDDD}Original price: {00FF00}$%i", sellPrice, Car[i][price]));
-    UpdateCar(i);
+    Car[uid][owner] = 0;
+    AlertPlayerDialog(playerid, "Info", sprintf("{00FF00}You've sold your vehicle!\n\n{DDDDDD}Sell price: {00FF00}$%i\n{DDDDDD}Original price: {00FF00}$%i", sellPrice, Car[uid][price]));
+    UpdateCar(uid);
 
     // Event
     CallRemoteFunction("OnPlayerSellVehicle", "ii", playerid, PVI);
@@ -623,7 +610,6 @@ CMD:sellcar(playerid) // Sell current car
 
 CMD:reloadcars(playerid) // Delete the car from db
 {
-    // Check admin
     if (GetPlayerAdmin(playerid) < 5)
         return 0;
 
@@ -645,13 +631,11 @@ CMD:updatecar(playerid) // Update data car to db (see: UpdateCar())
     if (!IsPlayerInAnyVehicle(playerid))
         return AlertPlayerText(playerid, "~r~~h~Not in vehicle");
 
-    // Get car index
-    new car = GetCarIndex(PVI);
-    if (car == -1)
-        return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+    new uid = GetCarUID(PVI);
+    if (!uid) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
 
     // Update info
-    UpdateCar(car);
+    UpdateCar(uid);
 
     AlertPlayerText(playerid, "~p~~b~Car updated");
     return 1;
@@ -666,23 +650,21 @@ CMD:setcarpos(playerid) // Change car position to current and save to db
     if (!IsPlayerInAnyVehicle(playerid))
         return AlertPlayerText(playerid, "~r~~h~Not in vehicle");
 
-    // Get car index
-    new car = GetCarIndex(PVI);
-    if (car == -1)
-        return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+    new uid = GetCarUID(PVI);
+    if (!uid) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
 
     // Get car position
     IMPORT_PLAYER_POS; GetVehicleZAngle(PVI, pPos[3]);
 
     // Store current position
-    Car[car][pos][0] = pPos[0];
-    Car[car][pos][1] = pPos[1];
-    Car[car][pos][2] = pPos[2];
-    Car[car][pos][3] = pPos[3];
+    Car[uid][pos][0] = pPos[0];
+    Car[uid][pos][1] = pPos[1];
+    Car[uid][pos][2] = pPos[2];
+    Car[uid][pos][3] = pPos[3];
 
     // Update position
     new qry[1000];
-    mysql_format(db, qry, sizeof(qry), "UPDATE cars SET x=%f, y=%f, z=%f, a=%f WHERE id=%i", pPos[0], pPos[1], pPos[2], pPos[3], Car[car][uid]);
+    mysql_format(db, qry, sizeof(qry), "UPDATE cars SET x=%f, y=%f, z=%f, a=%f WHERE id=%i", pPos[0], pPos[1], pPos[2], pPos[3], uid);
     mysql_query(db, qry, false);
 
     AlertPlayerText(playerid, "~p~~b~Position updated");
@@ -703,23 +685,19 @@ CMD:setcarprice(playerid, params[]) // Change car price and update to db
     if (sscanf(params, "i", carPrice))
         return AlertPlayerText(playerid, "~r~~h~You must set price");
 
-    // Index
-    new i = GetCarIndex(PVI);
-    
-    // Check db car
-    if (i == -1)
-        return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+    new uid = GetCarUID(PVI);
+    if (!uid) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
 
     // If not purchaseable, set it
-    if (Car[i][type] != TYPE_PURCHASE || Car[i][type] != TYPE_PURCHASE_ONCE)
-        Car[i][type] = TYPE_PURCHASE;
+    if (Car[uid][type] != TYPE_PURCHASE || Car[uid][type] != TYPE_PURCHASE_ONCE)
+        Car[uid][type] = TYPE_PURCHASE;
 
     // Set price
-    Car[i][price] = carPrice;
+    Car[uid][price] = carPrice;
     AlertPlayerText(playerid, "~p~~b~Pirce set");
 
     // Update info
-    UpdateCar(i);
+    UpdateCar(uid);
     return 1;
 }
 
@@ -731,11 +709,9 @@ CMD:setcartype(playerid, params[]) // Change car type and update to db
     // Is in a car
     if (!IsPlayerInAnyVehicle(playerid))
         return AlertPlayerText(playerid, "~r~~h~Not in vehicle");
-
-    // Get car index
-    new i = GetCarIndex(PVI);
-    if (i == -1)
-        return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+    
+    new uid = GetCarUID(PVI);
+    if (!uid) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
 
     // Get type
     new carType;
@@ -743,11 +719,11 @@ CMD:setcartype(playerid, params[]) // Change car type and update to db
         return AlertPlayerText(playerid, "~r~~h~You must set type");
 
     // Set car type
-    Car[i][type] = carType;
+    Car[uid][type] = carType;
     AlertPlayerText(playerid, "~p~~b~Type changed");
 
     // Update info
-    UpdateCar(i);
+    UpdateCar(uid);
     return 1;
 }
 
@@ -760,10 +736,8 @@ CMD:setcarmodel(playerid, params[]) // Change car model and update to db
     if (!IsPlayerInAnyVehicle(playerid))
         return AlertPlayerText(playerid, "~r~~h~Not in vehicle");
 
-    // Get car index
-    new i = GetCarIndex(PVI);
-    if (i == -1)
-        return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+    new uid = GetCarUID(PVI);
+    if (!uid) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
 
     // Get model (to set)
     new carModel;
@@ -771,11 +745,11 @@ CMD:setcarmodel(playerid, params[]) // Change car model and update to db
         return AlertPlayerText(playerid, "~r~~h~You must set model");
 
     // Set car model
-    Car[i][model] = carModel;
+    Car[uid][model] = carModel;
     AlertPlayerText(playerid, "~p~~b~Model changed");
 
     // Update info
-    UpdateCar(i);
+    UpdateCar(uid);
     return 1;
 }
 
@@ -788,10 +762,8 @@ CMD:setcarengine(playerid, params[]) // Change car engine (health) and update to
     if (!IsPlayerInAnyVehicle(playerid))
         return AlertPlayerText(playerid, "~r~~h~Not in vehicle");
 
-    // Get car index
-    new i = GetCarIndex(PVI);
-    if (i == -1)
-        return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+    new uid = GetCarUID(PVI);
+    if (!uid) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
 
     // Get engine
     new carEngine;
@@ -799,12 +771,12 @@ CMD:setcarengine(playerid, params[]) // Change car engine (health) and update to
         return AlertPlayerText(playerid, "~r~~h~You must set engine");
 
     // Set car engine
-    Car[i][engine] = carEngine;
+    Car[uid][engine] = carEngine;
     SetVehicleHealth(PVI, carEngine);
     AlertPlayerText(playerid, "~p~~b~Engine changed");
 
     // Update info
-    UpdateCar(i);
+    UpdateCar(uid);
     return 1;
 }
 
@@ -822,16 +794,13 @@ CMD:setcarowner(playerid, params[]) // Change car owner and update to db
     if (sscanf(params, "u", carOwner))
         return AlertPlayerText(playerid, "~r~~h~You must set owner uid");
 
-    // Index
-    new i = GetCarIndex(PVI);
-    
-    // Check db car
-    if (i == -1) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+    new uid = GetCarUID(PVI);
+    if (!uid) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
 
     // Set owner
-    Car[i][owner] = GetPVarInt(carOwner, "id");
+    Car[uid][owner] = GetPVarInt(carOwner, "id");
     AlertPlayerText(playerid, "~p~~b~Owner set");
-    UpdateCar(i);
+    UpdateCar(uid);
     return 1;
 }
 
@@ -844,16 +813,13 @@ CMD:resetcarowner(playerid, params[]) // Reset car owner and update to db
     if (!IsPlayerInAnyVehicle(playerid))
         return AlertPlayerText(playerid, "~r~~h~Not in vehicle");
 
-    // Index
-    new i = GetCarIndex(PVI);
-    
-    // Check db car
-    if (i == -1) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+    new uid = GetCarUID(PVI);
+    if (!uid) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
 
     // Set owner
-    Car[i][owner] = 0;
+    Car[uid][owner] = 0;
     AlertPlayerText(playerid, "~p~~b~Owner reset");
-    UpdateCar(i);
+    UpdateCar(uid);
     return 1;
 }
 
