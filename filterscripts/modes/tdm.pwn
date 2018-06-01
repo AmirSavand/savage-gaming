@@ -200,10 +200,6 @@ AssignPlayerTeam(playerid, team)
     // Assign player team
     SetPlayerTeam(playerid, team);
     SetPlayerColor(playerid, teamColors[team]);
-
-    // Announce
-    new str[100]; format(str, sizeof(str), "joined {FFFF00}%s", teamNames[team]);
-    AlertPlayers(FPlayer(playerid, str));
 }
 
 // Commands
