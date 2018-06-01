@@ -18,7 +18,7 @@
 #define HOLDING(%0) ((newkeys & (%0)) == (%0))
 
 #undef  MAX_PLAYERS
-#define MAX_PLAYERS 200
+#define MAX_PLAYERS 100
 
 //
 // Colors defines
@@ -47,7 +47,7 @@
 #define IMPORT_PLAYER_POS_AS_TARGET new Float: tPos[4]; GetPlayerPos(target,   tPos[0], tPos[1], tPos[2]); GetPlayerFacingAngle(playerid, tPos[3])
 
 //
-// Variables
+// Const Variables
 //
 
 new const stock carNames[212][MAX_PLAYER_NAME] = {
@@ -92,14 +92,12 @@ stock Ran(min, max)
 stock Log(string[], const fileLocation[] = "log.txt")
 {
     new File:logFile = fopen(fileLocation, io_append);
-    new logStr[2000];
 
     new _year, _month, _day, _hour, _minute, _second;
     getdate(_year, _month, _day);
     gettime(_hour, _minute, _second);
 
-    format(logStr,sizeof(logStr),"[%i/%i/%i - %02d:%02d:%02d] %s\r\n", _year, _month, _day, _hour, _minute, _second, string);
-    fwrite(logFile, logStr);
+    fwrite(logFile, sprintf("[%i/%i/%i - %02d:%02d:%02d] %s\r\n", _year, _month, _day, _hour, _minute, _second, string));
     fclose(logFile);
     return 1;
 }
@@ -109,16 +107,9 @@ stock bool:IsValidIndex(size, index)
     return index > 0 && index < size;
 }
 
-stock GetStringNumber(preString[], reward)
-{
-    new str[128];
-    format(str, sizeof(str), "%s%i", preString, reward);
-    return str;
-}
-
 stock KillTimers(timers[], len)
 {
-    // For all timers
+    // For each timers
     for (new t; t < len; t++)
     {
         // Kill timer
@@ -126,9 +117,26 @@ stock KillTimers(timers[], len)
     }
 }
 
-stock Float:GetDistanceBetweenPoints(Float:rx1, Float:ry1, Float:rz1, Float:rx2, Float:ry2, Float:rz2)
+stock Float:GetDistanceBetweenPoints(Float:x, Float:y, Float:z, Float:x2, Float:y2, Float:z2)
 {
-    return floatadd(floatadd(floatsqroot(floatpower(floatsub(rx1,rx2),2)),floatsqroot(floatpower(floatsub(ry1,ry2),2))),floatsqroot(floatpower(floatsub(rz1,rz2),2)));
+    return floatadd(floatadd(floatsqroot(floatpower(floatsub(x,x2),2)),floatsqroot(floatpower(floatsub(y,y2),2))),floatsqroot(floatpower(floatsub(z,z2),2)));
+}
+
+stock GetRandomPlayer()
+{
+    new players[MAX_PLAYERS];
+    new index;
+
+    for (new i; i < MAX_PLAYERS; i++)
+    {
+        if (IsPlayerConnected(i))
+        {
+            players[index] = i;
+            index++;
+        }
+    }
+
+    return players[Ran(0, index)];
 }
 
 //
@@ -137,16 +145,12 @@ stock Float:GetDistanceBetweenPoints(Float:rx1, Float:ry1, Float:rz1, Float:rx2,
 
 stock FPlayer(playerid, string[], pre[] = "> ")
 {
-    new str[500];
-    format(str, sizeof(str), "%s{00FF00}%s {DDDDFF}%s", pre, GetName(playerid), string);
-    return str;
+    return sprintf("%s{00FF00}%s {DDDDFF}%s", pre, GetName(playerid), string);
 }
 
 stock FPlayerText(playerid, string[], color[] = "~g~~h~")
 {
-    new str[200];
-    format(str, sizeof(str), "%s%s ~w~%s", color, GetName(playerid), string);
-    return str;
+    return sprintf("%s%s ~w~%s", color, GetName(playerid), string);
 }
 
 //
@@ -194,8 +198,7 @@ stock GetCarName(vehicleid)
     if (index < 0 || index > sizeof(carNames))
         return str;
 
-    format(str, sizeof(str), "%s", carNames[index]);
-    return str;
+    return carNames[index];
 }
 
 stock bool:HasEnoughMoney(playerid, amount = 0)
