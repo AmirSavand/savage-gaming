@@ -162,26 +162,26 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     }
 }
 
-// public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ)
-// {
-//     // Hit player
-//     if (hittype == BULLET_HIT_TYPE_PLAYER)
-//     {
-//         new t = GetPlayerTeam(hitid);
+public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ)
+{
+    // Hit player
+    if (hittype == BULLET_HIT_TYPE_PLAYER)
+    {
+        new t = GetPlayerTeam(hitid);
 
-//         // Player is in base
-//         if (GetPlayerDistanceFromPoint(hitid, teamSpawns[t][0], teamSpawns[t][1], teamSpawns[t][2]) <= BASE_DISTANCE)
-//         {
-//             // Alert player
-//             AlertPlayerText(playerid, "~r~~h~No base attack!");
+        // Player is in base
+        if (GetPlayerDistanceFromPoint(hitid, teamSpawns[t][0], teamSpawns[t][1], teamSpawns[t][2]) <= BASE_DISTANCE)
+        {
+            // Alert player
+            AlertPlayerText(playerid, "~r~~h~Try not to base attack");
 
-//             // Prevent damage
-//             return 0;
-//         }
-//     }
+            // Prevent damage
+            // return 0;
+        }
+    }
  
-//     return 1;
-// }
+    return 1;
+}
 
 // Functions
 
