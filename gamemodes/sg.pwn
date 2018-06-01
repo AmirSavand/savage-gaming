@@ -590,6 +590,16 @@ CMD:update(playerid)
 {
     new str[1000];
 
+    strcat(str, "{00FF00}6-2{DDDDFF}\n\n");
+    strcat(str, "Chase: Check points are now visible to everyone.\n");
+    strcat(str, "Skydive doesn't change your position anymore (only go up).\n");
+    strcat(str, "\n");
+    strcat(str, "{00FF00}6-1{DDDDFF}\n\n");
+    strcat(str, "Chase: Change time bewteen checkpoints to 8-16 seconds.\n");
+    strcat(str, "\n");
+    strcat(str, "{00FF00}5-31{DDDDFF}\n\n");
+    strcat(str, "New game mode: Chase.\n");
+    strcat(str, "\n");
     strcat(str, "{00FF00}5-28{DDDDFF}\n\n");
     strcat(str, "CTF: Flag bearer can not get in any vehicle.\n");
     strcat(str, "CTF: Flag bearer can not use skydive.\n");
