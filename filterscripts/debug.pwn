@@ -31,9 +31,9 @@ CMD:myteam(playerid)
     return 1;
 }
 
-CMD:mypos(playerid)
+CMD:pos(playerid, params[])
 {
     IMPORT_PLAYER_POS;
-    printf("[debug] Player %i pos: %f %f %f %f", playerid, pPos[0], pPos[1], pPos[2], pPos[3]);
+    printf("[debug] Position (%s): %f, %f, %f, %f", params, pPos[0], pPos[1], pPos[2], pPos[3]);
     return 1;
 }
