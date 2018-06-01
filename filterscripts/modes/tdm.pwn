@@ -131,10 +131,8 @@ public OnPlayerSpawn(playerid)
     new xo = Ran(-5, 5);
     new yo = Ran(-5, 5);
 
-    // Spawn player to team location with random offset
-    SetPlayerPos(playerid, teamSpawns[t][0] + xo, teamSpawns[t][1] + yo, teamSpawns[t][2]);
-    SetPlayerFacingAngle(playerid, teamSpawns[t][3]);
-    SetCameraBehindPlayer(playerid);
+    // Spawn player to team location
+    MovePlayer(playerid, teamSpawns[t][0] + xo, teamSpawns[t][1] + yo, teamSpawns[t][2], teamSpawns[t][2]);
     return 1;
 }
 

@@ -80,13 +80,9 @@ public OnPlayerSpawn(playerid)
     if (GetPlayerTeam(playerid) != NO_TEAM)
         SetupPlayer(playerid);
 
-    // Get random spawn point
-    new i = Ran(0, sizeof(playerSpawns));
-
     // Spawn player to random location
-    SetPlayerPos(playerid, playerSpawns[i][0], playerSpawns[i][1], playerSpawns[i][2]);
-    SetPlayerFacingAngle(playerid, playerSpawns[i][3]);
-    SetCameraBehindPlayer(playerid);
+    new i = Ran(0, sizeof(playerSpawns));
+    MovePlayer(playerid, playerSpawns[i][0], playerSpawns[i][1], playerSpawns[i][2], playerSpawns[i][3]);
     return 1;
 }
 
