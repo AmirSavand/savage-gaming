@@ -293,7 +293,7 @@ forward SkyDivePlayer(playerid);
 public  SkyDivePlayer(playerid)
 {
     // Send player to sky
-    IMPORT_PLAYER_POS; SetPlayerPos(playerid, pPos[0] + 100, pPos[1] + 100, pPos[2] + 400);
+    IMPORT_PLAYER_POS; SetPlayerPos(playerid, pPos[0], pPos[1], pPos[2] + 400);
 
     // Give parachute
     GivePlayerWeapon(playerid, WEAPON_PARACHUTE, 1);
