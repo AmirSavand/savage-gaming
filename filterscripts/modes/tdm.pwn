@@ -60,9 +60,9 @@ new timer[2];
 #include <streamer>
 
 #include "../../include/common"
-#include "../../include/random-package.inc"
-#include "../../include/battle-zone.inc"
-#include "../../include/first-blood.inc"
+#include "../../include/random-package"
+#include "../../include/battle-zone"
+#include "../../include/first-blood"
 
 // Callbacks
 

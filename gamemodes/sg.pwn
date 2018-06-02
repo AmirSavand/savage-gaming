@@ -576,8 +576,11 @@ CMD:mode(playerid, params[])
     // For all players
     for (new i; i < MAX_PLAYERS; i++)
     {
-        // Kill em
+        // Kill
         SetPlayerHealth(i, 0);
+
+        // Rest team
+        SetPlayerTeam(playerid, NO_TEAM);
 
         // Force selection
         ForceClassSelection(i);

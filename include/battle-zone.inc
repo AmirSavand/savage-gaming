@@ -3,6 +3,7 @@
 *
 * Check if player is out of battle zone and report.
 * Check OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Float:center[3]).
+*
 * Requires: BATTLE_ZONE_CENTER {0.0, 0.0, 0.0}, BATTLE_ZONE_DISTANCE 200.0
 *
 * by Amir Savand

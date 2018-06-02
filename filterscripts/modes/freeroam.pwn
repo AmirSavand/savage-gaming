@@ -9,6 +9,7 @@
 // Defines
 
 #define FILTERSCRIPT
+
 #define REGENERATION_AMOUNT     10
 #define REGENERATION_INTERVAL   500
 
@@ -38,7 +39,8 @@ new const Float:randomPackageSpawns[][3] = {
 
 #include "../../include/common"
 #include "../../include/regeneration"
-#include "../../include/random-package.inc"
+#include "../../include/random-package"
+#include "../../include/spawn"
 
 // Callbacks
 
