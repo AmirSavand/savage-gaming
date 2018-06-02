@@ -109,7 +109,7 @@ CMD:telto(playerid, params[]) // Teleport to a player
     return 1;
 }
 
-CMD:giveguns(playerid) // Give guns to a player
+CMD:giveguns(playerid) // Give guns to all players
 {
     // Check admin
     if (GetPlayerAdmin(playerid) < 5)
@@ -124,7 +124,7 @@ CMD:giveguns(playerid) // Give guns to a player
     return 1;
 }
 
-CMD:givemoney(playerid, params[]) // Add money (from server)
+CMD:givemoney(playerid, params[]) // Give money to a player (from server)
 {
     // Check admin
     if (GetPlayerAdmin(playerid) < 5)
@@ -133,7 +133,7 @@ CMD:givemoney(playerid, params[]) // Add money (from server)
     // Check params
     new target, amount;
     if (sscanf(params, "ui", target, amount))
-        return AlertPlayerDialog(playerid, "Command Usage", "/addmoney [player] [amount]");
+        return AlertPlayerDialog(playerid, "Command Usage", "/givemoney [player] [amount]");
 
     // Add money to target
     GivePlayerMoney(target, amount);
