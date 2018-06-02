@@ -10,7 +10,8 @@
 
 // Variables
 
-new Float:spawn[MAX_SPAWN_POINTS][MAX_SPAWN_AREAS][4];
+new Float:spawn[MAX_SPAWN_AREAS][MAX_SPAWN_POINTS][4];
+new spawnArea;
 
 // Functions
 
@@ -22,8 +23,19 @@ AddSpawn(area, point, Float:x, Float:y, Float:z, Float:a)
     spawn[area][point][3] = a;
 }
 
-SpawnPlayerInArea(playerid, area)
+RespawnPlayer(playerid, point = -1, Float:xOffset = 0.0, Float:yOffset = 0.0)
 {
     new p = Ran(0, MAX_SPAWN_POINTS);
-    MovePlayer(playerid, spawn[area][p][0], spawn[area][p][1], spawn[area][p][2], spawn[area][p][3]);
+    new a = spawnArea;
+
+    if (point == -1) p = point;
+
+    MovePlayer(playerid, spawn[a][p][0] + xOffset, spawn[a][p][1] + yOffset, spawn[a][p][2], spawn[a][p][3]);
+
+    return p;
+}
+
+stock SetSpawnArea(area)
+{
+    spawnArea = area;
 }
