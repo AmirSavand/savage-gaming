@@ -145,12 +145,16 @@ stock GetRandomPlayer()
 
 stock FPlayer(playerid, string[], pre[] = "> ")
 {
-    return sprintf("%s{00FF00}%s {DDDDFF}%s", pre, GetName(playerid), string);
+    new str[500];
+    format(str, sizeof(str), "%s{00FF00}%s {DDDDFF}%s", pre, GetName(playerid), string);
+    return str;
 }
 
 stock FPlayerText(playerid, string[], color[] = "~g~~h~")
 {
-    return sprintf("%s%s ~w~%s", color, GetName(playerid), string);
+    new str[200];
+    format(str, sizeof(str), "%s%s ~w~%s", color, GetName(playerid), string);
+    return str;
 }
 
 //
