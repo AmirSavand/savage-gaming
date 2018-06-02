@@ -9,12 +9,16 @@
 // Defines
 
 #define FILTERSCRIPT
-#define MAX_TEAMS               3
-#define DIALOG_TEAM             600
-#define BASE_DISTANCE           20
+#define MAX_TEAMS                   3
+#define DIALOG_TEAM                 600
+#define BASE_DISTANCE               20
 
-#define BATTLE_ZONE_DISTANCE    200.0
-#define BATTLE_ZONE_CENTER      {-1511.0, 2635.0, 55.0}
+#define MAX_SPAWN_AREAS             1
+#define MAX_SPAWN_POINTS            3
+#define MAX_SPAWN_POINTS_PACKAGE    9
+
+#define BATTLE_ZONE_DISTANCE        200.0
+#define BATTLE_ZONE_CENTER          {-1511.0, 2635.0, 55.0}
 
 // Variables
 
@@ -33,24 +37,6 @@ new const teamNames[MAX_TEAMS][] = {
 new teamMapicons[MAX_TEAMS];
 new Text3D:teamLabels[MAX_TEAMS];
 
-new const Float:teamSpawns[MAX_TEAMS][4] = {
-    {-1408.23, 2640.41, 55.68,  90.0}, // Blue team
-    {-1516.00, 2535.30, 55.68,   0.0}, // Red team
-    {-1556.42, 2711.65, 55.83, 160.0}  // Green team
-};
-
-new const Float:randomPackageSpawns[][3] = {
-    {-1438.93, 2614.25, 61.17},
-    {-1508.78, 2634.49, 55.83},
-    {-1506.40, 2590.81, 61.83},
-    {-1519.11, 2564.13, 59.18},
-    {-1484.42, 2641.93, 62.32},
-    {-1505.53, 2662.14, 55.83},
-    {-1433.98, 2662.55, 55.83},
-    {-1459.96, 2629.39, 58.77},
-    {-1483.40, 2613.75, 58.78}
-};
-
 new timer[2];
 
 // Includes
@@ -60,7 +46,8 @@ new timer[2];
 #include <streamer>
 
 #include "../../include/common"
-#include "../../include/random-package"
+#include "../../include/spawn"
+#include "../../include/spawn-package"
 #include "../../include/battle-zone"
 #include "../../include/first-blood"
 
@@ -70,22 +57,37 @@ public OnFilterScriptInit()
 {
     print("\n > TDM filterscript by Amir Savand.\n");
 
-    // Mapicon for spawn points
+    // Setup spawns
+    AddSpawn(0, 0, -1408.23, 2640.41, 55.68,  90.0); // Blue team
+    AddSpawn(0, 1, -1516.00, 2535.30, 55.68,   0.0); // Red team
+    AddSpawn(0, 2, -1556.42, 2711.65, 55.83, 160.0); // Green team
+
+    // Setup package spawns
+    AddPackageSpawn(0, 0, -1438.93, 2614.25, 61.17);
+    AddPackageSpawn(0, 1, -1508.78, 2634.49, 55.83);
+    AddPackageSpawn(0, 2, -1506.40, 2590.81, 61.83);
+    AddPackageSpawn(0, 3, -1519.11, 2564.13, 59.18);
+    AddPackageSpawn(0, 4, -1484.42, 2641.93, 62.32);
+    AddPackageSpawn(0, 5, -1505.53, 2662.14, 55.83);
+    AddPackageSpawn(0, 6, -1433.98, 2662.55, 55.83);
+    AddPackageSpawn(0, 7, -1459.96, 2629.39, 58.77);
+    AddPackageSpawn(0, 8, -1483.40, 2613.75, 58.78);
+
+    // Setup team bases
     for (new t; t < MAX_TEAMS; t++)
     {
         // Mapicon and label
-        teamMapicons[t] = CreateDynamicMapIcon(teamSpawns[t][0], teamSpawns[t][1], teamSpawns[t][2], 58, -1, -1, -1, -1, 1000);
-        teamLabels[t]   = CreateDynamic3DTextLabel(teamNames[t], teamColors[t], teamSpawns[t][0], teamSpawns[t][1], teamSpawns[t][2] + 0.5, BASE_DISTANCE);
+        teamMapicons[t] = CreateDynamicMapIcon(spawn[0][t][0], spawn[0][t][1], spawn[0][t][2], 58, -1, -1, -1, -1, 1000);
+        teamLabels[t]   = CreateDynamic3DTextLabel(teamNames[t], teamColors[t], spawn[0][t][0], spawn[0][t][1], spawn[0][t][2] + 0.5, BASE_DISTANCE);
     }
 
-    // Initial all players for TDM
+    // Setup players
     for (new i; i < MAX_PLAYERS; i++)
         SetupPlayer(i);
 
-    // Set timers
-    timer[0] = SetTimer("SpawnRandomPackage", 45000, 1);
+    // Setup timers
+    timer[0] = SetTimer("RespawnPackage", 45000, 1);
     timer[1] = SetTimer("CheckPlayerBattleZoneDistance", 5000, 1);
-    return 1;
 }
 
 public OnFilterScriptExit()
@@ -99,13 +101,11 @@ public OnFilterScriptExit()
 
     // Kill
     KillTimers(timer, sizeof(timer));
-    return 1;
 }
 
 public OnPlayerConnect(playerid)
 {
     SetupPlayer(playerid);
-    return 1;
 }
 
 public OnPlayerRequestClass(playerid, classid)
@@ -115,38 +115,28 @@ public OnPlayerRequestClass(playerid, classid)
     SetPlayerFacingAngle(playerid, 90.0);
     SetPlayerCameraPos(playerid, -1539.27, 2661.18, 58.0);
     SetPlayerCameraLookAt(playerid, -1534.91, 2659.46, 56.28);
-    return 1;
 }
 
 public OnPlayerSpawn(playerid)
 {
-    // Initial player again (if not already)
+    // Setup player again (if not already)
     if (GetPlayerTeam(playerid) == NO_TEAM)
         SetupPlayer(playerid);
 
-    // Get player team
-    new t = GetPlayerTeam(playerid);
-
-    // Random offset of position
-    new xo = Ran(-5, 5);
-    new yo = Ran(-5, 5);
-
-    // Spawn player to team location
-    MovePlayer(playerid, teamSpawns[t][0] + xo, teamSpawns[t][1] + yo, teamSpawns[t][2], teamSpawns[t][2]);
-    return 1;
+    // Spawn player to team location (with offset)
+    RespawnPlayer(playerid, GetPlayerTeam(playerid), Ran(-5, 5), Ran(-5, 5));
 }
 
 public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 {
     // Check for package
-    CheckRandomPackage(playerid, pickupid);
+    CheckPackage(playerid, pickupid);
 }
 
 public OnPlayerDeath(playerid, killerid, reason)
 {
     // First blood
     CheckFirstBlood(killerid);
-    return 1;
 }
 
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
@@ -170,7 +160,7 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
         new t = GetPlayerTeam(hitid);
 
         // Player is in base
-        if (GetPlayerDistanceFromPoint(hitid, teamSpawns[t][0], teamSpawns[t][1], teamSpawns[t][2]) <= BASE_DISTANCE)
+        if (GetPlayerDistanceFromPoint(hitid, spawn[0][t][0], spawn[0][t][1], spawn[0][t][2]) <= BASE_DISTANCE)
         {
             // Alert player
             AlertPlayerText(playerid, "~r~~h~Try not to base attack");
@@ -179,8 +169,18 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
             // return 0;
         }
     }
- 
-    return 1;
+}
+
+// Events
+
+forward OnModeChange(mode, area);
+public  OnModeChange(mode, area)
+{
+    if (IsValidIndex(area, MAX_SPAWN_AREAS))
+    {
+        SetSpawnArea(area);
+        SetPackageSpawnArea(area);
+    }
 }
 
 // Functions
