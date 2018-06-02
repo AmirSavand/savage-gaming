@@ -585,8 +585,8 @@ CMD:mode(playerid, params[])
     return 1;
 }
 
-CMD:updates(playerid) return cmd_update(playerid);
-CMD:update(playerid)
+CMD:update(playerid) return cmd_updates(playerid);
+CMD:updates(playerid)
 {
     new str[1000];
 
