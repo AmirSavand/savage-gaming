@@ -269,7 +269,7 @@ ShowCheckpoint(playerid)
         else
         {
             // Show next checkpoint
-            checkpoint = CreateDynamicCP(checkpoints[cp][0], checkpoints[cp][1], checkpoints[cp][2], 2);
+            checkpoint = CreateDynamicCP(checkpoints[cp][0], checkpoints[cp][1], checkpoints[cp][2], 2, -1, -1, playerid, 1000);
 
             // Reset checkpoint time
             cpTime = 0;
