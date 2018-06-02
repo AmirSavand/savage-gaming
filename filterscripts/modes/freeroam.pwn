@@ -13,14 +13,10 @@
 #define REGENERATION_AMOUNT     10
 #define REGENERATION_INTERVAL   500
 
-// Variables
+#define MAX_SPAWN_POINTS        4
+#define MAX_SPAWN_AREAS         1
 
-new const Float:playerSpawns[][4] = {
-    {-2029.94, 156.33, 28.83, 271.51},
-    {-1955.48, 297.43, 35.46, 128.17},
-    {-2089.47, 303.52, 41.07, 251.79},
-    {-1969.67, 132.14, 27.68 , 90.33}
-};
+// Variables
 
 new const Float:randomPackageSpawns[][3] = {
     {-2023.29, 161.38, 33.93},
@@ -31,6 +27,8 @@ new const Float:randomPackageSpawns[][3] = {
     {-1973.57, -78.13, 35.68},
     {-1879.32, 300.66, 41.04}
 };
+
+new timer[2];
 
 // Includes
 
@@ -48,15 +46,25 @@ public OnFilterScriptInit()
 {
     print("\n > Freeroam filterscript by Amir Savand.\n");
 
-    // Initial all players
+    // Setup spawn points
+    AddSpawn(0, 0, -2029.94, 156.33, 28.83, 271.51);
+    AddSpawn(0, 1, -1955.48, 297.43, 35.46, 128.17);
+    AddSpawn(0, 2, -2089.47, 303.52, 41.07, 251.79);
+    AddSpawn(0, 3, -1969.67, 132.14, 27.68 , 90.33);
+
+    // Setup all players
     for (new i = 0; i < MAX_PLAYERS; i++)
         SetupPlayer(i);
 
-    // Start spawning random packages
-    SetTimer("SpawnRandomPackage", 60000, 1);
+    // Setup timers
+    timer[0] = SetTimer("SpawnRandomPackage", 60000, 1);
+    timer[1] = SetTimer("RegeneratePlayers", REGENERATION_INTERVAL, 1);
+    return 1;
+}
 
-    // Regenerate players over time
-    SetTimer("RegeneratePlayers", REGENERATION_INTERVAL, 1);
+public OnFilterScriptExit()
+{
+    KillTimers(timer, sizeof(timer));
     return 1;
 }
 
@@ -78,13 +86,7 @@ public OnPlayerRequestClass(playerid, classid)
 
 public OnPlayerSpawn(playerid)
 {
-    // Initial player again (if not already)
-    if (GetPlayerTeam(playerid) != NO_TEAM)
-        SetupPlayer(playerid);
-
-    // Spawn player to random location
-    new i = Ran(0, sizeof(playerSpawns));
-    MovePlayer(playerid, playerSpawns[i][0], playerSpawns[i][1], playerSpawns[i][2], playerSpawns[i][3]);
+    SpawnPlayerInArea(playerid, 0);
     return 1;
 }
 
