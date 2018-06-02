@@ -37,3 +37,9 @@ CMD:pos(playerid, params[])
     printf("[debug] Position (%s): %f, %f, %f, %f", params, pPos[0], pPos[1], pPos[2], pPos[3]);
     return 1;
 }
+
+CMD:armor(playerid)
+{
+    SetPlayerArmour(playerid, 200);
+    return 1;
+}
