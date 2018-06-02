@@ -374,7 +374,7 @@ CMD:giveitem(playerid, params[])
         return AlertPlayerDialog(playerid, "Command Usage", "/giveitem [player] [item]");
 
     // Check id
-    if (!IsValidIndex(sizeof(itemNames), item))
+    if (!IsValidIndex(item, sizeof(itemNames)))
         return AlertPlayerText(playerid, "~r~~h~Invalid item id");
 
     GivePlayerItem(targetid, item, 1);

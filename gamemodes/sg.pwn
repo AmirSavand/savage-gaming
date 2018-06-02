@@ -3,6 +3,8 @@
 *
 * Savage Gaming gamemode that works with minigame filterscripts.
 *
+* Events: OnModeChange(mode, area)
+*
 * by Amir Savand
 */
 
@@ -45,11 +47,11 @@
 
 #define TIME_SERVER_UPDATE                  200
 
-#define MODE_FREEROAM                       1
-#define MODE_FFA                            2
-#define MODE_TDM                            3
-#define MODE_CTF                            4
-#define MODE_CHASE                          5
+#define MODE_FREEROAM                       0
+#define MODE_FFA                            1
+#define MODE_TDM                            2
+#define MODE_CTF                            3
+#define MODE_CHASE                          4
 
 // Includes
 
@@ -110,7 +112,7 @@ public OnGameModeInit()
     UsePlayerPedAnims();
 
     // Gang Skins
-    AddGangSkins();
+    SetupGangSkins();
 
     // Gamemode timer
     SetTimer("OnServerUpdate", TIME_SERVER_UPDATE, 1);
@@ -119,8 +121,7 @@ public OnGameModeInit()
     SetupTitleTextdraw("Savage Gaming");
 
     // Mapicons
-    SetupMapicons(1000.0);
-    return 1;
+    SetupMapicons(1000);
 }
 
 public OnPlayerConnect(playerid)
@@ -138,14 +139,12 @@ public OnPlayerConnect(playerid)
 
     // Show player recent changes
     cmd_update(playerid);
-    return 1;
 }
 
 public OnPlayerDisconnect(playerid)
 {
     // Announce player is leaving
     SendDeathMessage(INVALID_PLAYER_ID, playerid, 201);
-    return 1;
 }
 
 public OnPlayerSpawn(playerid)
@@ -163,7 +162,6 @@ public OnPlayerSpawn(playerid)
 
     // Update player label
     UpdatePlayerLabel(playerid, sprintf("{FF00FF}Rank %i", GetPVarInt(playerid, "rank")));
-    return 1;
 }
 
 public OnPlayerDeath(playerid, killerid, reason)
@@ -191,7 +189,6 @@ public OnPlayerDeath(playerid, killerid, reason)
 
     // Drop cash
     DropMoneyFromPlayer(playerid);
-    return 1;
 }
 
 public OnPlayerCommandPerformed(playerid, cmdtext[], success)
@@ -213,7 +210,6 @@ public OnPlayerClickMap(playerid, Float:fX,  Float:fY, Float:fZ)
         // Move car
         else SetVehiclePos(PVI, fX, fY, fZ);
     }
-    return 1;
 }
 
 public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
@@ -272,14 +268,12 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
         // Deal extra damage to player
         GivePlayerDamage(playerid, amount * multiplier);
     }
-    return 1;
 }
 
 public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 {
     // Pickup cash
     CheckPlayerMoneyDropPickup(playerid, pickupid);
-    return 1;
 }
 
 // Public functions
@@ -306,8 +300,8 @@ public  OnPlayerGetItem(playerid, itemName[], amount)
     AlertPlayerDialog(playerid, "Info", sprintf("{DDDDFF}You've got an item: {FFFF00}%s {DDDDFF}(x%i)", itemName, amount));
 }
 
-forward OnPlayerCollectRandomPackage(playerid);
-public  OnPlayerCollectRandomPackage(playerid)
+forward OnPlayerCollectPackage(playerid);
+public  OnPlayerCollectPackage(playerid)
 {
     // Get random index from packages
     new package = Ran(0, MAX_RANDOM_PACKAGES);
@@ -316,7 +310,7 @@ public  OnPlayerCollectRandomPackage(playerid)
     if (DoesPlayerHaveWeapon(playerid, WEAPON_MINIGUN) && package == RANDOM_PACKAGE_RPG)
     {
         // Give another package
-        OnPlayerCollectRandomPackage(playerid);
+        OnPlayerCollectPackage(playerid);
         return;
     }
 
@@ -468,7 +462,7 @@ public  OnPlayerAttemptToUseItem(playerid, item, itemName[])
         // Can't repair car if not in a car
         if (!IsPlayerInAnyVehicle(playerid))
         {
-            // Alert
+            // Alert and prevent usage
             AlertPlayerDialog(playerid, "Info", "You need to be in a vehicle to use this item.");
             return 0;
         }
@@ -552,9 +546,9 @@ CMD:mode(playerid, params[])
         return 0;
 
     // Check params
-    new mode;
-    if (sscanf(params, "i", mode) || mode < MODE_FREEROAM || mode > MODE_CHASE)
-        return AlertPlayerDialog(playerid, "Command Usage", "/mode [1-5]\n(Freeroam, FFA, TDM, CTF, Chase)");
+    new mode, area;
+    if (sscanf(params, "ii", mode, area))
+        return AlertPlayerDialog(playerid, "Command Usage", "/mode [mode: 0-4] [area]\nModes: Freeroam - FFA - TDM - CTF - Chase");
 
     // Unload modes
     SendRconCommand("unloadfs modes/freeroam");
@@ -580,11 +574,14 @@ CMD:mode(playerid, params[])
         SetPlayerHealth(i, 0);
 
         // Rest team
-        SetPlayerTeam(playerid, NO_TEAM);
+        SetPlayerTeam(i, NO_TEAM);
 
         // Force selection
         ForceClassSelection(i);
     }
+
+    // Trigger mode change event
+    CallRemoteFunction("OnModeChange", "ii", mode, area);
     return 1;
 }
 
@@ -594,7 +591,8 @@ CMD:updates(playerid)
     new str[1000];
 
     strcat(str, "{00FF00}6-2{DDDDFF}\n\n");
-    strcat(str, "Chase: Check points are now visible to everyone.\n");
+    strcat(str, "Add 1 more map to each game mode (2 maps for each in total).\n");
+    strcat(str, "Freeroam: Remove the package from location where you couldn't get the package.\n");
     strcat(str, "Skydive doesn't change your position anymore (only go up).\n");
     strcat(str, "\n");
     strcat(str, "{00FF00}6-1{DDDDFF}\n\n");

@@ -1,8 +1,7 @@
 /**
 * Gang Skins
 *
-* Gang skins for player classes
-* Call AddGangSkins() in GameModeInit
+* Gang skins for player classes.
 *
 * by Amir Savand
 */
@@ -14,7 +13,7 @@ new gangSkins[] = {
     115, 116
 };
 
-AddGangSkins()
+SetupGangSkins()
 {
     // For all gang skins
     for (new i; i < sizeof(gangSkins); i++)

@@ -102,7 +102,7 @@ stock Log(string[], const fileLocation[] = "log.txt")
     return 1;
 }
 
-stock bool:IsValidIndex(size, index)
+stock bool:IsValidIndex(index, size)
 {
     return index > 0 && index < size;
 }
