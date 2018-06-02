@@ -119,6 +119,7 @@ CMD:giveguns(playerid) // Give guns to all players
     {
         GivePlayerWeapon(i, WEAPON_UZI, 500);
         GivePlayerWeapon(i, WEAPON_AK47, 150);
+        GivePlayerWeapon(i, WEAPON_GRENADE, 2);
     }
 
     return 1;
