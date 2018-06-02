@@ -8,29 +8,24 @@
 
 #define FILTERSCRIPT
 
-#define STATUS_STOP     0
-#define STATUS_FIND     1
-#define STATUS_START    2
+#define STATUS_STOP              0
+#define STATUS_FIND              1
+#define STATUS_START             2
 
-#define TIME_MIN        8
-#define TIME_MAX        16
-#define TIME_FAIL       24
+#define TIME_MIN                 8
+#define TIME_MAX                 16
+#define TIME_FAIL                24
 
-#define REWARD          8000
-#define REWARD_FAIL     1000
+#define REWARD                   8000
+#define REWARD_FAIL              1000
 
-#define DISTANCE_MIN    18
-#define DISTANCE_MAX    60
+#define DISTANCE_MIN             18
+#define DISTANCE_MAX             60
+
+#define MAX_SPAWN_AREAS          1
+#define MAX_SPAWN_POINTS         5
 
 // Variables
-
-new const Float:playerSpawns[][4] = {
-    {1026.32, -1341.26, 13.72, 134.93},
-    { 973.90, -1309.28, 13.38, 221.93},
-    {1045.17, -1313.86, 13.54, 154.81},
-    {1015.14, -1334.92, 13.54, 174.99},
-    { 986.97, -1387.31, 13.61, 327.50}
-};
 
 new const Float:checkpoints[][3] = {
     { 960.38, -1318.27, 13.14},
@@ -61,6 +56,7 @@ new const Float:checkpoints[][3] = {
 #include <streamer>
 
 #include "../../include/common"
+#include "../../include/spawn"
 
 // Variables
 
@@ -80,25 +76,29 @@ public OnFilterScriptInit()
 {
     print("\n > Chase filterscript by Amir Savand.\n");
 
-    // Setup all players
+    // Setup spawns
+    AddSpawn(0, 0, 1026.32, -1341.26, 13.72, 134.93);
+    AddSpawn(0, 1,  973.90, -1309.28, 13.38, 221.93);
+    AddSpawn(0, 2, 1045.17, -1313.86, 13.54, 154.81);
+    AddSpawn(0, 3, 1015.14, -1334.92, 13.54, 174.99);
+    AddSpawn(0, 4,  986.97, -1387.31, 13.61, 327.50);
+
+    // Setup players
     for (new i = 0; i < MAX_PLAYERS; i++)
         SetupPlayer(i);
 
-    // Timer
+    // Setup timer
     timer = SetTimer("OnUpdate", 1000, true);
-    return 1;
 }
 
 public OnFilterScriptExit()
 {
     KillTimer(timer);
-    return 1;
 }
 
 public OnPlayerConnect(playerid)
 {
     SetupPlayer(playerid);
-    return 1;
 }
 
 public OnPlayerRequestClass(playerid, classid)
@@ -108,18 +108,15 @@ public OnPlayerRequestClass(playerid, classid)
     SetPlayerFacingAngle(playerid, 320.0);
     SetPlayerCameraPos(playerid, 1055.36, -1327.60, 33.38);
     SetPlayerCameraLookAt(playerid, 1039.28, -1343.81, 29.45);
-    return 1;
 }
 
 public OnPlayerSpawn(playerid)
 {
     // Spawn player to random location
-    new i = Ran(0, sizeof(playerSpawns));
-    MovePlayer(playerid, playerSpawns[i][0], playerSpawns[i][1], playerSpawns[i][2], playerSpawns[i][3]);
+    RespawnPlayer(playerid);
 
     // Rest weapons
     ResetPlayerWeapons(playerid);
-    return 1;
 }
 
 public OnPlayerStateChange(playerid, newstate, oldstate)
@@ -157,6 +154,17 @@ public OnPlayerEnterCheckpoint(playerid)
 {
     // Handle checkpoints
     ShowCheckpoint(playerid);
+}
+
+// Events
+
+forward OnModeChange(mode, area);
+public  OnModeChange(mode, area)
+{
+    if (IsValidIndex(area, MAX_SPAWN_AREAS))
+    {
+        SetSpawnArea(area);
+    }
 }
 
 // Functions

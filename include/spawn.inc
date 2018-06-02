@@ -28,7 +28,7 @@ RespawnPlayer(playerid, point = -1, Float:xOffset = 0.0, Float:yOffset = 0.0)
     new p = Ran(0, MAX_SPAWN_POINTS);
     new a = spawnArea;
 
-    if (point == -1) p = point;
+    if (point != -1) p = point;
 
     MovePlayer(playerid, spawn[a][p][0] + xOffset, spawn[a][p][1] + yOffset, spawn[a][p][2], spawn[a][p][3]);
 

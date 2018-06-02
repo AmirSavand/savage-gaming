@@ -14,8 +14,8 @@
 #define MAX_SPAWN_POINTS            13
 #define MAX_SPAWN_POINTS_PACKAGE    12
 
-#define BATTLE_ZONE_DISTANCE    250.0
-#define BATTLE_ZONE_CENTER      {662.0, -546.0, 16.0}
+#define BATTLE_ZONE_DISTANCE        250.0
+#define BATTLE_ZONE_CENTER          {662.0, -546.0, 16.0}
 
 // Variables
 

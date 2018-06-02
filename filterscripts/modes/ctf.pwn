@@ -226,6 +226,16 @@ public  OnPlayerAttemptToUseItem(playerid, item, itemName[])
     return 1;
 }
 
+forward OnModeChange(mode, area);
+public  OnModeChange(mode, area)
+{
+    if (IsValidIndex(area, MAX_SPAWN_AREAS))
+    {
+        SetSpawnArea(area);
+        SetPackageSpawnArea(area);
+    }
+}
+
 // Functions
 
 SetupPlayer(playerid)
