@@ -23,21 +23,20 @@ RegeneratePlayer(playerid, amount = 10, bool:health = true, bool:armour = false)
         SetPlayerArmour(playerid, ar + amount);
 
     // Maximum 100
-    ClampPlayerHealthAndArmour(playerid);
-    return 1;
+    ClampPlayerHealthAndArmour(playerid, amount);
 }
 
-ClampPlayerHealthAndArmour(playerid)
+ClampPlayerHealthAndArmour(playerid, limit)
 {
     // Get healt and armour
     new Float:hp = GetHealth(playerid);
     new Float:ar = GetArmour(playerid);
 
     // Clamp health
-    if (hp >= 100)
+    if (100 > hp > hp + limit)
         SetPlayerHealth(playerid, 100);
 
     // Clamp armour
-    if (ar >= 100)
+    if (100 > ar > ar + limit)
         SetPlayerArmour(playerid, 100);
 }
