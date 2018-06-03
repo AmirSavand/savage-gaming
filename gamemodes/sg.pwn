@@ -590,38 +590,26 @@ CMD:updates(playerid)
 {
     new str[1000];
 
-    strcat(str, "{00FF00}6-3{DDDDFF}\n\n");
+    strcat(str, "\n{00FFFF}06/03\n====================\n{DDDDFF}");
     strcat(str, "Fix 200 armor turns to 100 when having armour regeneration.\n");
-    strcat(str, "\n");
-    strcat(str, "{00FF00}6-2{DDDDFF}\n\n");
+
+    strcat(str, "\n{00FFFF}06/02\n====================\n{DDDDFF}");
     strcat(str, "Add 1 more map to each game mode (2 maps for each in total).\n");
     strcat(str, "Freeroam: Remove the package from location where you couldn't get the package.\n");
     strcat(str, "Skydive doesn't change your position anymore (only go up).\n");
-    strcat(str, "\n");
-    strcat(str, "{00FF00}6-1{DDDDFF}\n\n");
+    
+    strcat(str, "\n{00FFFF}06/01\n====================\n{DDDDFF}");
     strcat(str, "Chase: Change time bewteen checkpoints to 8-16 seconds.\n");
-    strcat(str, "\n");
-    strcat(str, "{00FF00}5-31{DDDDFF}\n\n");
+    
+    strcat(str, "\n{00FFFF}05/31\n====================\n{DDDDFF}");
     strcat(str, "New game mode: Chase.\n");
-    strcat(str, "\n");
-    strcat(str, "{00FF00}5-28{DDDDFF}\n\n");
+    
+    strcat(str, "\n{00FFFF}05/28\n====================\n{DDDDFF}");
     strcat(str, "CTF: Flag bearer can not get in any vehicle.\n");
     strcat(str, "CTF: Flag bearer can not use skydive.\n");
     strcat(str, "CTF: You now get +20 Sniper on spawn.\n");
     strcat(str, "CTF: Added battle zone support.\n");
     strcat(str, "CTF: New random package: 2x damage for 10 seconds.\n");
-    // strcat(str, "\n");
-    // strcat(str, "{00FF00}5-25{DDDDFF}\n\n");
-    // strcat(str, "Ranks now cost 50 percent less ($5,000 for each rank)\n");
-    // strcat(str, "Sell items by typing /sellitem\n");
-    // strcat(str, "Added speed indicator (km/h)\n");
-    // strcat(str, "Added mapicons of Pay n' Sprays and Mod Shops\n");
-    // strcat(str, "Added new perk: Armor Regeneration\n");
-    // strcat(str, "First blood now gives $1,000\n");
-    // strcat(str, "Double kill now gives $500\n");
-    // strcat(str, "Changed ranks: RPG, HS Rocket, More engine\n");
-    // strcat(str, "See command and shortcut list by typing /cmd /key\n");
-    // strcat(str, "See recent updates again by typing /update\n");
     
     AlertPlayerDialog(playerid, "{00FF00}Recent Changes and Updates", str);
     return 1;
