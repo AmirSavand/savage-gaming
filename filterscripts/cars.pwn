@@ -311,6 +311,13 @@ SetupCars() // Fetch all cars from db and store data in Car[][]
     // Don't load if already loaded
     if (loaded) return;
 
+    // Reset admin cars
+    for (new i; i < MAX_PLAYERS; i++)
+    {
+        DestroyVehicle(adminCar[i]);
+        adminCar[i] = -1;
+    }
+
     // Destroy cars if already loaded
     DestroyCars();
 
@@ -722,6 +729,10 @@ CMD:setcartype(playerid, params[]) // Change car type and update to db
     Car[uid][type] = carType;
     AlertPlayerText(playerid, "~p~~b~Type changed");
 
+    // Reset owner if type is TYPE_PURCHASE_ONCE
+    if (carType == TYPE_PURCHASE_ONCE)
+        Car[uid][owner] = 0;
+
     // Update info
     UpdateCar(uid);
     return 1;
@@ -819,6 +830,43 @@ CMD:resetcarowner(playerid, params[]) // Reset car owner and update to db
     // Set owner
     Car[uid][owner] = 0;
     AlertPlayerText(playerid, "~p~~b~Owner reset");
+    UpdateCar(uid);
+    return 1;
+}
+
+CMD:setcarinfo(playerid, params[]) // Set car info (type, price, engine)
+{
+    if (!GetPlayerAdmin(playerid)) 
+        return 0;
+
+    // Is in a car
+    if (!IsPlayerInAnyVehicle(playerid))
+        return AlertPlayerText(playerid, "~r~~h~Not in vehicle");
+    
+    new uid = GetCarUID(PVI);
+    if (!uid) return AlertPlayerText(playerid, "~r~~h~Not a database vehicle");
+
+    // Get info
+    new carType, carPrice, carEngine;
+    if (sscanf(params, "iii", carType, carPrice, carEngine))
+        return AlertPlayerText(playerid, "~r~~h~You must set type, price and engine");
+
+    // Set car info
+    Car[uid][type]   = carType;
+    Car[uid][price]  = carPrice;
+    Car[uid][engine] = carEngine;
+
+    // Update car engine
+    SetVehicleHealth(PVI, carEngine);
+    
+    // Reset owner if type is TYPE_PURCHASE_ONCE
+    if (carType == TYPE_PURCHASE_ONCE)
+        Car[uid][owner] = 0;
+
+    // Alert
+    AlertPlayerText(playerid, "~p~~b~Info changed");
+
+    // Update info
     UpdateCar(uid);
     return 1;
 }
