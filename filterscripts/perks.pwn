@@ -25,9 +25,9 @@
 #include <sscanf>
 #include <zcmd>
 
-#include "../../include/common"
-#include "../../include/database"
-#include "../../include/regeneration"
+#include "../include/common"
+#include "../include/database"
+#include "../include/regeneration"
 
 // Enum
 

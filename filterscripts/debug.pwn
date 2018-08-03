@@ -13,7 +13,7 @@
 #include <a_samp>
 #include <zcmd>
 
-#include "../../include/common"
+#include "../include/common"
 
 // Callbacks
 

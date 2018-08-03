@@ -25,7 +25,7 @@
 #include <sscanf>
 #include <zcmd>
 
-#include "../../include/common"
+#include "../include/common"
 
 // Variables
 
