@@ -231,7 +231,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
         {
             // Assault
             case WEAPON_M4:             multiplier = 1.2;
-            case WEAPON_AK47:           multiplier = 1.2;
+            case WEAPON_AK47:           multiplier = 1.4;
             case WEAPON_MP5:            multiplier = 1.5;
 
             // Snipers
