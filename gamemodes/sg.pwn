@@ -27,6 +27,7 @@
 #define RANDOM_PACKAGE_AMOUNT_ARMOR         200
 #define RANDOM_PACKAGE_AMOUNT_RPG           4
 #define RANDOM_PACKAGE_AMOUNT_RANDOM_ITEM   2
+#define RANDOM_PACKAGE_AMOUNT_DOUBLE_DAMAGE 60
 
 #define KILL_STREAK_MINIGUN                 100
 #define KILL_STREAK_MINIGUN_2               150
@@ -42,8 +43,6 @@
 #define RANK_COST_FACTOR                    5000 + 10000
 
 #define COOL_TEXTDRAW_TIME                  5
-
-#define DOUBLE_DAMAGE_DURATION              10000
 
 #define TIME_SERVER_UPDATE                  200
 
@@ -339,8 +338,8 @@ public  OnPlayerCollectPackage(playerid)
         }
         case RANDOM_PACKAGE_DOUBLE_DAMAGE: // Double damage
         {
-            SetPlayerDoubleDamage(playerid);
-            AlertPlayerText(playerid, "~r~~h~2x Damage~n~~w~for 10 seconds");
+            SetPlayerDoubleDamage(playerid, RANDOM_PACKAGE_AMOUNT_DOUBLE_DAMAGE);
+            AlertPlayerText(playerid, sprintf("~r~~h~2x Damage~n~~w~for %i seconds", RANDOM_PACKAGE_AMOUNT_DOUBLE_DAMAGE));
         }
     }
 

@@ -3,8 +3,6 @@
 *
 * Double damage for player for a duration.
 *
-* Requirements: DOUBLE_DAMAGE_DURATION (10000)
-*
 * by Amir Savand
 */
 
@@ -15,7 +13,7 @@ new playerDoubleDamageTimer[MAX_PLAYERS];
 
 // Functions
 
-SetPlayerDoubleDamage(playerid, duration = DOUBLE_DAMAGE_DURATION)
+SetPlayerDoubleDamage(playerid, duration)
 {
     playerDoubleDamage[playerid] = true;
     KillTimer(playerDoubleDamageTimer[playerid]);
