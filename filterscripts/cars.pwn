@@ -401,7 +401,7 @@ SetupCarMods(uid) // Initial all car mods (comps, colors, paintjob, etc...)
     }
 
     // Load the color and paintjob
-    ChangeVehicleColor(Car[uid][id], Car[uid][color][0], Car[uid][color][1]);
+    // ChangeVehicleColor(Car[uid][id], Car[uid][color][0], Car[uid][color][1]);
     ChangeVehiclePaintjob(Car[uid][id], Car[uid][color][2]);
     return 1;
 }
