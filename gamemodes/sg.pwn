@@ -51,6 +51,7 @@
 #define MODE_TDM                            2
 #define MODE_CTF                            3
 #define MODE_CHASE                          4
+#define MODE_CRASHERS                       5
 
 // Includes
 
@@ -90,6 +91,12 @@
 // Variables
 
 new firstBloodPlayer = INVALID_PLAYER_ID; // Used to show player reward
+
+new const crashersLoseMessages[][] = {
+    "just got ~r~~h~fucked",
+    "has been ~r~~h~eliminated",
+    "just ~r~~h~crashed"
+};
 
 // Main
 
@@ -529,6 +536,20 @@ public  OnChaseFail(playerid)
     ShowPlayersCoolTextdraw(FPlayerText(playerid, "~w~failed to complete the ~r~~h~Chase"));
 }
 
+forward OnPlayerCrashedInCrashers(playerid);
+public  OnPlayerCrashedInCrashers(playerid)
+{
+    // Announce
+    ShowPlayersCoolTextdraw(FPlayerText(playerid, sprintf("~w~%s", crashersLoseMessages[Ran(0, sizeof(crashersLoseMessages))])));
+}
+
+forward OnPlayerSurvivedCrashers(playerid, reward);
+public  OnPlayerSurvivedCrashers(playerid, reward)
+{
+    // Announce
+    AlertPlayerText(playerid, sprintf("~g~~h~+$%i", reward));
+}
+
 // Commands
 
 CMD:rankup(playerid)
@@ -547,7 +568,10 @@ CMD:mode(playerid, params[])
     // Check params
     new mode, area;
     if (sscanf(params, "ii", mode, area))
-        return AlertPlayerDialog(playerid, "Command Usage", "/mode [mode: 0-4] [area]\nModes: Freeroam - FFA - TDM - CTF - Chase");
+    {
+        return AlertPlayerDialog(playerid, "Command Usage",
+            "/mode [mode: 0-5] [area]\nModes: Freeroam - FFA - TDM - CTF - Chase - Crashers");
+    }
 
     // Unload modes
     SendRconCommand("unloadfs modes/freeroam");
@@ -555,6 +579,7 @@ CMD:mode(playerid, params[])
     SendRconCommand("unloadfs modes/ffa");
     SendRconCommand("unloadfs modes/ctf");
     SendRconCommand("unloadfs modes/chase");
+    SendRconCommand("unloadfs modes/crashers");
 
     // Load mode
     switch (mode)
@@ -564,6 +589,7 @@ CMD:mode(playerid, params[])
         case MODE_TDM:      SendRconCommand("loadfs modes/tdm");
         case MODE_CTF:      SendRconCommand("loadfs modes/ctf");
         case MODE_CHASE:    SendRconCommand("loadfs modes/chase");
+        case MODE_CRASHERS: SendRconCommand("loadfs modes/crashers");
     }
 
     // For all players
