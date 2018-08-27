@@ -174,6 +174,19 @@ public  OnModeChange(mode, area)
     }
 }
 
+
+forward PreventPlayerDropMoneyOnDeath(playerid);
+public  PreventPlayerDropMoneyOnDeath(playerid)
+{
+    return 1;
+}
+
+forward PreventPlayerDropAmmoOnDeath(playerid);
+public  PreventPlayerDropAmmoOnDeath(playerid)
+{
+    return 1;
+}
+
 // Functions
 
 SetupPlayer(playerid)
