@@ -20,7 +20,6 @@
 public OnFilterScriptInit()
 {
     print("\n > Debug filterscript by Amir Savand.\n");
-    return 1;
 }
 
 // Commands
@@ -34,6 +33,8 @@ CMD:myteam(playerid)
 CMD:pos(playerid, params[])
 {
     IMPORT_PLAYER_POS;
+    if (IsPlayerInAnyVehicle(playerid))
+    	GetVehicleZAngle(PVI, pPos[3]);
     printf("[debug] Position (%s): %f, %f, %f, %f", params, pPos[0], pPos[1], pPos[2], pPos[3]);
     return 1;
 }
