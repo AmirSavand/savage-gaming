@@ -619,6 +619,7 @@ CMD:updates(playerid)
     strcat(str, "Updated all vehicles and added free cars.\n");
     strcat(str, "AK47 is now +0.2 more powerful than M4.\n");
     strcat(str, "2x Damage duration is now 60 seconds (instead of 10).\n");
+    strcat(str, "New agme mode: Crashers.\n");
 
     strcat(str, "\n{00FFFF}June 03\n====================\n{DDDDFF}");
     strcat(str, "Fix 200 armor turns to 100 when having armour regeneration.\n");
