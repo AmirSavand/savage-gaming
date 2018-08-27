@@ -8,6 +8,8 @@
 // Global
 //
 
+#define STRLIB_RETURN_SIZE 256
+
 #include <strlib>
 
 //
