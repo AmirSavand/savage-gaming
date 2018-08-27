@@ -302,8 +302,9 @@ public  OnServerUpdate()
 forward OnPlayerGetItem(playerid, itemName[], amount);
 public  OnPlayerGetItem(playerid, itemName[], amount)
 {
-    // Alert player
-    AlertPlayerDialog(playerid, "Info", sprintf("{DDDDFF}You've got an item: {FFFF00}%s {DDDDFF}(x%i)", itemName, amount));
+    // Alert player if not in a vehicle
+    if (!IsPlayerInAnyVehicle(playerid))
+        AlertPlayerDialog(playerid, "Info", sprintf("{DDDDFF}You've got an item: {FFFF00}%s {DDDDFF}(x%i)", itemName, amount));
 }
 
 forward OnPlayerCollectPackage(playerid);
