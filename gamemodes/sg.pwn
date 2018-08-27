@@ -681,6 +681,9 @@ CMD:acmds(playerid)
     strcat(cmds, "{00FF00}.:: Items ::.\n\n");
     strcat(cmds, "{DDDDEE}/giveitem");
 
+    strcat(cmds, "{00FF00}.:: Objects ::.\n\n");
+    strcat(cmds, "{DDDDEE}/addobj /delobj /reloadobj");
+
     AlertPlayerDialog(playerid, "Admin Comamnds", cmds);
     return 1;
 }
