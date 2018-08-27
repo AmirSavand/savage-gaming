@@ -5,7 +5,7 @@
 * Allow player to use items via OnPlayerAttemptToUseItem (return 1)
 *
 * Events: OnPlayerGetItem(playerid, itemName, amount), OnPlayerSellItem(playerid, price, item, itemName[]), OnPlayerAttemptToUseItem(playerid, item, itemName[])
-* Remotes: GivePlayerRandomItem(playerid, item, amount), GivePlayersRandomItem(item, amount)
+* Remotes: GivePlayerRandomItem(playerid, amount), GivePlayersRandomItem(playerid, amount)
 *
 * by Amir Savand
 */
