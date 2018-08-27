@@ -159,7 +159,7 @@ public OnPlayerSpawn(playerid)
     if (CanPlayerUpgradeRank(playerid))
     {
         // Let player know about it
-        new str[200]; str = sprintf("Type /rankup to pay for upgrade to next rank.\n\nUpgrade cost: {00FF00}$%i", GetPlayerNextRankCost(playerid));
+        new str[256]; str = sprintf("Type /rankup to pay for upgrade to next rank.\n\nUpgrade cost: {00FF00}$%i", GetPlayerNextRankCost(playerid));
         AlertPlayerDialog(playerid, "{00FF00}New Rank Available", str);
     }
 
@@ -391,7 +391,7 @@ forward OnPlayerKillStreak(playerid, streak);
 public  OnPlayerKillStreak(playerid, streak)
 {
     // Announce string
-    new str[200];
+    new str[256];
 
     // Reward player on kill streak
     switch (streak)
