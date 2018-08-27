@@ -43,3 +43,18 @@ CREATE TABLE `perks` (
  `perk` int(11) NOT NULL,
  `status` tinyint(1) NOT NULL
 );
+
+-- objects
+
+CREATE TABLE `objects` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `model` int(11) NOT NULL,
+ `x` float NOT NULL,
+ `y` float NOT NULL,
+ `z` float NOT NULL,
+ `rx` float NOT NULL,
+ `ry` float NOT NULL,
+ `rz` float NOT NULL,
+ PRIMARY KEY (`id`)
+);
+
