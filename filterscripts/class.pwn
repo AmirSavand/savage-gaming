@@ -4,7 +4,7 @@
 * Weapon class and selection for players.
 * Call GivePlayerClassWeapons() to give player ammo of current class.
 *
-* Events: OnPlayerPickupDeathPickup(playerid)
+* Events: OnPlayerPickupDeathPickup(playerid), PreventPlayerDropAmmoOnDeath(playerid)
 *
 * by Amir Savand
 */
