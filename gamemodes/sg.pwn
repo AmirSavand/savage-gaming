@@ -13,6 +13,7 @@
 #define MAX_RANDOM_PACKAGES                 5
 #define MAX_DROP_MONEY                      1000
 #define MAX_RANK                            22
+#define MAX_PRESTIGE                        6
 
 #define DROP_MONEY_PICKUPS                  10
 #define DROP_MONEY_AMOUNT                   5
@@ -71,6 +72,8 @@
 #include "../include/gang-skins"
 
 #include "../include/rank"
+
+#include "../include/prestige"
 
 #include "../include/player-label"
 
@@ -159,15 +162,28 @@ public OnPlayerSpawn(playerid)
     if (CanPlayerUpgradeRank(playerid))
     {
         // Let player know about it
-        new str[256]; str = sprintf("Type /rankup to pay for upgrade to next rank.\n\nUpgrade cost: {00FF00}$%i", GetPlayerNextRankCost(playerid));
+        new str[256];
+        str = sprintf("Type /rankup to pay for upgrade to next rank.\n\nUpgrade cost: {00FF00}$%i", GetPlayerNextRankCost(playerid));
         AlertPlayerDialog(playerid, "{00FF00}New Rank Available", str);
+    }
+
+    // Prestige upgrade available
+    if (CanPlayerUpgradePrestige(playerid) && !GetPVarInt(playerid, "dismiss-prestige-upgrade"))
+    {
+        // Alert
+        AlertPlayerDialog(playerid, "{00FF00}Prestige Upgrade Available", "Type /presup to upgrade prestige level and {FF0000}reset all ranks.");
+
+        // Dismiss for next login
+        SetPVarInt(playerid, "dismiss-prestige-upgrade", 1);
     }
 
     // Fix default -$100
     GivePlayerMoney(playerid, 100);
 
     // Update player label
-    UpdatePlayerLabel(playerid, sprintf("{FF00FF}Rank %i", GetPVarInt(playerid, "rank")));
+    UpdatePlayerLabel(playerid, sprintf("{FF00FF}Rank %i\n{00FFFF}Prestige %i",
+        GetPVarInt(playerid, "rank"), GetPVarInt(playerid, "prestige"))
+    );
 }
 
 public OnPlayerDeath(playerid, killerid, reason)
@@ -486,6 +502,13 @@ public  OnPlayerRankUp(playerid, rank, cost)
     ShowPlayersCoolTextdraw(FPlayerText(playerid, sprintf("~w~is now ~p~Rank %i", rank)));
 }
 
+forward OnPlayerPrestige(playerid, prestige);
+public  OnPlayerPrestige(playerid, prestige)
+{
+    // Announce
+    ShowPlayersCoolTextdraw(FPlayerText(playerid, sprintf("~w~is now ~p~Prestige %i", prestige)));
+}
+
 forward OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Float:center[3]);
 public  OnPlayerLeaveBattleZone(playerid, Float:distance, Float:safedistance, Float:center[3])
 {
@@ -560,6 +583,13 @@ CMD:rankup(playerid)
     return 1;
 }
 
+CMD:presup(playerid)
+{
+    // Upgrade to next prestige level
+    UpgradePlayerPrestige(playerid);
+    return 1;
+}
+
 CMD:mode(playerid, params[])
 {
     // Check admin
@@ -621,7 +651,8 @@ CMD:updates(playerid)
     strcat(str, "AK47 is now +0.2 more powerful than M4.\n");
     strcat(str, "2x Damage duration is now 60 seconds (instead of 10).\n");
     strcat(str, "Add varies objects in the maps.\n");
-    strcat(str, "{FF0000}New Game mode: Crashers.\n");
+    strcat(str, "New Game mode: {FF0000}Crashers.\n");
+    strcat(str, "{FF0000}Prestige level: {DDDDFF}Reset all ranks and upgrade to prestige level.\n");
 
     strcat(str, "\n{00FFFF}June 03\n====================\n{DDDDFF}");
     strcat(str, "Fix 200 armor turns to 100 when having armour regeneration.\n");
@@ -654,7 +685,7 @@ CMD:cmds(playerid)
     new cmds[1000];
 
     strcat(cmds, "{00FF00}.:: Global ::.\n\n");
-    strcat(cmds, "{DDDDEE}/class /perks /rankup /items /keys /killme /money /updates\n\n");
+    strcat(cmds, "{DDDDEE}/class /perks /rankup /presup /items /keys /killme /money /cmds /updates\n\n");
 
     strcat(cmds, "{00FF00}.:: Items ::.\n\n");
     strcat(cmds, "{DDDDEE}/items /giveitem /sellitem\n\n");
@@ -673,7 +704,7 @@ CMD:acmds(playerid)
     new cmds[1000];
 
     strcat(cmds, "{00FF00}.:: Global ::.\n\n");
-    strcat(cmds, "{DDDDEE}/clear /jetpack /telto /givemoney /giveguns /setname /setskin\n\n");
+    strcat(cmds, "{DDDDEE}/clear /jetpack /telto /givemoney /giveguns /setname /setskin /acmd\n\n");
 
     strcat(cmds, "{00FF00}.:: Cars ::.\n\n");
     strcat(cmds, "{DDDDEE}/scar /addcar /delcar /updatecar /setcartype /setcarprice /setcarengine /setcarpos /setcarowner /resetcarowner /blow\n\n");
