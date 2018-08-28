@@ -251,6 +251,12 @@ public  PreventPlayerDropAmmoOnDeath(playerid)
     return DoesPlayerHavePerk(playerid, "No ammo drop on death") != INVALID_PERK_ID ? 1 : 0;
 }
 
+forward OnPlayerPrestige(playerid, prestige);
+public  OnPlayerPrestige(playerid, prestige)
+{
+    DeactivatePlayerPerks(playerid);
+}
+
 // Functions
 
 SavePlayerPerks(playerid) // Save perks to db
@@ -301,6 +307,16 @@ LoadPlayerPerks(playerid) // Load perks form db
     }
 
     cache_delete(cache);
+}
+
+DeactivatePlayerPerks(playerid) // Reset all perks
+{
+    // For all player perks
+    for (new i; i < sizeof(perks); i++)
+    {
+        // Disable perk
+        playerPerks[playerid][i] = false;
+    }
 }
 
 ShowPlayerPerks(playerid) // Perks dialog
