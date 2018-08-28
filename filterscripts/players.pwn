@@ -89,23 +89,26 @@ LoadPlayer(playerid)
         mysql_query(db, qry, false);
         SetPVarInt(playerid, "new", 1);
         SetPVarInt(playerid, "rank", 0);
+        SetPVarInt(playerid, "prestige", 0);
     }
 
     // Log in
     else
     {
         // Store data
-        new id, money, admin, rank, kills;
+        new id, money, admin, rank, prestige, kills;
         cache_get_value_int(0, "id", id);
         cache_get_value_int(0, "money", money);
         cache_get_value_int(0, "admin", admin);
         cache_get_value_int(0, "rank", rank);
+        cache_get_value_int(0, "prestige", prestige);
         cache_get_value_int(0, "kills", kills);
 
         // Apply data
         SetPVarInt(playerid, "id", id);
         SetPVarInt(playerid, "admin", admin);
         SetPVarInt(playerid, "rank", rank);
+        SetPVarInt(playerid, "prestige", prestige);
         SetPVarInt(playerid, "kills", kills);
 
         SetPlayerMoney(playerid, money);
@@ -122,8 +125,12 @@ SavePlayer(playerid)
     if (GetPVarInt(playerid, "id") < 1)
         return 0;
 
-    new qry[2000]; mysql_format(db, qry, sizeof(qry), "UPDATE players SET money=%i, rank=%i, kills=%i WHERE id=%i", 
-        GetPlayerMoney(playerid), GetPVarInt(playerid, "rank"), GetPVarInt(playerid, "kills"), GetPVarInt(playerid, "id"));
+    new qry[2000]; mysql_format(db, qry, sizeof(qry),
+        "UPDATE players SET money=%i, rank=%i, prestige=%i, kills=%i WHERE id=%i", 
+        GetPlayerMoney(playerid), GetPVarInt(playerid, "rank"), GetPVarInt(playerid, "prestige"),
+        GetPVarInt(playerid, "kills"), GetPVarInt(playerid, "id")
+    );
+    
     mysql_tquery(db, qry);
 
     // Event
