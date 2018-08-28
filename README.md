@@ -47,6 +47,17 @@ In this mode, you capture the flag and return it to base, kill everyone in the p
 - Flag and base map icon and pickup
 - Flag bearer can not get in any vehicle or use skydive item
 
+### Crashers
+
+This mode is pretty simple, crash others and survive.
+
+- Random spawn points
+- Random powerups (repair, nitro, cash, weapons, etc)
+- Random color
+- Weapons free (drive-by)
+- Shoot on foot (6 seconds on foot)
+- Get reward every time an opponent is destroyed
+
 ## Features
 
 ### Gamemode
