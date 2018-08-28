@@ -68,6 +68,7 @@ This mode is pretty simple, crash others and survive.
 - Custom damage system for balance between weapons and classes
 - Show car engine to player
 - Drop money pickups on death
+- Various objects (like ramps) to make the map more interesting
 
 ### Players
 
