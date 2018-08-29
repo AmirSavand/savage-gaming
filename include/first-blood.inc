@@ -3,7 +3,7 @@
 *
 * Check for first blood.
 *
-* Events: OnPlayerFirstBlood(playerid)
+* Events: OnPlayerFirstBlood(playerid, killedid)
 *
 * by Amir Savand
 */
@@ -15,7 +15,7 @@ new firstBlood = INVALID_PLAYER_ID;
 
 // Functions
 
-CheckFirstBlood(playerid)
+CheckFirstBlood(playerid, killedid)
 {
     // Check for first blood and player
     if (firstBlood == INVALID_PLAYER_ID && IsPlayerConnected(playerid))
@@ -24,6 +24,6 @@ CheckFirstBlood(playerid)
         firstBlood = playerid;
 
         // Event
-        CallRemoteFunction("OnPlayerFirstBlood", "i", playerid);
+        CallRemoteFunction("OnPlayerFirstBlood", "ii", playerid, killedid);
     }
 }

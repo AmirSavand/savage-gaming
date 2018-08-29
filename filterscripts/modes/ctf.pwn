@@ -139,7 +139,7 @@ public OnPlayerDeath(playerid, killerid, reason)
     }
 
     // First blood
-    CheckFirstBlood(killerid);
+    CheckFirstBlood(killerid, playerid);
 
     // Spawn to random location
     RespawnPlayer(playerid);

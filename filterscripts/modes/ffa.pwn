@@ -134,7 +134,7 @@ public OnPlayerSpawn(playerid)
 public OnPlayerDeath(playerid, killerid, reason)
 {
     // First blood
-    CheckFirstBlood(killerid);
+    CheckFirstBlood(killerid, playerid);
 }
 
 public OnPlayerPickUpDynamicPickup(playerid, pickupid)

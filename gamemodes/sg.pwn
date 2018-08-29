@@ -394,8 +394,8 @@ public  OnPlayerPurchaseVehicle(playerid, vehicleid)
     ShowPlayersCoolTextdraw(FPlayerText(playerid, sprintf("purchased ~y~%s", GetCarName(vehicleid))));
 }
 
-forward OnPlayerFirstBlood(playerid);
-public  OnPlayerFirstBlood(playerid)
+forward OnPlayerFirstBlood(playerid, killedid);
+public  OnPlayerFirstBlood(playerid, killedid)
 {
     // Reward player and announce (show combined money)
     GivePlayerMoney(playerid, KILL_REWARD_DOUBLE);

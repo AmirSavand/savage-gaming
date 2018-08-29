@@ -136,7 +136,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 public OnPlayerDeath(playerid, killerid, reason)
 {
     // First blood
-    CheckFirstBlood(killerid);
+    CheckFirstBlood(killerid, playerid);
 }
 
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
