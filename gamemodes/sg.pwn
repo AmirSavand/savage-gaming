@@ -590,6 +590,14 @@ public  OnPlayerSurvivedCrashers(playerid, reward)
     AlertPlayerText(playerid, sprintf("~g~~h~+$%i", reward));
 }
 
+// Functions
+
+GetPlayerKillReward(playerid)
+{
+    // Kill reward and prestige level factor
+    return KILL_REWARD + (GetPlayerPrestige(playerid) * PRESTIGE_KILL_REWARD);
+}
+
 // Commands
 
 CMD:rankup(playerid)
