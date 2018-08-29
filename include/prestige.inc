@@ -53,3 +53,8 @@ UpgradePlayerPrestige(playerid)
     CallRemoteFunction("OnPlayerPrestige", "ii", playerid, GetPVarInt(playerid, "prestige"));
     return 1;
 }
+
+GetPlayerPrestige(playerid)
+{
+    return GetPVarInt(playerid, "prestige");
+}
