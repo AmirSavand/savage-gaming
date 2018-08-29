@@ -126,6 +126,17 @@ stock Float:GetDistanceBetweenPoints(Float:x, Float:y, Float:z, Float:x2, Float:
     return floatadd(floatadd(floatsqroot(floatpower(floatsub(x,x2),2)),floatsqroot(floatpower(floatsub(y,y2),2))),floatsqroot(floatpower(floatsub(z,z2),2)));
 }
 
+stock GetFileContent(const path[])
+{
+    new content[1024], line[128];
+    new File:file = fopen(path, io_read);
+    
+    while(fread(file, line))
+        strcat(content, line);
+
+    return content;
+}
+
 stock GetRandomPlayer()
 {
     new players[MAX_PLAYERS];
