@@ -93,16 +93,16 @@ stock Ran(min, max)
     return random(max - min) + min;
 }
 
-stock Log(string[], const fileLocation[] = "log.txt")
+stock Log(string[], const path[] = "log.txt")
 {
-    new File:logFile = fopen(fileLocation, io_append);
+    new File:file = fopen(path, io_append);
 
     new _year, _month, _day, _hour, _minute, _second;
     getdate(_year, _month, _day);
     gettime(_hour, _minute, _second);
 
-    fwrite(logFile, sprintf("[%i/%i/%i - %02d:%02d:%02d] %s\r\n", _year, _month, _day, _hour, _minute, _second, string));
-    fclose(logFile);
+    fwrite(file, sprintf("[%i/%i/%i - %02d:%02d:%02d] %s\r\n", _year, _month, _day, _hour, _minute, _second, string));
+    fclose(file);
     return 1;
 }
 
