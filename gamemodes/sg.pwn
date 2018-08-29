@@ -46,6 +46,8 @@
 
 #define PRESTIGE_LEVEL_ARMY_SKIN            1
 
+#define PRESTIGE_KILL_REWARD                50
+
 #define COOL_TEXTDRAW_TIME                  5
 
 #define TIME_SERVER_UPDATE                  200
@@ -210,13 +212,15 @@ public OnPlayerDeath(playerid, killerid, reason)
     // Killed by a player
     if (killerid != INVALID_PLAYER_ID)
     {
+        new reward = GetPlayerKillReward(playerid);
+
         // Reward and heal killer
-        GivePlayerMoney(killerid, KILL_REWARD);
+        GivePlayerMoney(killerid, reward);
         SetPlayerHealth(killerid, 100);
 
         // Show killer money if not just drew first blood (handled else where)
         if (firstBloodPlayer != killerid)
-            AlertPlayerText(killerid, sprintf("~g~~h~+%i", KILL_REWARD));
+            AlertPlayerText(killerid, sprintf("~g~~h~+%i", reward));
 
         // Reset first blood (used for showing)
         firstBloodPlayer = INVALID_PLAYER_ID;
@@ -398,7 +402,7 @@ forward OnPlayerFirstBlood(playerid, killedid);
 public  OnPlayerFirstBlood(playerid, killedid)
 {
     // Reward player and announce (show combined money)
-    GivePlayerMoney(playerid, KILL_REWARD_DOUBLE);
+    GivePlayerMoney(playerid, KILL_REWARD_DOUBLE + GetPlayerKillReward(killedid));
     AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_REWARD + KILL_REWARD_FIRST_BLOOD));
 
     // Announce
@@ -412,7 +416,7 @@ forward OnPlayerDoubleKill(playerid, killedid);
 public  OnPlayerDoubleKill(playerid, killedid)
 {
     // Reward player and announce (show combined money)
-    GivePlayerMoney(playerid, KILL_REWARD_DOUBLE);
+    GivePlayerMoney(playerid, KILL_REWARD_DOUBLE + GetPlayerKillReward(killedid));
     AlertPlayerText(playerid, sprintf("~g~~h~+%i", KILL_REWARD + KILL_REWARD_DOUBLE));
 
     // Alert players
