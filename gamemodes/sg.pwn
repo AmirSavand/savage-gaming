@@ -408,8 +408,8 @@ public  OnPlayerFirstBlood(playerid, killedid)
     firstBloodPlayer = playerid;
 }
 
-forward OnPlayerDoubleKill(playerid);
-public  OnPlayerDoubleKill(playerid)
+forward OnPlayerDoubleKill(playerid, killedid);
+public  OnPlayerDoubleKill(playerid, killedid)
 {
     // Reward player and announce (show combined money)
     GivePlayerMoney(playerid, KILL_REWARD_DOUBLE);

@@ -39,7 +39,7 @@ CheckPlayerKillStreak(playerid, killedid)
     if (gettime() - playerLastKill[playerid] <= TIME_DOUBLE_KILL)
     {
         // Event
-        CallRemoteFunction("OnPlayerDoubleKill", "i", playerid);
+        CallRemoteFunction("OnPlayerDoubleKill", "ii", playerid, killedid);
 
         // Reset so player won't double kill 2 times
         playerLastKill[playerid] = 0;
