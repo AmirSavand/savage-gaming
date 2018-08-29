@@ -39,6 +39,7 @@
 #define KILL_STREAK_MONEY_2                 5000
 
 #define KILL_REWARD                         100
+#define KILL_REWARD_PRESTIGE                50
 #define KILL_REWARD_DOUBLE                  400
 #define KILL_REWARD_FIRST_BLOOD             900
 
@@ -46,7 +47,6 @@
 
 #define PRESTIGE_LEVEL_ARMY_SKIN            1
 
-#define PRESTIGE_KILL_REWARD                50
 
 #define COOL_TEXTDRAW_TIME                  5
 
@@ -599,7 +599,7 @@ public  OnPlayerSurvivedCrashers(playerid, reward)
 GetPlayerKillReward(playerid)
 {
     // Kill reward and prestige level factor
-    return KILL_REWARD + (GetPlayerPrestige(playerid) * PRESTIGE_KILL_REWARD);
+    return KILL_REWARD + (GetPlayerPrestige(playerid) * KILL_REWARD_PRESTIGE);
 }
 
 // Commands
