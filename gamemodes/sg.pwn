@@ -10,10 +10,11 @@
 
 // Defines
 
+#define MAX_GROUP_SKINS                     100
 #define MAX_RANDOM_PACKAGES                 5
 #define MAX_DROP_MONEY                      1000
 #define MAX_RANK                            22
-#define MAX_PRESTIGE                        6
+#define MAX_PRESTIGE                        3
 
 #define DROP_MONEY_PICKUPS                  10
 #define DROP_MONEY_AMOUNT                   5
@@ -43,6 +44,8 @@
 
 #define RANK_COST_FACTOR                    5000 + 10000
 
+#define PRESTIGE_LEVEL_ARMY_SKIN            1
+
 #define COOL_TEXTDRAW_TIME                  5
 
 #define TIME_SERVER_UPDATE                  200
@@ -69,7 +72,7 @@
 
 #include "../include/mapicons"
 
-#include "../include/gang-skins"
+#include "../include/skins"
 
 #include "../include/rank"
 
@@ -120,8 +123,9 @@ public OnGameModeInit()
     DisableInteriorEnterExits();
     UsePlayerPedAnims();
 
-    // Gang Skins
+    // Setup skins
     SetupGangSkins();
+    SetupArmySkins();
 
     // Gamemode timer
     SetTimer("OnServerUpdate", TIME_SERVER_UPDATE, 1);
@@ -148,6 +152,18 @@ public OnPlayerConnect(playerid)
 
     // Show player recent changes
     cmd_update(playerid);
+}
+
+public OnPlayerRequestSpawn(playerid)
+{
+    // No prestige and choosing army skin
+    if (GetPlayerPrestige(playerid) < PRESTIGE_LEVEL_ARMY_SKIN && IsSkinFromGroup(GetPlayerSkin(playerid), armySkins))
+    {
+        AlertPlayerDialog(playerid, "Info", "You can only select army skins\nif you are over {00FFFF}Preastige Level 1.");
+        return 0;
+    }
+
+    return 1;
 }
 
 public OnPlayerDisconnect(playerid)
