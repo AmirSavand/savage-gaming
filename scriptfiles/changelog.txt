@@ -1,0 +1,20 @@
+
+August 30
+----------------
+- Prestige level: Reset all ranks and upgrade to prestige level.
+- Prestige level 1: Select army skins and get armour when you kill someone.
+- Prestige level 2: Get +20 armor on spawn.
+- Prestige level 3: Get 2 more items when getting random items.
+
+
+August 29
+----------------
+- New Game mode: Crashers.
+- Add varies objects in the maps.
+
+
+August 27
+----------------
+- Updated all vehicles and added free cars.
+- AK47 is now +0.2 more powerful than M4.
+- 2x Damage duration is now 60 seconds (instead of 10).
