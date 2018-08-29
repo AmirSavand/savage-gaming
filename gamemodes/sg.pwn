@@ -43,10 +43,17 @@
 #define KILL_REWARD_DOUBLE                  400
 #define KILL_REWARD_FIRST_BLOOD             900
 
-#define RANK_COST_FACTOR                    5000 + 10000
+#define PRESTIGE_ARMY_SKIN                  1
+#define PRESTIGE_KILL_ARMOR                 1
+#define PRESTIGE_SPAWN_ARMOR                2
+#define PRESTIGE_EXTRA_RANDOM_ITEM          2
+#define PRESTIGE_HEALTH_REGENERATION        3
 
-#define PRESTIGE_LEVEL_ARMY_SKIN            1
+#define PRESTIGE_AMOUNT_KILL_ARMOR          10
+#define PRESTIGE_AMOUNT_SPAWN_ARMOR         20
+#define PRESTIGE_AMOUNT_EXTRA_RANDOM_ITEM   2
 
+#define RANK_COST_FACTOR                    15000
 
 #define COOL_TEXTDRAW_TIME                  5
 
@@ -159,7 +166,7 @@ public OnPlayerConnect(playerid)
 public OnPlayerRequestSpawn(playerid)
 {
     // No prestige and choosing army skin
-    if (GetPlayerPrestige(playerid) < PRESTIGE_LEVEL_ARMY_SKIN && IsSkinFromGroup(GetPlayerSkin(playerid), armySkins))
+    if (GetPlayerPrestige(playerid) < PRESTIGE_ARMY_SKIN && IsSkinFromGroup(GetPlayerSkin(playerid), armySkins))
     {
         AlertPlayerDialog(playerid, "Info", "You can only select army skins\nif you are over {00FFFF}Preastige Level 1.");
         return 0;
@@ -198,6 +205,10 @@ public OnPlayerSpawn(playerid)
     // Fix default -$100
     GivePlayerMoney(playerid, 100);
 
+    // Give player spawn armor (prestige)
+    if (GetPlayerPrestige(playerid) >= PRESTIGE_SPAWN_ARMOR)
+        SetPlayerArmour(playerid, GetArmour(playerid) + PRESTIGE_AMOUNT_SPAWN_ARMOR);
+
     // Update player label
     UpdatePlayerLabel(playerid, sprintf("{FF00FF}Rank %i\n{00FFFF}Prestige %i",
         GetPVarInt(playerid, "rank"), GetPVarInt(playerid, "prestige"))
@@ -217,6 +228,10 @@ public OnPlayerDeath(playerid, killerid, reason)
         // Reward and heal killer
         GivePlayerMoney(killerid, reward);
         SetPlayerHealth(killerid, 100);
+
+        // Give armor to killer (prestige)
+        if (GetPlayerPrestige(killerid) >= PRESTIGE_KILL_ARMOR)
+            SetPlayerArmour(killerid, GetArmour(killerid) + PRESTIGE_AMOUNT_KILL_ARMOR);
 
         // Show killer money if not just drew first blood (handled else where)
         if (firstBloodPlayer != killerid)
@@ -592,6 +607,17 @@ public  OnPlayerSurvivedCrashers(playerid, reward)
 {
     // Announce
     AlertPlayerText(playerid, sprintf("~g~~h~+$%i", reward));
+}
+
+forward OnPlayerRequestRandomItemAmount(playerid, item, amount);
+public  OnPlayerRequestRandomItemAmount(playerid, item, amount)
+{
+    // More of that item (prestige)
+    if (GetPlayerPrestige(playerid) >= PRESTIGE_EXTRA_RANDOM_ITEM)
+        return PRESTIGE_AMOUNT_EXTRA_RANDOM_ITEM;
+
+    // No more than 1
+    return 0;
 }
 
 // Functions
