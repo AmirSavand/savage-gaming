@@ -697,24 +697,7 @@ CMD:mode(playerid, params[])
 CMD:update(playerid) return cmd_updates(playerid);
 CMD:updates(playerid)
 {
-    new str[1000];
-
-    strcat(str, "\n{00FFFF}August 30\n====================\n{DDDDFF}");
-    strcat(str, "{FF0000}Prestige level: {DDDDFF}Reset all ranks and upgrade to prestige level.\n");
-    strcat(str, "Prestige level 1: Select army skins and get armour when you kill someone.\n");
-    strcat(str, "Prestige level 2: Get +20 armor on spawn.\n");
-    strcat(str, "Prestige level 3: Get 2 more items when getting random items.\n");
-
-    strcat(str, "\n{00FFFF}August 29\n====================\n{DDDDFF}");
-    strcat(str, "New Game mode: {FF0000}Crashers.\n");
-    strcat(str, "Add varies objects in the maps.\n");
-
-    strcat(str, "\n{00FFFF}August 27\n====================\n{DDDDFF}");
-    strcat(str, "Updated all vehicles and added free cars.\n");
-    strcat(str, "AK47 is now +0.2 more powerful than M4.\n");
-    strcat(str, "2x Damage duration is now 60 seconds (instead of 10).\n");
-    
-    AlertPlayerDialog(playerid, "{00FF00}Recent Changes and Updates", str);
+    AlertPlayerDialog(playerid, "{00FF00}Recent Changes and Updates", GetFileContent("changelog.txt"));
     return 1;
 }
 
