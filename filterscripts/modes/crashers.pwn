@@ -16,7 +16,7 @@
 #define MAX_SPAWN_POINTS            8
 #define MAX_SPAWN_POINTS_PACKAGE    8
 
-#define VEHICLE_RESPAWN             6
+#define VEHICLE_RESPAWN             8
 
 #define SURVIVAL_REWARD             250
 
