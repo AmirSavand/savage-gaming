@@ -109,7 +109,10 @@ public OnFilterScriptExit()
 {
     // Destroy cars
     for (new i; i < MAX_PLAYERS; i++)
+    {
         DestroyVehicle(playerCar[i]);
+        playerCar[i] = INVALID_VEHICLE_ID;
+    }
 }
 
 public OnPlayerConnect(playerid)
@@ -209,16 +212,16 @@ public OnPlayerDeath(playerid)
     CallRemoteFunction("OnPlayerCrashedInCrashers", "i", playerid);
 
     // Check all other players
-    for (new i; i < MAX_PLAYERS; i++)
+    for (new otherplayer; otherplayer < MAX_PLAYERS; otherplayer++)
     {
         // If not the same player
-        if (i != playerid)
+        if (otherplayer != playerid)
         {
             // Reward other player
-            GivePlayerMoney(i, SURVIVAL_REWARD);
+            GivePlayerMoney(otherplayer, SURVIVAL_REWARD);
 
             // Trigger event
-            CallRemoteFunction("OnPlayerSurvivedCrashers", "ii", i, SURVIVAL_REWARD);
+            CallRemoteFunction("OnPlayerSurvivedCrashers", "ii", otherplayer, SURVIVAL_REWARD);
         }
     }
 }
@@ -260,6 +263,7 @@ SetupPlayerCar(playerid, spawnpoint)
 {
     // Destroy player car
     DestroyVehicle(playerCar[playerid]);
+    playerCar[playerid] = INVALID_VEHICLE_ID;
 
     // Random car model
     new model = Ran(0, sizeof(models));
