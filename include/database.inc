@@ -35,9 +35,7 @@ CloseDatabase()
     mysql_close(db);
 }
 
-stock RegenerateTableAutoIncreasement(table[])
+stock RegenerateTableAutoIncreasement(const table[])
 {
-    new qry[200];
-    mysql_format(db, qry, sizeof(qry), "SET @num := 0;UPDATE %s SET id = @num := (@num+1);ALTER TABLE %s AUTO_INCREMENT =1;", table, table);
-    mysql_tquery(db, qry);
+    mysql_tquery(db, sprintf("SET @num := 0; UPDATE %s SET id = @num := (@num+1); ALTER TABLE %s AUTO_INCREMENT = 1;", table, table));
 }
