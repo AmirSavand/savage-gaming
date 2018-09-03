@@ -184,3 +184,36 @@ CMD:setskin(playerid, params[]) // Set player skin
     CallRemoteFunction("OnPlayerChangeSkin", "ii", target, skin);
     return 1;
 }
+
+CMD:kill(playerid, params[]) // Kill player
+{
+    // Check admin
+    if (GetPlayerAdmin(playerid) < 5)
+        return 0;
+
+    // Check params
+    new target;
+    if (sscanf(params, "u", target))
+        return AlertPlayerDialog(playerid, "Command Usage", "/kill [player]");
+
+    // Check player
+    if (!IsPlayerConnected(target))
+        return AlertPlayerText(playerid, "~r~~h~Player is not connected");
+
+    // Kill target
+    SetPlayerHealth(target, 0);
+    AlertPlayerDialog(target, "Info", "You were punsihed!");
+    return 1;
+}
+
+CMD:heal(playerid) // Heal self
+{
+    // Check admin
+    if (GetPlayerAdmin(playerid) < 5)
+        return 0;
+
+    // Kill player
+    SetPlayerHealth(playerid, 100);
+    AlertPlayerText(playerid, "~g~~h~Healed");
+    return 1;
+}
