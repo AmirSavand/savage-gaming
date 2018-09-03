@@ -16,8 +16,6 @@
 
 #define EDITING_OBJECT_UID 0
 
-
-
 // Includes
 
 #include <a_samp>
@@ -251,7 +249,7 @@ CMD:reloadobjs(playerid, params[]) return cmd_reloadobjects(playerid, params);
 CMD:reloadobjects(playerid, params[])
 {
     // Check admin
-    if (GetPlayerAdmin(playerid))
+    if (!GetPlayerAdmin(playerid))
         return 0;
 
     // Reload objects from database
