@@ -16,8 +16,9 @@
 // Script defines
 //
 
-#define PRESSED(%0) (((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
-#define HOLDING(%0) ((newkeys & (%0)) == (%0))
+#define PRESSED(%0)  (((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
+#define RELEASED(%0) (((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
+#define HOLDING(%0)  ((newkeys & (%0)) == (%0))
 
 #undef  MAX_PLAYERS
 #define MAX_PLAYERS 100
@@ -28,6 +29,7 @@
 // Colors defines
 //
 
+#define cWhite      0xFFFFFFFF
 #define cRed        0xFF0000FF
 #define cGreen      0x11FF00FF
 #define cBlue       0x1100FFFF
@@ -93,6 +95,11 @@ stock Ran(min, max)
     return random(max - min) + min;
 }
 
+stock Float:RanFloat(Float:min, Float:max)
+{
+    return float(random(floatround(max) - floatround(min)) + floatround(min));
+}
+
 stock Log(string[], const path[] = "log.txt")
 {
     new File:file = fopen(path, io_append);
@@ -124,6 +131,11 @@ stock KillTimers(timers[], len)
 stock Float:GetDistanceBetweenPoints(Float:x, Float:y, Float:z, Float:x2, Float:y2, Float:z2)
 {
     return floatadd(floatadd(floatsqroot(floatpower(floatsub(x,x2),2)),floatsqroot(floatpower(floatsub(y,y2),2))),floatsqroot(floatpower(floatsub(z,z2),2)));
+}
+
+stock Float:GetDistanceBetweenPoints2D(Float:x1, Float:y1, Float:x2, Float:y2)
+{
+    return GetDistanceBetweenPoints(x1, y1, 0.0, x2, y2, 0.0);
 }
 
 stock GetFileContent(const path[])
@@ -218,6 +230,20 @@ stock GetCarName(vehicleid)
         return str;
 
     return carNames[index];
+}
+
+stock GetInFrontOfPlayer(playerid, &Float:x, &Float:y, Float:distance = 0.0)
+{
+    new Float:a;
+
+    GetPlayerPos(playerid, x, y, a);
+    GetPlayerFacingAngle(playerid, a);
+
+    if (PVI)
+        GetVehicleZAngle(PVI, a);
+
+    x += (distance * floatsin(-a, degrees));
+    y += (distance * floatcos(-a, degrees));
 }
 
 stock bool:HasEnoughMoney(playerid, amount = 0)
@@ -434,12 +460,13 @@ stock GetWeaponModel(weaponid)
         case 32    : return 372;
         case 46    : return 371;
         case 9     : return 341;
-        case 2..8  : return weaponid+331;
-        case 10..15: return weaponid+311;
-        case 16..18: return weaponid+326;
-        case 30, 31: return weaponid+325;
-        case 22..29, 33..39, 40..43: 
-                     return weaponid+324;
+        case 2..8  : return weaponid + 331;
+        case 10..15: return weaponid + 311;
+        case 16..18: return weaponid + 326;
+        case 30, 31: return weaponid + 325;
+        case 22..29,
+             33..39,
+             40..43: return weaponid + 324;
     }
     return 0;
 }
