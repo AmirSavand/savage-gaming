@@ -127,7 +127,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
                 return 1;
 
             // Owner name to show
-            new ownerName[200] = "(Owner is Offline)";
+            new ownerName[256] = "(Owner is Offline)";
 
             // Check if owner is online
             for (new p; p < MAX_PLAYERS; p++)
@@ -497,9 +497,9 @@ CMD:addcar(playerid, params[]) // Create a db car in current position (model is 
         GetVehicleZAngle(PVI, pPos[3]);
 
     // Insert car to db
-    new qry[1000];
-    mysql_format(db, qry, sizeof(qry), "INSERT INTO cars (model, x, y, z, a) VALUES (%i, %f, %f, %f, %f)", carModel, pPos[0], pPos[1], pPos[2], pPos[3]);
-    new Cache:cache = mysql_query(db, qry);
+    new Cache:cache = mysql_query(db, sprintf(
+        "INSERT INTO cars (model, x, y, z, a) VALUES (%i, %f, %f, %f, %f)",
+        carModel, pPos[0], pPos[1], pPos[2], pPos[3]));
 
     // Store car data
     new uid = cache_insert_id();
