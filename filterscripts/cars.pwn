@@ -497,9 +497,7 @@ CMD:addcar(playerid, params[]) // Create a db car in current position (model is 
         GetVehicleZAngle(PVI, pPos[3]);
 
     // Insert car to db
-    new Cache:cache = mysql_query(db, sprintf(
-        "INSERT INTO cars (model, x, y, z, a) VALUES (%i, %f, %f, %f, %f)",
-        carModel, pPos[0], pPos[1], pPos[2], pPos[3]));
+    new Cache:cache = mysql_query(db, sprintf("INSERT INTO cars (model, x, y, z, a) VALUES (%i, %f, %f, %f, %f)", carModel, pPos[0], pPos[1], pPos[2], pPos[3]));
 
     // Store car data
     new uid = cache_insert_id();
