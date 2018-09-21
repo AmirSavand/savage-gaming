@@ -199,7 +199,8 @@ public OnVehicleSpawn(vehicleid)
             AlertPlayerText(i, "~r~~h~Car destroyed");
 
             // Destroy car
-            DestroyVehicle(vehicleid);
+            DestroyVehicle(playerCar[i]);
+            playerCar[i] = INVALID_VEHICLE_ID;
         }
     }
 }
