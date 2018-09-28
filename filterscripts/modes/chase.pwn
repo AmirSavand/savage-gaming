@@ -52,7 +52,7 @@ new const Float:checkpoints[][3] = {
 
 #include <a_samp>
 #include <zcmd>
-#include <sscanf>
+#include <sscanf2>
 #include <streamer>
 
 #include "../../include/common"

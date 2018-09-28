@@ -41,7 +41,7 @@
 
 #include <a_samp>
 #include <a_mysql>
-#include <sscanf>
+#include <sscanf2>
 #include <zcmd>
 
 #include "../include/common"
@@ -98,7 +98,7 @@ public OnFilterScriptExit()
     return 1;
 }
 
-public OnPlayerDisconnect(playerid)
+public OnPlayerDisconnect(playerid, reason)
 {
     SavePlayerItems(playerid);
     return 1;

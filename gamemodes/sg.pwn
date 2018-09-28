@@ -69,7 +69,7 @@
 
 #include <a_samp>
 #include <streamer>
-#include <sscanf>
+#include <sscanf2>
 #include <zcmd>
 
 // Includes
@@ -174,7 +174,7 @@ public OnPlayerRequestSpawn(playerid)
     return 1;
 }
 
-public OnPlayerDisconnect(playerid)
+public OnPlayerDisconnect(playerid, reason)
 {
     // Announce player is leaving
     SendDeathMessage(INVALID_PLAYER_ID, playerid, 201);

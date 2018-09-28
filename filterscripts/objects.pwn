@@ -21,7 +21,7 @@
 #include <a_samp>
 #include <a_mysql>
 #include <streamer>
-#include <sscanf>
+#include <sscanf2>
 #include <zcmd>
 
 #include "../include/common"

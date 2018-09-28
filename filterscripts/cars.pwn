@@ -37,7 +37,7 @@
 
 #include <a_samp>
 #include <a_mysql>
-#include <sscanf>
+#include <sscanf2>
 #include <zcmd>
 #include <getvehiclecolor>
 
