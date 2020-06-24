@@ -6,7 +6,7 @@ CREATE TABLE `players` (
  `money` int(11) NOT NULL DEFAULT '0',
  `admin` int(11) NOT NULL DEFAULT '0',
  `rank` int(11) NOT NULL DEFAULT '0',
- `prestige` int(11) NOT NULL DEFAULT '0'
+ `prestige` int(11) NOT NULL DEFAULT '0',
  `kills` int(11) NOT NULL DEFAULT '0',
  PRIMARY KEY (`id`)
 );
